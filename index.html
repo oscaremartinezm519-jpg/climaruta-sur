@@ -1,1872 +1,1244 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="minimal">
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ClimaRuta Sur • Tampico - Madero - Altamira</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter & Press Start 2P (Arcade) -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet" />
-  <!-- Leaflet CSS & JS -->
+  <title>ClimaRuta Sur — Tampico • Madero • Altamira</title>
+  
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    /* ===================================================================== */
-    /* 1. PALETAS DE LAS 3 APARIENCIAS: MINIMALISTA, ARCADE Y PASTEL         */
-    /* ===================================================================== */
-    :root[data-theme="minimal"] {
-      --bg-app: #f4f4f5;
-      --bg-surface: rgba(255, 255, 255, 0.96);
-      --bg-card: #f4f4f5;
-      --bg-card-hover: #e4e4e7;
-      --text-primary: #0a0a0a;
-      --text-secondary: #52525b;
-      --border-color: #e4e4e7;
-      --btn-solid-bg: #0a0a0a;
-      --btn-solid-text: #ffffff;
-      --accent-badge-bg: #0a0a0a;
-      --accent-badge-text: #ffffff;
-      --shadow-ui: 0 10px 28px rgba(0, 0, 0, 0.10);
-      --radius-ui: 0.9rem;
+    :root {
+      --bg-card: #ffffff;
+      --bg-secondary: #f6f6f6;
+      --text-primary: #000000;
+      --text-secondary: #545454;
+      --border-color: #e2e2e2;
+      --accent-bg: #000000;
+      --accent-text: #ffffff;
+      --danger-bg: #e11900;
+      --success-bg: #05944f;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+      --shadow-card: 0 8px 24px rgba(0,0,0,0.12);
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --border-width: 1px;
-      --font-main: 'Inter', sans-serif;
     }
 
-    :root[data-theme="arcade"] {
-      --bg-app: #060814;
-      --bg-surface: rgba(13, 18, 38, 0.96);
-      --bg-card: #141d3d;
-      --bg-card-hover: #1e2b59;
-      --text-primary: #f8fafc;
-      --text-secondary: #67e8f9;
-      --border-color: #22d3ee;
-      --btn-solid-bg: #4ade80;
-      --btn-solid-text: #052e16;
-      --accent-badge-bg: #22d3ee;
-      --accent-badge-text: #060814;
-      --shadow-ui: 4px 4px 0px #000000;
-      --radius-ui: 0.25rem;
+    /* TEMA ARCADE RETRO */
+    body.theme-arcade {
+      --bg-card: #0b0e17;
+      --bg-secondary: #151b2b;
+      --text-primary: #00ff66;
+      --text-secondary: #56d8ff;
+      --border-color: #00ff66;
+      --accent-bg: #00ff66;
+      --accent-text: #0b0e17;
+      --danger-bg: #ff2a55;
+      --success-bg: #00ff66;
+      --radius-lg: 4px;
+      --radius-md: 4px;
+      --radius-pill: 4px;
+      --shadow-card: 0 0 0 2px #00ff66, 0 6px 0 #005522;
+      --font-main: 'Press Start 2P', monospace;
       --border-width: 2px;
-      --font-main: 'Inter', sans-serif;
     }
+    body.theme-arcade * { letter-spacing: -0.3px; }
+    body.theme-arcade .arcade-sm { font-size: 9px !important; line-height: 1.5 !important; }
+    body.theme-arcade .arcade-xs { font-size: 8px !important; line-height: 1.4 !important; }
 
-    :root[data-theme="pastel"] {
-      --bg-app: #fff9fc;
-      --bg-surface: rgba(255, 255, 255, 0.96);
-      --bg-card: #fce7f3;
-      --bg-card-hover: #fbcfe8;
-      --text-primary: #3b1f33;
-      --text-secondary: #7e5272;
-      --border-color: #f9a8d4;
-      --btn-solid-bg: #f472b6;
-      --btn-solid-text: #ffffff;
-      --accent-badge-bg: #a78bfa;
-      --accent-badge-text: #ffffff;
-      --shadow-ui: 0 10px 25px -5px rgba(244, 114, 182, 0.22);
-      --radius-ui: 1.35rem;
+    /* TEMA PASTEL */
+    body.theme-pastel {
+      --bg-card: #fff9fb;
+      --bg-secondary: #ffeef4;
+      --text-primary: #4a3541;
+      --text-secondary: #8a6a7b;
+      --border-color: #f7c6d9;
+      --accent-bg: #f06292;
+      --accent-text: #ffffff;
+      --danger-bg: #ff6b8b;
+      --success-bg: #5ec29b;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-pill: 999px;
+      --shadow-card: 0 8px 24px rgba(240, 98, 146, 0.16);
+      --font-main: 'Quicksand', sans-serif;
       --border-width: 1.5px;
-      --font-main: 'Inter', sans-serif;
     }
 
-    body {
-      font-family: var(--font-main);
-      background-color: var(--bg-app);
-      color: var(--text-primary);
-      overscroll-behavior-y: none;
-      transition: background-color 0.25s ease, color 0.25s ease;
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; width: 100%; overflow: hidden; font-family: var(--font-main); background: #e5e5e5; color: var(--text-primary); }
+
+    #map { position: absolute; inset: 0; z-index: 1; transition: filter 0.3s ease; }
+    body.theme-minimal #map .leaflet-tile-pane { filter: grayscale(0.85) contrast(1.04) brightness(1.02); }
+    body.theme-arcade #map .leaflet-tile-pane { filter: invert(0.92) hue-rotate(155deg) saturate(2.2) contrast(1.2); }
+    body.theme-pastel #map .leaflet-tile-pane { filter: sepia(0.15) hue-rotate(305deg) saturate(1.15) brightness(1.04); }
+
+    /* Canvas Atmosférico Estilo Zoom Earth */
+    #fxCanvas {
+      position: fixed; inset: 0; pointer-events: none; z-index: 900;
+      opacity: 0; transition: opacity 0.6s ease;
+    }
+    #fxCanvas.active { opacity: 1; }
+
+    /* Borde de alerta temporal */
+    #alertEdgeFlash {
+      position: fixed; inset: 0; pointer-events: none; z-index: 899;
+      box-shadow: inset 0 0 0 0 rgba(225, 25, 0, 0);
+      transition: box-shadow 0.4s ease;
+    }
+    #alertEdgeFlash.active {
+      box-shadow: inset 0 0 28px 6px rgba(225, 25, 0, 0.65);
     }
 
-    .theme-surface {
-      background-color: var(--bg-surface);
-      border-color: var(--border-color);
-      border-width: var(--border-width);
-      box-shadow: var(--shadow-ui);
+    /* Barra Superior */
+    .top-bar {
+      position: fixed; top: 12px; left: 12px; right: 12px; z-index: 500;
+      background: var(--bg-card); border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-lg); padding: 10px 14px;
+      box-shadow: var(--shadow-card);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
     }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .logo-badge {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: var(--accent-bg); color: var(--accent-text);
+      font-weight: 800; font-size: 13px; display: grid; place-items: center; flex-shrink: 0;
+    }
+    .brand-text h1 { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .live-pill {
+      font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 6px;
+      background: var(--accent-bg); color: var(--accent-text); text-transform: uppercase;
+    }
+    .live-pill.offline { background: #999; color: #fff; }
+    .brand-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    .theme-card {
-      background-color: var(--bg-card);
-      border-color: var(--border-color);
-      border-width: var(--border-width);
-      border-radius: var(--radius-ui);
-      transition: all 0.18s ease;
-    }
-
-    .theme-card:hover {
-      background-color: var(--bg-card-hover);
-    }
-
-    .theme-btn-solid {
-      background-color: var(--btn-solid-bg);
-      color: var(--btn-solid-text);
-      border-radius: var(--radius-ui);
-    }
-
-    .theme-badge-solid {
-      background-color: var(--accent-badge-bg);
-      color: var(--accent-badge-text);
-    }
-
-    .theme-text-muted {
-      color: var(--text-secondary);
-    }
-
-    [data-theme="arcade"] .arcade-font {
-      font-family: 'Press Start 2P', monospace;
-      font-size: 0.62rem;
-      letter-spacing: 0.03em;
-    }
-
-    /* ===================================================================== */
-    /* 2. FILTROS DE TILES OPENSTREETMAP SIN API KEY SEGÚN APARIENCIA         */
-    /* ===================================================================== */
-    .leaflet-container {
-      background: var(--bg-app);
-      font-family: 'Inter', sans-serif;
-    }
-    [data-theme="minimal"] .leaflet-tile-pane {
-      filter: grayscale(85%) contrast(1.04) brightness(1.02);
-    }
-    [data-theme="arcade"] .leaflet-tile-pane {
-      filter: invert(100%) hue-rotate(180deg) contrast(1.15) brightness(0.85);
-    }
-    [data-theme="pastel"] .leaflet-tile-pane {
-      filter: sepia(12%) saturate(115%) brightness(1.04);
-    }
-
-    .leaflet-popup-content-wrapper {
-      background: var(--bg-surface);
-      color: var(--text-primary);
-      border-radius: var(--radius-ui);
+    .top-actions { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+    .chip-btn {
+      background: var(--bg-secondary); color: var(--text-primary);
       border: var(--border-width) solid var(--border-color);
-      box-shadow: var(--shadow-ui);
-      padding: 0;
+      border-radius: var(--radius-pill); padding: 7px 11px;
+      font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 5px;
     }
-    .leaflet-popup-content {
-      margin: 0;
-      width: 285px !important;
+    .chip-btn.active { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
+
+    /* Banner Alerta Global */
+    .global-alert-banner {
+      position: fixed; top: 76px; left: 12px; right: 12px; z-index: 510;
+      background: var(--danger-bg); color: #ffffff;
+      border-radius: var(--radius-md); padding: 10px 14px;
+      box-shadow: 0 10px 25px rgba(225, 25, 0, 0.35);
+      display: none; flex-direction: column; gap: 8px;
     }
-    .leaflet-popup-tip {
-      background: var(--bg-surface);
+    .global-alert-banner.visible { display: flex; }
+    .alert-header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .alert-title { font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .alert-toggle-btn {
+      background: rgba(0,0,0,0.28); color: #fff; border: none;
+      border-radius: var(--radius-pill); padding: 5px 10px;
+      font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0;
     }
-    .leaflet-control-zoom {
-      border: none !important;
-      box-shadow: var(--shadow-ui) !important;
+    .alert-details {
+      display: none; background: rgba(0,0,0,0.22); border-radius: 10px; padding: 10px;
+      font-size: 11.5px; line-height: 1.45;
     }
-    .leaflet-control-zoom a {
-      background-color: var(--bg-surface) !important;
-      color: var(--text-primary) !important;
-      border-bottom: 1px solid var(--border-color) !important;
+    .alert-details.open { display: block; }
+    .alert-details ul { margin-left: 16px; margin-top: 4px; }
+
+    /* Tarjeta Clima Flotante */
+    .weather-card {
+      position: fixed; top: 82px; left: 12px; z-index: 450;
+      background: var(--bg-card); border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-md); padding: 10px 12px; width: 220px;
+      box-shadow: var(--shadow-card); transition: top 0.25s ease;
+    }
+    body.has-alert .weather-card { top: 132px; }
+    .weather-card-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+    .weather-row { font-size: 11px; color: var(--text-secondary); line-height: 1.45; }
+    .weather-row strong { color: var(--text-primary); }
+
+    /* Controles Derecha Mapa */
+    .map-controls {
+      position: fixed; top: 82px; right: 12px; z-index: 450;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+      transition: top 0.25s ease;
+    }
+    body.has-alert .map-controls { top: 132px; }
+    .ctrl-pill {
+      background: var(--bg-card); color: var(--text-primary);
+      border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-pill); padding: 8px 12px;
+      font-family: inherit; font-size: 11px; font-weight: 700;
+      box-shadow: var(--shadow-card); cursor: pointer;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .ctrl-pill.running { background: var(--success-bg); color: #fff; border-color: var(--success-bg); }
+    .ctrl-icon {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--bg-card); color: var(--text-primary);
+      border: var(--border-width) solid var(--border-color);
+      box-shadow: var(--shadow-card); cursor: pointer;
+      display: grid; place-items: center; font-size: 16px;
+    }
+    .ctrl-icon.active { background: var(--accent-bg); color: var(--accent-text); }
+
+    /* Botones Flotantes Inferiores */
+    .bottom-fab-row {
+      position: fixed; bottom: 132px; left: 12px; right: 12px; z-index: 460;
+      display: flex; justify-content: space-between; align-items: center; pointer-events: none;
+    }
+    .fab-btn {
+      pointer-events: auto; border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-pill); padding: 12px 18px;
+      font-family: inherit; font-size: 12px; font-weight: 800;
+      box-shadow: var(--shadow-card); cursor: pointer;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .fab-sos { background: var(--bg-card); color: var(--text-primary); }
+    .fab-report { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
+
+    /* Panel Inferior de Rutas */
+    .bottom-sheet {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 480;
+      background: var(--bg-card); border-top: var(--border-width) solid var(--border-color);
+      border-radius: 20px 20px 0 0; padding: 12px 14px 16px;
+      box-shadow: 0 -6px 24px rgba(0,0,0,0.1);
+    }
+    .search-box {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg-secondary); border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-md); padding: 9px 12px; margin-bottom: 10px;
+    }
+    .search-box input {
+      border: none; background: transparent; width: 100%;
+      font-family: inherit; font-size: 12px; color: var(--text-primary); outline: none;
+    }
+    .routes-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; margin-bottom: 8px; color: var(--text-secondary); }
+    .routes-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+    .routes-scroll::-webkit-scrollbar { display: none; }
+    .route-chip {
+      flex-shrink: 0; background: var(--bg-secondary); color: var(--text-primary);
+      border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-pill); padding: 7px 12px;
+      font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+    .route-chip.selected { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
+
+    /* Modales */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 800;
+      display: none; align-items: flex-end; justify-content: center; padding: 12px;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: var(--bg-card); color: var(--text-primary);
+      border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-lg); width: 100%; max-width: 460px;
+      max-height: 84vh; overflow-y: auto; padding: 16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .modal-head h2 { font-size: 15px; font-weight: 800; }
+    .close-btn {
+      background: var(--bg-secondary); color: var(--text-primary);
+      border: none; width: 30px; height: 30px; border-radius: 50%;
+      font-weight: 800; cursor: pointer;
+    }
+    .grid-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
+    .opt-card {
+      background: var(--bg-secondary); color: var(--text-primary);
+      border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-md); padding: 11px 10px;
+      text-align: left; font-family: inherit; font-size: 11.5px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 8px;
+    }
+    .opt-card:hover, .opt-card.picked { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
+    .input-field {
+      width: 100%; padding: 10px 12px; margin-bottom: 10px;
+      background: var(--bg-secondary); color: var(--text-primary);
+      border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-md); font-family: inherit; font-size: 12px;
+    }
+    .primary-btn {
+      width: 100%; padding: 12px; border: none; border-radius: var(--radius-md);
+      background: var(--accent-bg); color: var(--accent-text);
+      font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
+    }
+    .danger-btn {
+      width: 100%; padding: 11px; border: none; border-radius: var(--radius-md);
+      background: var(--danger-bg); color: #fff;
+      font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; margin-top: 6px;
+    }
+    .list-item {
+      background: var(--bg-secondary); border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
     }
 
-    /* Contenedor de pines personalizados */
-    .map-pin-wrapper {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.15s ease;
+    /* Toast */
+    .toast {
+      position: fixed; top: 84px; left: 50%; transform: translateX(-50%); z-index: 950;
+      background: var(--accent-bg); color: var(--accent-text);
+      padding: 9px 16px; border-radius: var(--radius-pill);
+      font-size: 11.5px; font-weight: 700; box-shadow: var(--shadow-card);
+      opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+      white-space: nowrap;
     }
-    .map-pin-wrapper:hover {
-      transform: scale(1.12);
-    }
+    .toast.show { opacity: 1; }
 
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-
-    /* ===================================================================== */
-    /* 3. DESTELLO PERIFÉRICO Y DESVANECIMIENTO CANVAS (4 SEGUNDOS)           */
-    /* ===================================================================== */
-    #weather-fx-canvas {
-      opacity: 0;
-      transition: opacity 0.6s ease;
-    }
-    #weather-fx-canvas.fx-active {
-      opacity: 1;
-    }
-
-    @keyframes edge-flash-4s {
-      0% { box-shadow: inset 0 0 0 0 rgba(220, 38, 38, 0); }
-      15% { box-shadow: inset 0 0 54px 16px rgba(220, 38, 38, 0.72); }
-      40% { box-shadow: inset 0 0 18px 5px rgba(220, 38, 38, 0.25); }
-      65% { box-shadow: inset 0 0 54px 16px rgba(220, 38, 38, 0.65); }
-      100% { box-shadow: inset 0 0 0 0 rgba(220, 38, 38, 0); }
-    }
-    .screen-edge-flash {
-      animation: edge-flash-4s 4s ease-out forwards;
-    }
-
-    @keyframes subtle-quake {
-      0%, 100% { transform: translate(0, 0); }
-      20% { transform: translate(-3px, 2px); }
-      40% { transform: translate(3px, -2px); }
-      60% { transform: translate(-2px, -1px); }
-      80% { transform: translate(2px, 1px); }
-    }
-    .quake-shake {
-      animation: subtle-quake 0.45s ease-in-out 4;
-    }
+    /* Ocultar atribución estorbosa en móvil pero mantener crédito */
+    .leaflet-control-attribution { font-size: 9px !important; opacity: 0.7; }
   </style>
 </head>
-<body class="h-screen w-screen overflow-hidden flex flex-col select-none">
+<body class="theme-minimal">
 
-  <!-- CAPA DE EFECTOS ATMOSFÉRICOS ZOOM EARTH EN CANVAS 2D (RÁFAGA DE 4 SEGUNDOS) -->
-  <canvas id="weather-fx-canvas" class="fixed inset-0 pointer-events-none z-40"></canvas>
-  <div id="edge-flash-overlay" class="fixed inset-0 pointer-events-none z-50"></div>
+  <!-- Canvas para efectos atmosféricos temporales (4s) -->
+  <canvas id="fxCanvas"></canvas>
+  <div id="alertEdgeFlash"></div>
+  <div id="toast" class="toast"></div>
 
-  <!-- ===================================================================== -->
-  <!-- 1. BARRA SUPERIOR: MINIMALISTA + SELECTOR 3 APARIENCIAS + ADMIN       -->
-  <!-- ===================================================================== -->
-  <header id="top-header" class="z-30 theme-surface border-b px-3.5 py-2.5 backdrop-blur-md">
-    <div class="flex items-center justify-between gap-2">
-      <!-- Identidad + Clima Real en vivo -->
-      <div class="flex items-center gap-2.5 min-w-0">
-        <div id="brand-logo" class="w-9 h-9 theme-btn-solid flex items-center justify-center font-extrabold text-xs shrink-0 arcade-font">
-          CR
-        </div>
-        <div class="min-w-0">
-          <div class="flex items-center gap-1.5">
-            <h1 class="font-extrabold text-sm tracking-tight truncate arcade-font">ClimaRuta Sur</h1>
-            <span class="text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded theme-badge-solid shrink-0">
-              EN VIVO
-            </span>
-          </div>
-          <!-- Widget de Clima Real Open-Meteo -->
-          <div id="live-weather-ticker" class="text-[11px] theme-text-muted flex items-center gap-1.5 truncate">
-            <span>Sincronizando Tampico / Madero...</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Controles Superiores: Apariencia + Modo Texto + Admin -->
-      <div class="flex items-center gap-1.5 shrink-0">
-        <!-- Selector Rápido de 3 Apariencias -->
-        <button onclick="cycleTheme()" id="btn-theme-cycle" class="theme-card px-2.5 py-1.5 text-[11px] font-bold flex items-center gap-1.5 active:scale-95" title="Cambiar apariencia">
-          <span id="theme-icon">◻️</span>
-          <span id="theme-name" class="hidden sm:inline">Minimalista</span>
-        </button>
-
-        <!-- Modo Bajo Consumo / Solo Texto -->
-        <button onclick="toggleTextMode()" id="btn-text-mode" class="theme-card px-2.5 py-1.5 text-[11px] font-bold flex items-center gap-1 active:scale-95" title="Modo ahorro de datos (sin mapa)">
-          <span id="text-mode-icon">📄</span>
-        </button>
-
-        <!-- Switch Administrador -->
-        <button onclick="toggleAdminMode()" id="btn-admin-toggle" class="theme-card px-2.5 py-1.5 text-[11px] font-bold flex items-center gap-1.5 active:scale-95">
-          <span id="admin-dot" class="w-2 h-2 rounded-full bg-neutral-400"></span>
-          <span>Admin</span>
-        </button>
+  <!-- Barra Superior -->
+  <header class="top-bar">
+    <div class="brand">
+      <div class="logo-badge">CR</div>
+      <div class="brand-text">
+        <h1 class="arcade-sm">ClimaRuta Sur <span id="dbStatusPill" class="live-pill">CONECTANDO</span></h1>
+        <div id="topWeatherLine" class="brand-sub arcade-xs">Cargando clima real de Tampico...</div>
       </div>
     </div>
-
-    <!-- PÍLDORA MINIMIZADA DE ALERTA GENERAL (REACTIVA EL EFECTO 4s AL ABRIRSE) -->
-    <div id="global-alert-pill" class="hidden mt-2">
-      <div onclick="toggleGlobalAlertDetails()" class="cursor-pointer bg-red-600 hover:bg-red-700 text-white rounded-xl px-3 py-2 flex items-center justify-between gap-2 shadow-md transition">
-        <div class="flex items-center gap-2 min-w-0">
-          <span id="alert-pill-icon" class="text-base shrink-0">⚠️</span>
-          <div class="truncate text-xs">
-            <span id="alert-pill-title" class="font-extrabold uppercase tracking-wide">ALERTA GENERAL</span>
-            <span id="alert-pill-sector" class="opacity-90 ml-1">• Zona Conurbada</span>
-          </div>
-        </div>
-        <span id="alert-pill-chevron" class="text-[11px] font-bold bg-black/25 px-2.5 py-0.5 rounded-lg shrink-0">
-          Precauciones ▼
-        </span>
-      </div>
-
-      <!-- Tarjeta Desplegable con Recomendaciones Prácticas -->
-      <div id="global-alert-expanded" class="hidden mt-1.5 theme-surface border border-red-500/50 rounded-xl p-3.5 text-xs space-y-2">
-        <div class="flex items-center justify-between border-b border-neutral-300/30 pb-1.5">
-          <span class="font-extrabold text-red-600 uppercase text-[11px]">📋 Recomendaciones de Seguridad</span>
-          <span id="alert-pill-time" class="text-[10px] theme-text-muted">Activa ahora</span>
-        </div>
-        <ul id="alert-recommendations-list" class="list-disc pl-4 space-y-1 text-xs leading-relaxed"></ul>
-        <div id="admin-clear-alert-box" class="hidden pt-1.5 border-t border-neutral-300/30 flex justify-end">
-          <button onclick="clearGlobalAlert()" class="bg-black text-white font-bold text-[11px] px-3 py-1.5 rounded-lg">
-            ✓ Finalizar Alerta Global (Admin)
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- BARRA DE HERRAMIENTAS DE ADMINISTRADOR (SOLO VISIBLE EN MODO ADMIN) -->
-    <div id="admin-toolbar" class="hidden mt-2 bg-neutral-900 text-white rounded-xl px-3 py-2 flex items-center justify-between gap-2 text-xs">
-      <div class="flex items-center gap-2 truncate">
-        <span>🛡️ <strong>Panel Admin:</strong></span>
-        <span id="banned-counter" class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">0 bloqueados</span>
-      </div>
-      <button onclick="openBroadcastModal()" class="shrink-0 bg-red-600 hover:bg-red-500 text-white font-extrabold text-[11px] px-3 py-1.5 rounded-lg flex items-center gap-1.5 active:scale-95 transition">
-        <span>🚨</span>
-        <span>Emitir Alerta Global</span>
-      </button>
+    <div class="top-actions">
+      <button id="themeToggleBtn" class="chip-btn arcade-xs" title="Cambiar apariencia">◻ Minimalista</button>
+      <button id="adminToggleBtn" class="chip-btn arcade-xs">● Admin</button>
     </div>
   </header>
 
-  <!-- ===================================================================== -->
-  <!-- 2. ÁREA CENTRAL: MAPA LIMPIO OSM + AVATARES POR APARIENCIA            -->
-  <!-- ===================================================================== -->
-  <main class="relative flex-1 w-full overflow-hidden">
-
-    <!-- VISTA MAPA -->
-    <div id="map-view" class="h-full w-full relative">
-      <div id="map" class="h-full w-full z-10"></div>
-
-      <!-- Tarjeta flotante de condiciones meteorológicas reales (Open-Meteo) -->
-      <div id="weather-card-overlay" class="absolute top-3 left-3 z-20 theme-surface backdrop-blur-md border rounded-2xl px-3.5 py-2.5 text-[11px] max-w-[235px] pointer-events-auto">
-        <div class="flex items-center justify-between gap-2">
-          <span class="font-extrabold tracking-tight flex items-center gap-1">🛰️ Open-Meteo Oficial</span>
-          <button onclick="fetchLiveWeather()" class="text-xs theme-text-muted hover:opacity-75 font-bold" title="Actualizar clima">↻</button>
-        </div>
-        <div id="weather-card-details" class="mt-1 space-y-0.5 leading-snug">
-          <div>Temp: <strong>--°C</strong> • Viento: <strong>-- km/h</strong></div>
-          <div class="theme-text-muted">Prob. lluvia: --% • CAPE: -- J/kg</div>
-        </div>
-      </div>
-
-      <!-- Controles derechos del mapa: Simular Ruta en Movimiento + Centrar GPS -->
-      <div class="absolute top-3 right-3 z-20 flex flex-col items-end gap-2">
-        <button onclick="toggleSimulateMovement()" id="btn-simulate-move" class="theme-surface border px-3 py-2 rounded-xl text-[11px] font-extrabold flex items-center gap-1.5 active:scale-95 transition shadow-md">
-          <span id="sim-icon">▶</span>
-          <span id="sim-label">Simular ruta</span>
-        </button>
-
-        <button onclick="centerOnUser()" class="w-10 h-10 theme-surface border rounded-xl flex items-center justify-center active:scale-95 transition" title="Mi ubicación">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3A8.994 8.994 0 0013 3.06V1h-2v2.06A8.994 8.994 0 003.06 11H1v2h2.06A8.994 8.994 0 0011 20.94V23h2v-2.06A8.994 8.994 0 0020.94 13H23v-2h-2.06z" />
-          </svg>
-        </button>
-      </div>
+  <!-- Banner de Alerta Global en Vivo -->
+  <section id="globalAlertBanner" class="global-alert-banner">
+    <div class="alert-header-row">
+      <div id="alertBannerTitle" class="alert-title arcade-xs">🚨 ALERTA GENERAL</div>
+      <button id="alertExpandBtn" class="alert-toggle-btn arcade-xs">Precauciones ▼</button>
     </div>
-
-    <!-- VISTA MODO TEXTO (BAJO CONSUMO EN TORMENTAS) -->
-    <div id="text-mode-view" class="hidden h-full w-full overflow-y-auto p-4 pb-64 space-y-3 z-20">
-      <div class="theme-surface border rounded-2xl p-3.5">
-        <div class="flex items-center justify-between">
-          <span class="text-xs font-extrabold">⚡ Modo Ahorro de Datos (Sin Mapa)</span>
-          <span class="text-[10px] theme-text-muted">Ideal con señal 3G baja</span>
-        </div>
-        <p id="text-weather-summary" class="text-xs mt-1.5 leading-relaxed">
-          Cargando resumen meteorológico oficial...
-        </p>
-      </div>
-
-      <div class="flex items-center justify-between pt-1">
-        <h2 class="text-sm font-extrabold">📢 Reportes Ciudadanos Activos</h2>
-        <span id="text-mode-count" class="text-xs theme-text-muted">0 activos</span>
-      </div>
-      <div id="text-mode-reports-list" class="space-y-2.5"></div>
+    <div id="alertBannerDetails" class="alert-details arcade-xs">
+      <strong id="alertZoneText"></strong>
+      <ul id="alertTipsList"></ul>
     </div>
+  </section>
 
-    <!-- =================================================================== -->
-    <!-- 3. BOTONES FLOTANTES: AUXILIO VIAL / EMERGENCIAS + REPORTAR         -->
-    <!-- =================================================================== -->
-    <div class="fixed bottom-[235px] sm:bottom-[245px] left-4 right-4 z-30 flex items-center justify-between pointer-events-none">
-      <!-- Botón Auxilio Vial Vecinal & Directorio 911 -->
-      <button onclick="openAssistanceModal()" class="pointer-events-auto theme-surface border font-extrabold text-xs px-3.5 py-3 rounded-2xl flex items-center gap-1.5 transition active:scale-95">
-        <span class="text-base">🆘</span>
-        <span>Auxilio / 911</span>
-      </button>
-
-      <!-- Botón Gigante + REPORTAR (Toque 1) -->
-      <button onclick="openReportModal()" class="pointer-events-auto theme-btn-solid font-extrabold text-sm px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 transition active:scale-95">
-        <span class="text-lg leading-none">+</span>
-        <span>REPORTAR</span>
-      </button>
+  <!-- Tarjeta Clima Open-Meteo -->
+  <aside class="weather-card">
+    <div class="weather-card-head arcade-xs">
+      <span>📡 Open-Meteo Oficial</span>
+      <button id="refreshWeatherBtn" style="background:none;border:none;color:inherit;cursor:pointer;font-weight:800;">↻</button>
     </div>
+    <div id="weatherDetailBox" class="weather-row arcade-xs">
+      Consultando estación Tampico-Altamira...
+    </div>
+  </aside>
 
-    <!-- =================================================================== -->
-    <!-- 4. PANEL INFERIOR: TRAYECTOS REALES (OSRM) Y ALERTAS PROGRAMADAS    -->
-    <!-- =================================================================== -->
-    <section id="bottom-drawer" class="fixed bottom-0 left-0 right-0 z-30 theme-surface backdrop-blur-xl border-t rounded-t-3xl transition-all duration-300 max-h-[78vh] flex flex-col">
-      <div onclick="toggleDrawerSize()" class="w-full pt-2.5 pb-1.5 flex flex-col items-center cursor-pointer">
-        <div class="w-10 h-1.5 rounded-full bg-neutral-400/50"></div>
+  <!-- Controles Derechos del Mapa -->
+  <div class="map-controls">
+    <button id="simRouteBtn" class="ctrl-pill arcade-xs">▶ Simular ruta</button>
+    <button id="compassBtn" class="ctrl-icon" title="Alternar Norte arriba / Seguir rumbo">🧭</button>
+    <button id="locateBtn" class="ctrl-icon" title="Mi ubicación GPS">◎</button>
+    <button id="adminPanelFab" class="ctrl-pill arcade-xs" style="display:none;background:var(--danger-bg);color:#fff;border-color:var(--danger-bg);">🚨 Emitir Alerta</button>
+  </div>
+
+  <!-- Botones Flotantes Inferiores -->
+  <div class="bottom-fab-row">
+    <button id="openSosBtn" class="fab-btn fab-sos arcade-xs">
+      <span style="background:#e11900;color:#fff;padding:2px 5px;border-radius:4px;font-size:9px;">SOS</span> Auxilio / 911
+    </button>
+    <button id="openReportBtn" class="fab-btn fab-report arcade-xs">+ REPORTAR</button>
+  </div>
+
+  <!-- Mapa Principal -->
+  <main id="map"></main>
+
+  <!-- Panel Inferior de Rutas -->
+  <section class="bottom-sheet">
+    <div class="search-box">
+      <span>🔍</span>
+      <input id="destInput" type="text" placeholder="¿A dónde vas? Ej. Puerto Altamira, Centro Tampico, Miramar..." />
+      <button id="searchRouteBtn" class="chip-btn active arcade-xs">Ir</button>
+    </div>
+    <div class="routes-header arcade-xs">
+      <span>Tus Trayectos Guardados (Aviso automático)</span>
+      <span id="routeStatsLabel">Trazado real OSRM</span>
+    </div>
+    <div class="routes-scroll" id="savedRoutesRow">
+      <button class="route-chip selected arcade-xs" data-route="altamira">🏠 Casa → 🏭 Puerto Altamira (06:40)</button>
+      <button class="route-chip arcade-xs" data-route="centro">🏠 Casa → 🏛️ Centro Tampico (07:30)</button>
+      <button class="route-chip arcade-xs" data-route="miramar">🏠 Casa → 🏖️ Playa Miramar (17:00)</button>
+    </div>
+  </section>
+
+  <!-- MODAL 1: REPORTAR INCIDENTE / CLIMA -->
+  <div id="reportModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 class="arcade-sm">Nuevo Reporte en Vivo</h2>
+        <button class="close-btn" data-close="reportModal">✕</button>
       </div>
-
-      <div class="px-4 pb-4 overflow-y-auto space-y-3">
-        <!-- Buscador de destino -->
-        <div class="relative">
-          <div class="flex items-center theme-card px-3.5 py-2.5 gap-2">
-            <span class="text-sm">🔍</span>
-            <input
-              id="destination-input"
-              type="text"
-              placeholder="¿A dónde vas? Ej. Puerto Altamira, Centro, Miramar..."
-              class="bg-transparent text-xs sm:text-sm font-medium w-full focus:outline-none"
-              onfocus="showDestinationSuggestions()"
-              oninput="filterDestinations(this.value)"
-            />
-            <button id="btn-clear-route" onclick="clearSelectedRoute()" class="hidden text-xs theme-text-muted px-1.5 py-0.5 rounded font-bold">
-              ✕
-            </button>
-          </div>
-
-          <div id="destination-suggestions" class="hidden absolute left-0 right-0 bottom-full mb-1.5 theme-surface border rounded-2xl overflow-hidden z-40">
-            <div class="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider theme-text-muted border-b border-neutral-300/30">
-              Destinos en Zona Conurbada (Trazado Real OSRM)
-            </div>
-            <div id="suggestions-list" class="divide-y divide-neutral-300/20 max-h-44 overflow-y-auto"></div>
-          </div>
-        </div>
-
-        <!-- Chips de Rutas Guardadas -->
-        <div>
-          <div class="flex items-center justify-between mb-1.5">
-            <span class="text-[11px] font-bold theme-text-muted">Tus Trayectos Guardados</span>
-            <span id="routing-status-badge" class="text-[10px] font-semibold theme-text-muted">Trazado OSRM listo</span>
-          </div>
-          <div id="saved-routes-chips" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1"></div>
-        </div>
-
-        <!-- TARJETA DE DIAGNÓSTICO DUAL DE RUTA -->
-        <div id="route-diagnosis-card" class="hidden theme-card p-3.5 space-y-3">
-          <div class="flex items-start justify-between gap-2 border-b border-neutral-300/30 pb-2.5">
-            <div>
-              <h3 id="diag-route-title" class="font-extrabold text-sm">Casa → Puerto Altamira</h3>
-              <p id="diag-route-meta" class="text-[11px] theme-text-muted mt-0.5">Calculando ruta real...</p>
-            </div>
-            <button onclick="clearSelectedRoute()" class="text-xs font-bold theme-text-muted hover:underline px-2 py-1">Cerrar</button>
-          </div>
-
-          <!-- Configuración de Alerta Programada para esta ruta -->
-          <div class="flex items-center justify-between theme-surface border rounded-xl px-3 py-2 text-xs">
-            <div class="flex items-center gap-2">
-              <span>⏰</span>
-              <div>
-                <span class="font-bold block text-[11px]">Aviso automático de salida</span>
-                <span class="text-[10px] theme-text-muted">Solo notifica si hay lluvia o incidentes</span>
-              </div>
-            </div>
-            <div class="flex items-center gap-1.5">
-              <input id="route-alert-time" type="time" value="06:40" onchange="updateRouteAlertSchedule()" class="theme-card text-[11px] font-bold px-2 py-1 rounded-lg border" />
-              <input id="route-alert-enabled" type="checkbox" checked onchange="updateRouteAlertSchedule()" class="w-4 h-4 accent-black rounded" />
-            </div>
-          </div>
-
-          <!-- BLOQUE A: CLIMA REAL OFICIAL EN RUTA -->
-          <div class="theme-surface border rounded-xl p-2.5 space-y-1">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded theme-badge-solid">
-                🛰️ Datos Oficiales / Satélite & Open-Meteo
-              </span>
-              <span class="text-[10px] font-semibold theme-text-muted">Dato Oficial</span>
-            </div>
-            <p id="diag-official-weather" class="text-xs leading-relaxed pt-1"></p>
-          </div>
-
-          <!-- BLOQUE B: REPORTES DE USUARIOS EN RUTA -->
-          <div class="theme-surface border rounded-xl p-2.5 space-y-1.5">
-            <div class="flex items-center justify-between">
-              <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-amber-500 text-black">
-                👥 Reportes de Usuarios en Trayecto
-              </span>
-              <span id="diag-user-reports-badge" class="text-[10px] font-bold">0 eventos</span>
-            </div>
-            <div id="diag-user-reports-list" class="space-y-1.5 pt-0.5"></div>
-          </div>
-        </div>
+      <p style="font-size:11px;color:var(--text-secondary);margin-bottom:10px;" class="arcade-xs">Se publica al instante para toda la zona conurbada. Desaparece con 3 confirmaciones de despejado.</p>
+      <div class="grid-options" id="reportTypeGrid">
+        <button class="opt-card arcade-xs" data-tipo="clima" data-subtipo="Lluvia fuerte / Chubasco">🌧️ Lluvia fuerte</button>
+        <button class="opt-card arcade-xs" data-tipo="clima" data-subtipo="Viento / Rachas de Norte">💨 Rachas de Norte</button>
+        <button class="opt-card arcade-xs" data-tipo="vial" data-subtipo="Calle inundada / Encharcamiento">🌊 Calle inundada</button>
+        <button class="opt-card arcade-xs" data-tipo="vial" data-subtipo="Tráfico pesado / Embotellamiento">🚦 Tráfico pesado</button>
+        <button class="opt-card arcade-xs" data-tipo="vial" data-subtipo="Choque / Accidente vial">💥 Choque / Accidente</button>
+        <button class="opt-card arcade-xs" data-tipo="peligro" data-subtipo="Calle cerrada / Obra / Cable caído">🚧 Calle cerrada / Peligro</button>
       </div>
-    </section>
-  </main>
-
-  <!-- ===================================================================== -->
-  <!-- 5. MODAL DE REPORTE RÁPIDO EN 3 TOQUES                                -->
-  <!-- ===================================================================== -->
-  <div id="report-modal" class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="theme-surface border w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <span id="report-step-badge" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full theme-badge-solid">
-            Toque 2 de 3 • Categoría
-          </span>
-          <h2 id="report-modal-title" class="text-base font-extrabold mt-1">¿Qué ocurre en tu ubicación?</h2>
-        </div>
-        <button onclick="closeReportModal()" class="w-9 h-9 rounded-full theme-card flex items-center justify-center text-sm font-bold">✕</button>
-      </div>
-
-      <div id="report-categories-grid" class="grid grid-cols-2 gap-2.5"></div>
-
-      <div id="report-severity-panel" class="hidden space-y-2.5">
-        <button onclick="openReportModal()" class="text-xs font-bold underline">← Cambiar categoría</button>
-        <div id="report-severity-options" class="grid grid-cols-1 gap-2.5"></div>
-      </div>
-
-      <p class="text-[11px] text-center theme-text-muted">
-        Se publica al instante para todos • Requiere 3 confirmaciones para despejarse.
-      </p>
+      <input id="reportColoniaInput" class="input-field arcade-xs" type="text" placeholder="Colonia o referencia (ej. Av. Hidalgo, Blvd. Petrocel...)" />
+      <button id="submitReportBtn" class="primary-btn arcade-xs">Publicar Reporte Ahora</button>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- 6. MODAL DE ALERTAS GENERALES (ADMIN BROADCAST - 10 ESCENARIOS)       -->
-  <!-- ===================================================================== -->
-  <div id="broadcast-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="theme-surface border border-red-500/50 w-full max-w-lg rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[88vh] overflow-y-auto">
-      <div class="flex items-center justify-between">
-        <div>
-          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-red-600 text-white">
-            🛡️ Panel Admin • Alerta Obligatoria
-          </span>
-          <h2 class="text-base font-extrabold mt-1">Emitir Alerta General a la Comunidad</h2>
-        </div>
-        <button onclick="closeBroadcastModal()" class="w-9 h-9 rounded-full theme-card flex items-center justify-center text-sm font-bold">✕</button>
+  <!-- MODAL 2: DETALLE DE PIN Y DESPEJE 3/3 -->
+  <div id="pinModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 id="pinModalTitle" class="arcade-sm">Detalle del Reporte</h2>
+        <button class="close-btn" data-close="pinModal">✕</button>
       </div>
-
-      <div>
-        <label class="text-xs font-extrabold block mb-1">Sector o zona afectada:</label>
-        <input id="broadcast-sector-input" type="text" value="Toda la Zona Conurbada (Tampico, Madero y Altamira)" class="w-full theme-card px-3 py-2 text-xs font-medium focus:outline-none border" />
+      <p id="pinModalMeta" style="font-size:11.5px;color:var(--text-secondary);margin-bottom:12px;" class="arcade-xs"></p>
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <button id="confirmPinBtn" class="primary-btn arcade-xs" style="flex:1;">👍 Sigue ahí (<span id="pinConfirmCount">1</span>)</button>
+        <button id="clearPinBtn" class="primary-btn arcade-xs" style="flex:1;background:var(--success-bg);color:#fff;">✓ Ya se despejó (<span id="pinClearCount">0</span>/3)</button>
       </div>
-
-      <div class="space-y-2">
-        <span class="text-xs font-extrabold block">Selecciona contingencia (efecto atmosférico 4 seg):</span>
-        <div id="broadcast-scenarios-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-      </div>
+      <button id="adminDeletePinBtn" class="danger-btn arcade-xs" style="display:none;">🛡️ [Admin] Eliminar reporte y sancionar dispositivo</button>
     </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- 7. MODAL AUXILIO VIAL VECINAL + DIRECTORIO EMERGENCIAS (911 / VOLUNT.)-->
-  <!-- ===================================================================== -->
-  <div id="assistance-modal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-    <div class="theme-surface border w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 space-y-4 max-h-[88vh] overflow-y-auto">
-      <div class="flex items-center justify-between">
+  <!-- MODAL 3: AUXILIO VIAL Y DIRECTORIO 911 -->
+  <div id="sosModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 class="arcade-sm">Emergencias y Auxilio Vial</h2>
+        <button class="close-btn" data-close="sosModal">✕</button>
+      </div>
+      <div class="list-item">
         <div>
-          <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full theme-badge-solid">
-            Red de Apoyo Ciudadano y Oficial
-          </span>
-          <h2 class="text-base font-extrabold mt-1">Auxilio Vial y Emergencias</h2>
+          <strong style="font-size:12px;" class="arcade-xs">🚨 Emergencias Nacionales (911)</strong>
+          <div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Cruz Roja, Bomberos, Tránsito y Protección Civil</div>
         </div>
-        <button onclick="closeAssistanceModal()" class="w-9 h-9 rounded-full theme-card flex items-center justify-center text-sm font-bold">✕</button>
+        <a href="tel:911" class="chip-btn active arcade-xs" style="text-decoration:none;">Llamar 911</a>
+      </div>
+      <div class="list-item">
+        <div>
+          <strong style="font-size:12px;" class="arcade-xs">🚒 Protección Civil Regional</strong>
+          <div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Tampico • Madero • Altamira</div>
+        </div>
+        <a href="tel:8333052624" class="chip-btn arcade-xs" style="text-decoration:none;">Llamar</a>
       </div>
 
-      <div class="space-y-2">
-        <h3 class="text-xs font-extrabold uppercase tracking-wider theme-text-muted">📞 Líneas Directas y Grupos Voluntarios</h3>
-        <div class="grid grid-cols-2 gap-2 text-xs">
-          <a href="tel:911" class="bg-red-600 text-white rounded-xl p-2.5 flex items-center gap-2 font-bold">
-            <span class="text-lg">🚨</span>
-            <div>
-              <div>911 Emergencias</div>
-              <div class="text-[10px] font-normal opacity-90">Policía / Seguridad</div>
-            </div>
-          </a>
-          <a href="tel:8332121010" class="theme-card p-2.5 flex items-center gap-2 font-bold">
-            <span class="text-lg">🚒</span>
-            <div>
-              <div>Bomberos / PC</div>
-              <div class="text-[10px] font-normal theme-text-muted">Protección Civil</div>
-            </div>
-          </a>
-          <a href="tel:8332121333" class="theme-card p-2.5 flex items-center gap-2 font-bold">
-            <span class="text-lg">🚑</span>
-            <div>
-              <div>Cruz Roja Sur</div>
-              <div class="text-[10px] font-normal theme-text-muted">Ambulancias</div>
-            </div>
-          </a>
-          <a href="tel:8331002020" class="theme-card p-2.5 flex items-center gap-2 font-bold">
-            <span class="text-lg">🦺</span>
-            <div>
-              <div>Voluntarios Zona Sur</div>
-              <div class="text-[10px] font-normal theme-text-muted">Rescate y Apoyo Vial</div>
-            </div>
-          </a>
-        </div>
-      </div>
-
-      <div class="border-t border-neutral-300/30 pt-3 space-y-2.5">
-        <div class="flex items-center justify-between">
-          <h3 class="text-xs font-extrabold uppercase tracking-wider">🛠️ Auxilio Vial Vecinal (Sin costo)</h3>
-          <span class="text-[10px] theme-text-muted">Solo fallas mecánicas</span>
-        </div>
-
-        <div id="roadside-request-box" class="space-y-2">
-          <p class="text-[11px] theme-text-muted">
-            Tu solicitud llegará solo a voluntarios verificados a menos de 4 km de tu GPS:
-          </p>
-          <div class="grid grid-cols-3 gap-2 text-center text-xs">
-            <button onclick="requestRoadsideHelp('Llanta ponchada')" class="theme-card p-2.5 font-bold">
-              <div class="text-xl mb-1">🛞</div>Llanta
-            </button>
-            <button onclick="requestRoadsideHelp('Sin batería (pasar corriente)')" class="theme-card p-2.5 font-bold">
-              <div class="text-xl mb-1">🔋</div>Batería
-            </button>
-            <button onclick="requestRoadsideHelp('Auto varado / Sin gasolina')" class="theme-card p-2.5 font-bold">
-              <div class="text-xl mb-1">⛽</div>Gas / Varado
-            </button>
-          </div>
-        </div>
-
-        <!-- Tarjeta de Voluntario Asignado (con Nombre, Vehículo y Placas) -->
-        <div id="volunteer-assigned-card" class="hidden theme-card border-emerald-500 p-3.5 space-y-2">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded bg-emerald-600 text-white">
-              ✓ Voluntario en Camino
-            </span>
-            <span id="vol-eta" class="text-xs font-extrabold text-emerald-600">Llega en ~7 min</span>
-          </div>
-          <div class="text-xs space-y-1">
-            <div class="font-extrabold text-sm" id="vol-name">Carlos Mendoza R. (Voluntario Verificado)</div>
-            <div id="vol-vehicle">🚙 Vehículo: Nissan NP300 Blanca (con torreta ámbar)</div>
-            <div class="font-mono font-extrabold" id="vol-plates">🪪 Placas: WN-4821-B (Tamaulipas)</div>
-            <div class="text-[11px] theme-text-muted pt-1" id="vol-issue">Motivo: Llanta ponchada</div>
-          </div>
-          <button onclick="cancelRoadsideHelp()" class="w-full mt-1 theme-btn-solid text-xs font-bold py-2 rounded-xl">
-            Marcar ayuda recibida / Cancelar
-          </button>
-        </div>
-      </div>
+      <hr style="border:none;border-top:1px solid var(--border-color);margin:12px 0;" />
+      <h3 style="font-size:12px;margin-bottom:6px;" class="arcade-xs">🤝 Auxilio Vial Vecinal en Vivo</h3>
+      <p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Si aceptas ayudar o pides apoyo, se muestra nombre, vehículo y placas por seguridad.</p>
+      <select id="sosFallaSelect" class="input-field arcade-xs">
+        <option value="Ponchadura de llanta">🛞 Ponchadura de llanta</option>
+        <option value="Paso de corriente / Batería">🔋 Paso de corriente / Batería</option>
+        <option value="Vehículo varado por agua">🌊 Vehículo varado por encharcamiento</option>
+        <option value="Sin combustible">⛽ Sin combustible</option>
+      </select>
+      <button id="requestAuxilioBtn" class="primary-btn arcade-xs">Solicitar Auxilio en mi Ubicación</button>
+      <div id="auxilioListContainer" style="margin-top:10px;"></div>
     </div>
   </div>
 
-  <!-- TOAST FLOTANTE -->
-  <div id="toast-notification" class="hidden fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-black text-white px-4 py-2.5 rounded-2xl shadow-2xl text-xs font-bold flex items-center gap-2 whitespace-nowrap">
-    <span id="toast-icon">✅</span>
-    <span id="toast-message">Listo</span>
+  <!-- MODAL 4: PANEL ADMINISTRADOR (ALERTAS GENERALES) -->
+  <div id="adminModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 class="arcade-sm">🚨 Panel Admin: Alerta General</h2>
+        <button class="close-btn" data-close="adminModal">✕</button>
+      </div>
+      <p style="font-size:11px;color:var(--text-secondary);margin-bottom:10px;" class="arcade-xs">Selecciona el escenario real para emitir aviso global inmediato a toda la zona:</p>
+      <div class="grid-options" id="globalAlertGrid">
+        <button class="opt-card arcade-xs" data-alert="huracan">🌀 Huracán / Tormenta</button>
+        <button class="opt-card arcade-xs" data-alert="norte">💨 Norte / Rachas Fuertes</button>
+        <button class="opt-card arcade-xs" data-alert="inundacion">🌊 Lluvia Severa / Inundación</button>
+        <button class="opt-card arcade-xs" data-alert="granizo">⛈️ Granizo / Tormenta Eléctrica</button>
+        <button class="opt-card arcade-xs" data-alert="calor">☀️ Onda de Calor Extrema</button>
+        <button class="opt-card arcade-xs" data-alert="frio">❄️ Descenso Brusco Temp.</button>
+        <button class="opt-card arcade-xs" data-alert="incendio">🔥 Incendio de Alto Riesgo</button>
+        <button class="opt-card arcade-xs" data-alert="gas">☣️ Fuga de Gas / Química</button>
+        <button class="opt-card arcade-xs" data-alert="ceniza">🌫️ Ceniza / Emisión Planta</button>
+        <button class="opt-card arcade-xs" data-alert="sismo">📳 Sismo / Actividad Sísmica</button>
+      </div>
+      <input id="alertZoneInput" class="input-field arcade-xs" type="text" value="Toda la Zona Conurbada (Tampico, Madero y Altamira)" placeholder="Sector o municipio afectado..." />
+      <button id="publishGlobalAlertBtn" class="danger-btn arcade-xs">🚨 EMITIR ALERTA A TODOS LOS CELULARES</button>
+      <button id="clearGlobalAlertBtn" class="chip-btn arcade-xs" style="width:100%;justify-content:center;margin-top:8px;">✓ Desactivar Alerta Activa</button>
+    </div>
   </div>
 
-  <!-- ===================================================================== -->
-  <!-- JAVASCRIPT: AVATARES POR TEMA, MOTOR 4s ZOOM EARTH, OPEN-METEO & OSRM -->
-  <!-- ===================================================================== -->
+  <!-- Scripts: Leaflet + Supabase JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
-    // -----------------------------------------------------------------------
-    // 1. GESTIÓN DE LOS 3 TEMAS (MINIMALISTA, ARCADE RETRO, PASTEL)
-    // -----------------------------------------------------------------------
-    const THEMES = [
-      { id: 'minimal', name: 'Minimalista', icon: '◻️' },
-      { id: 'arcade', name: 'Arcade', icon: '🕹️' },
-      { id: 'pastel', name: 'Pastel', icon: '🌸' }
-    ];
+    // =========================================================
+    // 1. CONEXIÓN REAL A SUPABASE (TUS CREDENCIALES)
+    // =========================================================
+    const SUPABASE_URL = 'https://uxwumwwevynsuocnfkby.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_E5Mw3f0wgfeu-W25B5O0ag_H3tAAUzS';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // ID único persistente por dispositivo para moderación y votos
+    let deviceId = localStorage.getItem('crs_device_id');
+    if (!deviceId) {
+      deviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
+      localStorage.setItem('crs_device_id', deviceId);
+    }
+
+    // Estado Global
+    const THEMES = ['minimal', 'arcade', 'pastel'];
     let currentThemeIdx = 0;
+    let isAdmin = false;
+    let followHeading = false; // Norte arriba por defecto
+    let userCoords = [22.2553, -97.8686]; // Centro Tampico-Madero
+    let userHeading = 0;
+    let userSpeedKmh = 0;
+    let activeReports = [];
+    let selectedReportId = null;
+    let pickedReportType = { tipo: 'clima', subtipo: 'Lluvia fuerte / Chubasco' };
+    let pickedAlertKey = 'norte';
+    let routeLayer = null;
+    let simInterval = null;
 
-    function getCurrentTheme() {
-      return THEMES[currentThemeIdx].id;
-    }
+    // Catálogo de 10 Alertas Globales con recomendaciones y tipo de efecto
+    const GLOBAL_ALERTS_CATALOG = {
+      huracan: {
+        titulo: 'HURACÁN / TORMENTA TROPICAL',
+        fx: 'rain_storm',
+        tips: ['Resguárdate en un lugar seguro lejos de ventanas.', 'Evita cruzar calles inundadas o pasos a desnivel.', 'Ten a la mano lámpara, batería portátil y documentos.']
+      },
+      norte: {
+        titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES',
+        fx: 'wind',
+        tips: ['Extrema precaución al conducir en Bulevar Costero y puentes.', 'Aléjate de espectaculares, árboles viejos y cables sueltos.', 'Asegura láminas y objetos sueltos en azoteas.']
+      },
+      inundacion: {
+        titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL',
+        fx: 'rain_storm',
+        tips: ['No intentes cruzar corrientes de agua en vehículo.', 'Usa vías altas y respeta cierres de Tránsito.', 'Si el agua sube dentro del auto, abandónalo hacia zona alta.']
+      },
+      granizo: {
+        titulo: 'GRANIZO / TORMENTA ELÉCTRICA',
+        fx: 'rain_storm',
+        tips: ['Oríllate bajo techo seguro si cae granizo intenso.', 'No te resguardes debajo de árboles ni estructuras metálicas.', 'Enciende luces intermitentes si baja la visibilidad.']
+      },
+      calor: {
+        titulo: 'ONDA DE CALOR EXTREMA',
+        fx: 'heat',
+        tips: ['Hidrátate constantemente aunque no tengas sed.', 'Nunca dejes niños ni mascotas dentro de vehículos estacionados.', 'Evita exposición directa al sol entre 11:00 y 16:00 hrs.']
+      },
+      frio: {
+        titulo: 'DESCENSO BRUSCO DE TEMPERATURA',
+        fx: 'wind',
+        tips: ['Abrígate por capas y protege a niños y adultos mayores.', 'Ventila habitaciones si usas calefactores.', 'Precaución por neblina en carreteras hacia Altamira.']
+      },
+      incendio: {
+        titulo: 'INCENDIO DE ALTO RIESGO',
+        fx: 'fire',
+        tips: ['Cede el paso total a Bomberos y Protección Civil.', 'Si hay humo denso, cierra ventanas y usa cubrebocas húmedo.', 'No te acerques a grabar para evitar bloquear accesos.']
+      },
+      gas: {
+        titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA',
+        fx: 'gas',
+        tips: ['Ubica la dirección del viento y aléjate en sentido contrario.', 'Cierra puertas, ventanas y apaga aires acondicionados.', 'No enciendas flamas, cigarros ni interruptores eléctricos.']
+      },
+      ceniza: {
+        titulo: 'CAÍDA DE CENIZA / PARTÍCULAS EN SUSPENSIÓN',
+        fx: 'ash',
+        tips: ['Usa cubrebocas y protege tus ojos al salir.', 'No uses el limpiaparabrisas en seco (raya el cristal).', 'Barre la ceniza en seco; no la arrojes al drenaje.']
+      },
+      sismo: {
+        titulo: 'ACTIVIDAD SÍSMICA DETECTADA',
+        fx: 'quake',
+        tips: ['Mantén la calma y ubícate en zonas de menor riesgo.', 'Aléjate de ventanas, vidrios y objetos que puedan caer.', 'Después del movimiento, revisa instalaciones de gas y luz.']
+      }
+    };
 
-    function cycleTheme() {
-      currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
+    // =========================================================
+    // 2. INICIALIZACIÓN DEL MAPA (ESRI ARCGIS SIN BLOQUEOS)
+    // =========================================================
+    const map = L.map('map', { zoomControl: false }).setView(userCoords, 13);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Esri • Open-Meteo • OSRM'
+    }).addTo(map);
+
+    const reportMarkersLayer = L.layerGroup().addTo(map);
+
+    // =========================================================
+    // 3. GENERADOR DE ICONOS Y AVATARES POR APARIENCIA
+    // =========================================================
+    function getUserAvatarHTML() {
       const theme = THEMES[currentThemeIdx];
-      document.documentElement.setAttribute('data-theme', theme.id);
-      document.getElementById('theme-icon').textContent = theme.icon;
-      document.getElementById('theme-name').textContent = theme.name;
+      const isWalking = userSpeedKmh < 6 && !simInterval;
 
-      // Actualizar avatar del usuario y pines de reportes en el mapa según la nueva apariencia
-      updateUserAvatarMarker();
-      renderMarkers();
-
-      // Si hay una alerta global activa, lanzar una ráfaga breve de 4s con el nuevo estilo
-      if (currentGlobalScenario) {
-        triggerBurstEffect(currentGlobalScenario);
-      }
-
-      showToast(`Apariencia: ${theme.name}`, theme.icon);
-    }
-
-    // -----------------------------------------------------------------------
-    // 2. ICONOS SVG DINÁMICOS POR APARIENCIA (AVATAR EN MOVIMIENTO Y PINES)
-    // -----------------------------------------------------------------------
-    function buildUserAvatarHTML(theme, headingDeg = 0) {
       if (theme === 'arcade') {
-        // Alien verde brillante (#00FF66) con cabeza grande, ojos negros y antenitas dentro de cúpula transparente
+        // OVNI con Alien Verde brillante bien visible; solo se balancea +-12° (nunca de cabeza)
+        const tilt = Math.max(-14, Math.min(14, Math.sin(userHeading * Math.PI / 180) * 14));
         return `
-          <div class="relative flex items-center justify-center w-14 h-14" style="transform: rotate(${headingDeg * 0.12}deg);">
-            <svg width="54" height="54" viewBox="0 0 20 20" shape-rendering="crispEdges">
-              <!-- Contorno cúpula cristal transparente -->
-              <rect x="7" y="1" width="6" height="1" fill="#67e8f9" />
-              <rect x="5" y="2" width="2" height="1" fill="#67e8f9" />
-              <rect x="13" y="2" width="2" height="1" fill="#67e8f9" />
-              <rect x="4" y="3" width="1" height="5" fill="#67e8f9" />
-              <rect x="15" y="3" width="1" height="5" fill="#67e8f9" />
-              <!-- Interior cúpula sutil -->
-              <rect x="5" y="3" width="10" height="5" fill="#cffafe" opacity="0.22" />
+          <div style="width:44px;height:44px;display:grid;place-items:center;transform:rotate(${tilt}deg);transition:transform 0.25s ease;">
+            <svg width="42" height="42" viewBox="0 0 16 16" shape-rendering="crispEdges">
               <!-- Antenitas del alien -->
-              <rect x="7" y="2" width="1" height="2" fill="#00FF66" />
-              <rect x="12" y="2" width="1" height="2" fill="#00FF66" />
-              <!-- Cabeza grande verde neón (#00FF66) -->
-              <rect x="7" y="4" width="6" height="3" fill="#00FF66" />
-              <rect x="8" y="7" width="4" height="1" fill="#00FF66" />
+              <rect x="6" y="1" width="1" height="2" fill="#00ff66"/>
+              <rect x="9" y="1" width="1" height="2" fill="#00ff66"/>
+              <!-- Cúpula transparente -->
+              <rect x="5" y="2" width="6" height="1" fill="#7ef9ff"/>
+              <rect x="4" y="3" width="1" height="4" fill="#7ef9ff"/>
+              <rect x="11" y="3" width="1" height="4" fill="#7ef9ff"/>
+              <!-- Cabeza del Alien Verde Neón -->
+              <rect x="6" y="3" width="4" height="4" fill="#00ff66"/>
+              <rect x="5" y="4" width="6" height="2" fill="#00ff66"/>
               <!-- Ojos negros pixelados -->
-              <rect x="8" y="5" width="1" height="2" fill="#000000" />
-              <rect x="11" y="5" width="1" height="2" fill="#000000" />
-              <!-- Reflejo cristal -->
-              <rect x="6" y="3" width="1" height="2" fill="#ffffff" opacity="0.85" />
-              <!-- Cuerpo del OVNI metálico -->
-              <rect x="3" y="8" width="14" height="2" fill="#94a3b8" />
-              <rect x="1" y="10" width="18" height="2" fill="#f8fafc" />
-              <rect x="3" y="12" width="14" height="1" fill="#475569" />
-              <!-- Luces neón del platillo -->
-              <rect x="3" y="10" width="2" height="1" fill="#facc15" />
-              <rect x="9" y="10" width="2" height="1" fill="#00FF66" />
-              <rect x="15" y="10" width="2" height="1" fill="#f43f5e" />
-              <!-- Rayo tractor pixelado -->
-              <rect x="7" y="14" width="6" height="1" fill="#00FF66" opacity="0.75" />
-              <rect x="6" y="16" width="8" height="1" fill="#00FF66" opacity="0.45" />
+              <rect x="6" y="4" width="1" height="2" fill="#05080f"/>
+              <rect x="9" y="4" width="1" height="2" fill="#05080f"/>
+              <!-- Cuerpo del Platillo Volador -->
+              <rect x="2" y="7" width="12" height="2" fill="#b8c7d9"/>
+              <rect x="1" y="9" width="14" height="2" fill="#5c6f87"/>
+              <!-- Luces del OVNI -->
+              <rect x="3" y="9" width="2" height="1" fill="#ff2a55"/>
+              <rect x="7" y="9" width="2" height="1" fill="#ffe600"/>
+              <rect x="11" y="9" width="2" height="1" fill="#00ff66"/>
+              <!-- Rayo tractor sutil -->
+              <rect x="6" y="12" width="4" height="1" fill="rgba(0,255,102,0.55)"/>
+              <rect x="5" y="14" width="6" height="1" fill="rgba(0,255,102,0.3)"/>
             </svg>
-          </div>
-        `;
+          </div>`;
       }
 
       if (theme === 'pastel') {
-        // Auto compacto blanco con techo rosa pastel y destellos
+        // Auto compacto blanco y rosa pastel limpio (sin símbolos extra)
+        const rot = isWalking ? 0 : userHeading;
         return `
-          <div class="relative flex items-center justify-center w-11 h-11" style="transform: rotate(${headingDeg}deg);">
-            <svg width="40" height="40" viewBox="0 0 40 40">
-              <defs>
-                <filter id="pastelShadow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#db2777" flood-opacity="0.35"/>
-                </filter>
-              </defs>
-              <g filter="url(#pastelShadow)">
-                <!-- Carrocería blanca redondeada -->
-                <rect x="11" y="5" width="18" height="30" rx="8" fill="#ffffff" stroke="#f472b6" stroke-width="2"/>
-                <!-- Techo rosa pastel -->
-                <rect x="13.5" y="12" width="13" height="14" rx="5" fill="#fbcfe8"/>
-                <!-- Parabrisas -->
-                <path d="M14 11 Q20 8.5 26 11 L25 14 Q20 12.5 15 14 Z" fill="#831843" opacity="0.75"/>
-                <!-- Faros delanteros -->
-                <circle cx="14.5" cy="7" r="1.5" fill="#fef08a"/>
-                <circle cx="25.5" cy="7" r="1.5" fill="#fef08a"/>
-              </g>
-              <!-- Destello cute -->
-              <path d="M33 6 L34 9 L37 10 L34 11 L33 14 L32 11 L29 10 L32 9 Z" fill="#f472b6"/>
+          <div style="width:40px;height:40px;display:grid;place-items:center;transform:rotate(${rot}deg);transition:transform 0.25s ease;">
+            <svg width="34" height="34" viewBox="0 0 36 36">
+              <rect x="8" y="4" width="20" height="28" rx="9" fill="#ffffff" stroke="#f06292" stroke-width="2.5"/>
+              <rect x="10" y="9" width="16" height="6" rx="3" fill="#ffd6e5"/>
+              <rect x="10" y="21" width="16" height="5" rx="2.5" fill="#ffd6e5"/>
+              <rect x="11" y="15" width="14" height="6" rx="2" fill="#ff94b8"/>
+              <circle cx="11" cy="6" r="1.5" fill="#ffe082"/>
+              <circle cx="25" cy="6" r="1.5" fill="#ffe082"/>
             </svg>
-          </div>
-        `;
+          </div>`;
       }
 
-      // Minimalista (por defecto): Sedán eléctrico blanco/gris visto desde arriba
+      // Tema Minimalista: Sedán eléctrico blanco/negro vista superior
+      const rot = isWalking ? 0 : userHeading;
       return `
-        <div class="relative flex items-center justify-center w-11 h-11" style="transform: rotate(${headingDeg}deg);">
-          <svg width="40" height="40" viewBox="0 0 40 40">
-            <defs>
-              <filter id="minShadow" x="-25%" y="-25%" width="150%" height="150%">
-                <feDropShadow dx="0" dy="3" stdDeviation="2.5" flood-color="#000000" flood-opacity="0.35"/>
-              </filter>
-            </defs>
-            <g filter="url(#minShadow)">
-              <!-- Silueta aerodinámica sedán eléctrico -->
-              <rect x="11.5" y="4" width="17" height="32" rx="7" fill="#ffffff" stroke="#18181b" stroke-width="1.8"/>
-              <!-- Techo panorámico oscuro -->
-              <rect x="13.5" y="10.5" width="13" height="18" rx="4.5" fill="#18181b"/>
-              <!-- Brillo sutil techo cristal -->
-              <rect x="15" y="13" width="10" height="11" rx="3" fill="#3f3f46"/>
-              <!-- Faros LED estilizados -->
-              <path d="M13 6.5 L16 5.5" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M27 6.5 L24 5.5" stroke="#0ea5e9" stroke-width="1.6" stroke-linecap="round"/>
-            </g>
+        <div style="width:40px;height:40px;display:grid;place-items:center;transform:rotate(${rot}deg);transition:transform 0.25s ease;">
+          <svg width="34" height="34" viewBox="0 0 36 36">
+            <ellipse cx="18" cy="19" rx="10" ry="14" fill="rgba(0,0,0,0.18)"/>
+            <rect x="9" y="4" width="18" height="28" rx="7" fill="#ffffff" stroke="#111111" stroke-width="2.2"/>
+            <path d="M11 11 Q18 8 25 11 L24 15 L12 15 Z" fill="#1a1a1a"/>
+            <path d="M12 22 L24 22 L23 26 Q18 28 13 26 Z" fill="#1a1a1a"/>
+            <rect x="12" y="15" width="12" height="7" rx="1.5" fill="#f0f0f0"/>
           </svg>
-        </div>
-      `;
+        </div>`;
     }
 
-    function buildReportPinHTML(rep, theme) {
-      const isConfirmed = rep.confirmations >= 3;
+    const userMarker = L.marker(userCoords, {
+      icon: L.divIcon({ className: '', html: getUserAvatarHTML(), iconSize: [44, 44], iconAnchor: [22, 22] }),
+      zIndexOffset: 1000
+    }).addTo(map);
 
-      // Iconos vectoriales minimalistas según categoría
-      const minimalSvgIcons = {
-        rain: `<path d="M8 14v3M12 14v3M16 14v3M7 11a4 4 0 01.8-7.9A5.5 5.5 0 0118.4 5 3.5 3.5 0 0117.5 11H7z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>`,
-        flood: `<path d="M3 14c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5M3 18c2 0 2-1.5 4-1.5s2 1.5 4 1.5 2-1.5 4-1.5 2 1.5 4 1.5M12 5v5m0 0l-2-2m2 2l2-2" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>`,
-        crash: `<path d="M12 4L3 19h18L12 4zm0 6v4m0 3h.01" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>`,
-        traffic: `<rect x="8" y="3" width="8" height="18" rx="2" stroke="currentColor" stroke-width="1.8" fill="none"/><circle cx="12" cy="7.5" r="1.2" fill="currentColor"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor"/>`,
-        closed: `<circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="2" fill="none"/><path d="M8 12h8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>`,
-        wind: `<path d="M4 9h11a2.5 2.5 0 10-2.5-2.5M4 13h14a2.5 2.5 0 11-2.5 2.5M4 17h7" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round"/>`
+    function refreshUserMarker() {
+      userMarker.setLatLng(userCoords);
+      userMarker.setIcon(L.divIcon({ className: '', html: getUserAvatarHTML(), iconSize: [44, 44], iconAnchor: [22, 22] }));
+    }
+
+    function getPinHTML(rep) {
+      const theme = THEMES[currentThemeIdx];
+      const symbolMap = {
+        'Lluvia fuerte / Chubasco': '🌧',
+        'Viento / Rachas de Norte': '💨',
+        'Calle inundada / Encharcamiento': '🌊',
+        'Tráfico pesado / Embotellamiento': '🚦',
+        'Choque / Accidente vial': '💥',
+        'Calle cerrada / Obra / Cable caído': '🚧'
       };
+      const iconChar = symbolMap[rep.subtipo] || '⚠️';
 
       if (theme === 'arcade') {
-        // Pin cuadrado pixel-art 8-bit
-        const bg = isConfirmed ? '#060814' : '#141d3d';
-        const border = isConfirmed ? '#4ade80' : '#facc15';
-        return `
-          <div class="map-pin-wrapper" style="width:40px;height:40px;background:${bg};border:3px solid ${border};box-shadow:3px 3px 0 #000;">
-            <span style="font-size:18px;image-rendering:pixelated;">${rep.icon}</span>
-            <span style="position:absolute;bottom:-6px;right:-6px;background:${border};color:#000;font-family:'Press Start 2P',monospace;font-size:8px;padding:2px 4px;border:1px solid #000;">
-              ${rep.confirmations}
-            </span>
-          </div>
-        `;
+        return `<div style="background:#0b0e17;border:2px solid #00ff66;color:#00ff66;width:34px;height:34px;display:grid;place-items:center;font-size:14px;box-shadow:0 3px 0 #005522;position:relative;">
+          ${iconChar}
+          <span style="position:absolute;bottom:-6px;right:-6px;background:#00ff66;color:#0b0e17;font-size:8px;padding:1px 3px;font-weight:800;">${rep.confirmaciones}</span>
+        </div>`;
       }
-
       if (theme === 'pastel') {
-        // Pin suave redondeado en tonos pastel
-        const pastelColors = {
-          rain: '#bae6fd', flood: '#c7d2fe', crash: '#fecdd3',
-          traffic: '#fde68a', closed: '#fbcfe8', wind: '#e9d5ff'
-        };
-        const bg = pastelColors[rep.categoryId] || '#fbcfe8';
-        return `
-          <div class="map-pin-wrapper" style="width:40px;height:40px;border-radius:16px;background:${bg};border:2.5px solid #ffffff;box-shadow:0 6px 14px rgba(219,39,119,0.28);">
-            <span style="font-size:18px;">${rep.icon}</span>
-            <span style="position:absolute;bottom:-4px;right:-4px;background:#f472b6;color:#fff;font-size:10px;font-weight:800;padding:0 5px;border-radius:9999px;border:1.5px solid #fff;">
-              ${rep.confirmations}
-            </span>
-          </div>
-        `;
+        return `<div style="background:#fff9fb;border:2.5px solid #f06292;color:#4a3541;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 4px 10px rgba(240,98,146,0.28);position:relative;">
+          ${iconChar}
+          <span style="position:absolute;bottom:-3px;right:-3px;background:#f06292;color:#fff;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span>
+        </div>`;
       }
-
-      // Minimalista: Pin geométrico monocromático elegante (Negro / Blanco / Gris acero)
-      const bg = isConfirmed ? '#0a0a0a' : '#ffffff';
-      const fg = isConfirmed ? '#ffffff' : '#0a0a0a';
-      const borderStyle = isConfirmed ? '2px solid #ffffff' : '2px dashed #0a0a0a';
-      const svgInner = minimalSvgIcons[rep.categoryId] || minimalSvgIcons.crash;
-
-      return `
-        <div class="map-pin-wrapper" style="width:38px;height:38px;border-radius:9999px;background:${bg};color:${fg};border:${borderStyle};box-shadow:0 6px 16px rgba(0,0,0,0.28);">
-          <svg width="20" height="20" viewBox="0 0 24 24">${svgInner}</svg>
-          <span style="position:absolute;bottom:-4px;right:-4px;background:#0a0a0a;color:#ffffff;font-size:10px;font-weight:800;padding:0 5px;border-radius:9999px;border:1.5px solid #ffffff;">
-            ${rep.confirmations}
-          </span>
-        </div>
-      `;
+      // Minimalista
+      return `<div style="background:#000000;border:2px solid #ffffff;color:#ffffff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 4px 12px rgba(0,0,0,0.28);position:relative;">
+        ${iconChar}
+        <span style="position:absolute;bottom:-3px;right:-3px;background:#ffffff;color:#000000;border:1.5px solid #000;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span>
+      </div>`;
     }
 
-    // -----------------------------------------------------------------------
-    // 3. MOTOR ATMOSFÉRICO EN CANVAS 2D (RÁFAGA TEMPORAL DE 4 SEGUNDOS)
-    // -----------------------------------------------------------------------
-    const fxCanvas = document.getElementById('weather-fx-canvas');
-    const fxCtx = fxCanvas.getContext('2d');
-    let fxAnimationId = null;
-    let fxStopTimeout = null;
-    let fxParticles = [];
-    let fxTick = 0;
-    let currentGlobalScenario = null;
+    function renderReportsOnMap() {
+      reportMarkersLayer.clearLayers();
+      activeReports.forEach(rep => {
+        if (rep.oculto || rep.votos_despejado >= 3) return;
+        const m = L.marker([rep.lat, rep.lng], {
+          icon: L.divIcon({ className: '', html: getPinHTML(rep), iconSize: [36, 36], iconAnchor: [18, 18] })
+        });
+        m.on('click', () => openPinDetail(rep));
+        m.addTo(reportMarkersLayer);
+      });
+    }
 
-    function resizeFxCanvas() {
+    // =========================================================
+    // 4. MOTOR ATMOSFÉRICO TEMPORAL (4 SEGUNDOS ESTILO ZOOM EARTH)
+    // =========================================================
+    const fxCanvas = document.getElementById('fxCanvas');
+    const ctx = fxCanvas.getContext('2d');
+    let fxAnimId = null;
+    let fxTimeout = null;
+    let fxParticles = [];
+
+    function resizeCanvas() {
       fxCanvas.width = window.innerWidth;
       fxCanvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resizeFxCanvas);
-    resizeFxCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
-    function stopWeatherFX() {
-      fxCanvas.classList.remove('fx-active');
-      clearTimeout(fxStopTimeout);
-      setTimeout(() => {
-        if (fxAnimationId) {
-          cancelAnimationFrame(fxAnimationId);
-          fxAnimationId = null;
-        }
-        fxParticles = [];
-        fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-      }, 600);
-    }
+    function triggerAlertBurst(fxType) {
+      if (fxAnimId) cancelAnimationFrame(fxAnimId);
+      if (fxTimeout) clearTimeout(fxTimeout);
 
-    // Dispara tanto el destello de bordes como el canvas atmosférico por 4 segundos
-    function triggerBurstEffect(scenarioId) {
-      // 1. Destello rojo periférico de 4 segundos
-      const flash = document.getElementById('edge-flash-overlay');
-      flash.classList.remove('screen-edge-flash');
-      void flash.offsetWidth;
-      flash.classList.add('screen-edge-flash');
-
-      // 2. Vibración sutil si es sismo
-      if (scenarioId === 'quake') {
-        document.body.classList.remove('quake-shake');
-        void document.body.offsetWidth;
-        document.body.classList.add('quake-shake');
-      }
-
-      // 3. Iniciar partículas físicas en Canvas durante 4 segundos exactos
-      startWeatherFX(scenarioId, 4000);
-    }
-
-    function startWeatherFX(scenarioId, durationMs = 4000) {
-      if (fxAnimationId) cancelAnimationFrame(fxAnimationId);
-      clearTimeout(fxStopTimeout);
+      const theme = THEMES[currentThemeIdx];
       fxParticles = [];
-      fxTick = 0;
-
-      const w = fxCanvas.width;
-      const h = fxCanvas.height;
-      const count = scenarioId === 'norte' ? 42 :
-                    scenarioId === 'hurricane' || scenarioId === 'flood_alert' || scenarioId === 'hail' ? 95 :
-                    scenarioId === 'gas_leak' || scenarioId === 'ash' ? 50 :
-                    scenarioId === 'fire' || scenarioId === 'heatwave' ? 45 :
-                    scenarioId === 'cold' ? 60 : 1;
+      const count = fxType === 'wind' ? 45 : 75;
 
       for (let i = 0; i < count; i++) {
         fxParticles.push({
-          x: Math.random() * w,
-          y: Math.random() * h,
-          vx: Math.random() * 4 + 5,
-          vy: Math.random() * 6 + 7,
-          size: Math.random() * 3 + 1.5,
-          alpha: Math.random() * 0.55 + 0.25,
-          phase: Math.random() * Math.PI * 2,
-          trail: []
+          x: Math.random() * fxCanvas.width,
+          y: Math.random() * fxCanvas.height,
+          vx: fxType === 'wind' ? (7 + Math.random() * 8) : (fxType === 'rain_storm' ? -2.5 : (Math.random() - 0.5) * 1.6),
+          vy: fxType === 'rain_storm' ? (11 + Math.random() * 7) : (fxType === 'fire' || fxType === 'heat' ? -(1.5 + Math.random() * 2.5) : (0.6 + Math.random() * 1.4)),
+          size: 2 + Math.random() * 4,
+          alpha: 0.35 + Math.random() * 0.55
         });
       }
 
-      fxCanvas.classList.add('fx-active');
+      fxCanvas.classList.add('active');
+      document.getElementById('alertEdgeFlash').classList.add('active');
 
-      function renderLoop() {
-        fxTick += 1;
-        const theme = getCurrentTheme();
-        fxCtx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-        fxCtx.imageSmoothingEnabled = theme !== 'arcade';
+      let tick = 0;
+      function drawFx() {
+        tick++;
+        ctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
 
-        if (scenarioId === 'norte') drawWindStreamlines(theme);
-        else if (scenarioId === 'hurricane' || scenarioId === 'flood_alert' || scenarioId === 'hail') drawStormAndRain(theme, scenarioId === 'hail');
-        else if (scenarioId === 'gas_leak' || scenarioId === 'ash') drawPlumeAndAsh(theme, scenarioId === 'gas_leak');
-        else if (scenarioId === 'fire' || scenarioId === 'heatwave') drawThermalAndEmbers(theme, scenarioId === 'fire');
-        else if (scenarioId === 'cold') drawFrostCrystals(theme);
-        else if (scenarioId === 'quake') drawSeismicWave(theme);
+        const palette = {
+          minimal: { rain: 'rgba(30,60,110,0.45)', wind: 'rgba(20,20,20,0.32)', fire: 'rgba(225,25,0,0.5)', gas: 'rgba(130,80,200,0.28)', ash: 'rgba(70,70,70,0.4)', heat: 'rgba(235,110,0,0.32)', quake: '#111111' },
+          arcade: { rain: '#00e5ff', wind: '#00ff66', fire: '#ff2a55', gas: '#d500f9', ash: '#b0bec5', heat: '#ff9100', quake: '#00ff66' },
+          pastel: { rain: 'rgba(100,181,246,0.55)', wind: 'rgba(240,98,146,0.4)', fire: 'rgba(255,112,67,0.5)', gas: 'rgba(186,104,200,0.38)', ash: 'rgba(144,164,174,0.45)', heat: 'rgba(255,167,38,0.42)', quake: '#f06292' }
+        }[theme];
 
-        fxAnimationId = requestAnimationFrame(renderLoop);
-      }
+        const colorKey = fxType === 'rain_storm' ? 'rain' : fxType;
+        ctx.strokeStyle = palette[colorKey] || palette.wind;
+        ctx.fillStyle = palette[colorKey] || palette.wind;
 
-      renderLoop();
+        if (fxType === 'quake') {
+          ctx.lineWidth = theme === 'arcade' ? 3 : 2;
+          ctx.beginPath();
+          const baseY = fxCanvas.height * 0.5;
+          for (let x = 0; x < fxCanvas.width; x += 8) {
+            const amp = Math.sin((x + tick * 14) * 0.04) * 28 * Math.sin(tick * 0.15);
+            if (x === 0) ctx.moveTo(x, baseY + amp);
+            else ctx.lineTo(x, baseY + amp);
+          }
+          ctx.stroke();
+        } else {
+          fxParticles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x > fxCanvas.width) p.x = 0;
+            if (p.x < 0) p.x = fxCanvas.width;
+            if (p.y > fxCanvas.height) p.y = 0;
+            if (p.y < 0) p.y = fxCanvas.height;
 
-      // Detener automáticamente a los 4 segundos
-      fxStopTimeout = setTimeout(() => {
-        stopWeatherFX();
-      }, durationMs);
-    }
-
-    function drawWindStreamlines(theme) {
-      const w = fxCanvas.width, h = fxCanvas.height;
-      fxParticles.forEach((p) => {
-        p.x += p.vx * 1.65;
-        p.y += Math.sin(fxTick * 0.04 + p.phase) * 1.4 + 1.1;
-        if (p.x > w + 80) { p.x = -80; p.y = Math.random() * h; p.trail = []; }
-        if (p.y > h) { p.y = 0; p.trail = []; }
-        p.trail.push({ x: p.x, y: p.y });
-        if (p.trail.length > 14) p.trail.shift();
-
-        if (theme === 'arcade') {
-          fxCtx.fillStyle = `rgba(34, 211, 238, ${p.alpha})`;
-          p.trail.forEach((pt, idx) => {
-            if (idx % 2 === 0) fxCtx.fillRect(Math.round(pt.x / 4) * 4, Math.round(pt.y / 4) * 4, 6, 4);
+            if (theme === 'arcade') {
+              const s = Math.round(p.size * 1.5);
+              ctx.fillRect(Math.round(p.x), Math.round(p.y), fxType === 'wind' ? s * 4 : s, fxType === 'rain_storm' ? s * 3 : s);
+            } else if (fxType === 'wind') {
+              ctx.lineWidth = 1.6;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p.x - 36, p.y);
+              ctx.stroke();
+            } else if (fxType === 'rain_storm') {
+              ctx.lineWidth = 1.5;
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p.x - 4, p.y + 16);
+              ctx.stroke();
+            } else {
+              ctx.beginPath();
+              ctx.arc(p.x, p.y, fxType === 'gas' ? p.size * 5 : p.size, 0, Math.PI * 2);
+              ctx.fill();
+            }
           });
-        } else {
-          if (p.trail.length < 2) return;
-          fxCtx.beginPath();
-          fxCtx.moveTo(p.trail[0].x, p.trail[0].y);
-          for (let i = 1; i < p.trail.length; i++) fxCtx.lineTo(p.trail[i].x, p.trail[i].y);
-          fxCtx.strokeStyle = theme === 'pastel' ? `rgba(219, 39, 119, ${p.alpha * 0.65})` : `rgba(10, 10, 10, ${p.alpha * 0.55})`;
-          fxCtx.lineWidth = theme === 'pastel' ? 2.2 : 1.8;
-          fxCtx.lineCap = 'round';
-          fxCtx.stroke();
         }
-      });
-    }
-
-    function drawStormAndRain(theme, hasHail) {
-      const w = fxCanvas.width, h = fxCanvas.height;
-      if (Math.random() < 0.025) {
-        const grad = fxCtx.createRadialGradient(w * (0.2 + Math.random() * 0.6), 0, 10, w * 0.5, 0, w * 0.6);
-        grad.addColorStop(0, theme === 'arcade' ? 'rgba(74, 222, 128, 0.35)' : 'rgba(56, 189, 248, 0.28)');
-        grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        fxCtx.fillStyle = grad;
-        fxCtx.fillRect(0, 0, w, h * 0.5);
+        fxAnimId = requestAnimationFrame(drawFx);
       }
+      drawFx();
 
-      fxParticles.forEach((p, idx) => {
-        p.x -= 2.5;
-        p.y += p.vy * 1.45;
-        if (p.y > h) { p.y = -20; p.x = Math.random() * (w + 100); }
-        if (p.x < -20) p.x = w + 20;
-
-        if (theme === 'arcade') {
-          fxCtx.fillStyle = hasHail && idx % 5 === 0 ? '#ffffff' : '#22d3ee';
-          fxCtx.fillRect(Math.round(p.x / 4) * 4, Math.round(p.y / 4) * 4, hasHail && idx % 5 === 0 ? 6 : 3, hasHail && idx % 5 === 0 ? 6 : 12);
-        } else {
-          fxCtx.beginPath();
-          fxCtx.moveTo(p.x, p.y);
-          fxCtx.lineTo(p.x - 4, p.y + 16);
-          fxCtx.strokeStyle = theme === 'pastel' ? `rgba(167, 139, 250, ${p.alpha})` : `rgba(2, 132, 199, ${p.alpha * 0.85})`;
-          fxCtx.lineWidth = hasHail && idx % 4 === 0 ? 2.5 : 1.4;
-          fxCtx.stroke();
-        }
-      });
+      // Se detiene automáticamente a los 4 segundos para no estorbar la conducción
+      fxTimeout = setTimeout(() => {
+        fxCanvas.classList.remove('active');
+        document.getElementById('alertEdgeFlash').classList.remove('active');
+        setTimeout(() => { if (fxAnimId) cancelAnimationFrame(fxAnimId); }, 650);
+      }, 4000);
     }
 
-    function drawPlumeAndAsh(theme, isGas) {
-      const w = fxCanvas.width, h = fxCanvas.height;
-      fxParticles.forEach((p) => {
-        p.x += 1.2 + Math.sin(fxTick * 0.02 + p.phase) * 0.8;
-        p.y += isGas ? Math.cos(fxTick * 0.02 + p.phase) * 0.7 : 1.1;
-        if (p.x > w + 50) p.x = -50;
-        if (p.y > h + 30) { p.y = -20; p.x = Math.random() * w; }
-
-        if (theme === 'arcade') {
-          fxCtx.fillStyle = isGas ? 'rgba(74, 222, 128, 0.55)' : 'rgba(148, 163, 184, 0.65)';
-          fxCtx.fillRect(Math.round(p.x / 6) * 6, Math.round(p.y / 6) * 6, isGas ? 12 : 6, isGas ? 12 : 6);
-        } else if (isGas) {
-          const r = p.size * 18;
-          const grad = fxCtx.createRadialGradient(p.x, p.y, 1, p.x, p.y, r);
-          grad.addColorStop(0, theme === 'pastel' ? 'rgba(244, 114, 182, 0.18)' : 'rgba(234, 179, 8, 0.18)');
-          grad.addColorStop(1, 'rgba(0,0,0,0)');
-          fxCtx.fillStyle = grad;
-          fxCtx.beginPath();
-          fxCtx.arc(p.x, p.y, r, 0, Math.PI * 2);
-          fxCtx.fill();
-        } else {
-          fxCtx.fillStyle = theme === 'pastel' ? `rgba(126, 82, 114, ${p.alpha})` : `rgba(24, 24, 27, ${p.alpha})`;
-          fxCtx.beginPath();
-          fxCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          fxCtx.fill();
-        }
-      });
-    }
-
-    function drawThermalAndEmbers(theme, isFire) {
-      const w = fxCanvas.width, h = fxCanvas.height;
-      fxParticles.forEach((p) => {
-        p.y -= isFire ? p.vy * 0.45 : 1.8;
-        p.x += Math.sin(fxTick * 0.05 + p.phase) * 1.5;
-        if (p.y < -20) { p.y = h + 20; p.x = Math.random() * w; }
-
-        if (theme === 'arcade') {
-          fxCtx.fillStyle = isFire ? '#f97316' : '#facc15';
-          fxCtx.fillRect(Math.round(p.x / 4) * 4, Math.round(p.y / 4) * 4, 5, 5);
-        } else if (isFire) {
-          fxCtx.fillStyle = `rgba(234, 88, 12, ${p.alpha + 0.2})`;
-          fxCtx.beginPath();
-          fxCtx.arc(p.x, p.y, p.size * 0.9, 0, Math.PI * 2);
-          fxCtx.fill();
-        } else {
-          fxCtx.beginPath();
-          fxCtx.arc(p.x, p.y, p.size * 6, 0, Math.PI, true);
-          fxCtx.strokeStyle = theme === 'pastel' ? 'rgba(244, 114, 182, 0.4)' : 'rgba(220, 38, 38, 0.28)';
-          fxCtx.lineWidth = 1.5;
-          fxCtx.stroke();
-        }
-      });
-    }
-
-    function drawFrostCrystals(theme) {
-      const w = fxCanvas.width, h = fxCanvas.height;
-      fxParticles.forEach((p) => {
-        p.y += 1.6;
-        p.x += Math.sin(fxTick * 0.03 + p.phase) * 0.9;
-        if (p.y > h) { p.y = -10; p.x = Math.random() * w; }
-
-        if (theme === 'arcade') {
-          fxCtx.fillStyle = '#bae6fd';
-          fxCtx.fillRect(Math.round(p.x / 4) * 4, Math.round(p.y / 4) * 4, 4, 4);
-        } else {
-          fxCtx.strokeStyle = theme === 'pastel' ? 'rgba(167, 139, 250, 0.7)' : 'rgba(14, 165, 233, 0.65)';
-          fxCtx.lineWidth = 1.2;
-          fxCtx.beginPath();
-          fxCtx.moveTo(p.x - 4, p.y); fxCtx.lineTo(p.x + 4, p.y);
-          fxCtx.moveTo(p.x, p.y - 4); fxCtx.lineTo(p.x, p.y + 4);
-          fxCtx.stroke();
-        }
-      });
-    }
-
-    function drawSeismicWave(theme) {
-      const w = fxCanvas.width, h = fxCanvas.height;
-      const baseY = h * 0.36;
-      fxCtx.beginPath();
-      for (let x = 0; x < w; x += 4) {
-        const envelope = Math.exp(-Math.pow((x - ((fxTick * 8) % (w + 200)) + 100) / 70, 2));
-        const y = baseY + Math.sin(x * 0.22 + fxTick * 0.5) * 28 * envelope;
-        if (x === 0) fxCtx.moveTo(x, y);
-        else fxCtx.lineTo(x, y);
-      }
-      fxCtx.strokeStyle = theme === 'arcade' ? '#4ade80' : theme === 'pastel' ? '#db2777' : '#dc2626';
-      fxCtx.lineWidth = theme === 'arcade' ? 3 : 2;
-      fxCtx.stroke();
-    }
-
-    // -----------------------------------------------------------------------
-    // 4. CLIMA REAL CON OPEN-METEO API (TAMPICO / MADERO / ALTAMIRA)
-    // -----------------------------------------------------------------------
-    let liveWeatherState = { temp: 26, apparent: 28, windSpeed: 22, windGusts: 35, rainProb: 35, cape: 520 };
-
-    async function fetchLiveWeather() {
-      const url = 'https://api.open-meteo.com/v1/forecast?latitude=22.255&longitude=-97.868&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability,cape&timezone=America%2FMonterrey&forecast_days=1';
+    // =========================================================
+    // 5. CLIMA REAL OPEN-METEO & TRAZADO OSRM
+    // =========================================================
+    async function fetchRealWeather() {
       try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${userCoords[0]}&longitude=${userCoords[1]}&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability,cape&forecast_days=1&timezone=auto`;
         const res = await fetch(url);
-        if (!res.ok) throw new Error('Error Open-Meteo');
         const data = await res.json();
-        const currentHour = new Date().getHours();
-        liveWeatherState = {
-          temp: Math.round(data.current.temperature_2m),
-          apparent: Math.round(data.current.apparent_temperature),
-          windSpeed: Math.round(data.current.wind_speed_10m),
-          windGusts: Math.round(data.current.wind_gusts_10m),
-          rainProb: data.hourly?.precipitation_probability?.[currentHour] ?? 25,
-          cape: Math.round(data.hourly?.cape?.[currentHour] ?? 350)
-        };
-      } catch (e) {}
-      updateWeatherUI();
+        const c = data.current;
+        const prob = data.hourly?.precipitation_probability?.[0] ?? 0;
+        const cape = data.hourly?.cape?.[0] ?? 0;
+        const stormText = cape > 1000 ? '⚡ Inestabilidad eléctrica' : '✓ Sin tormenta severa';
+
+        document.getElementById('topWeatherLine').textContent =
+          `${Math.round(c.temperature_2m)}°C • Viento ${Math.round(c.wind_speed_10m)} km/h (rachas ${Math.round(c.wind_gusts_10m)}) • Lluvia ${prob}%`;
+        document.getElementById('weatherDetailBox').innerHTML = `
+          Temp: <strong>${Math.round(c.temperature_2m)}°C</strong> (ST ${Math.round(c.apparent_temperature)}°C)<br>
+          Viento: <strong>${Math.round(c.wind_speed_10m)} km/h</strong> • Rachas <strong>${Math.round(c.wind_gusts_10m)} km/h</strong><br>
+          Prob. lluvia: <strong>${prob}%</strong> • ${stormText}
+        `;
+      } catch (e) {
+        document.getElementById('topWeatherLine').textContent = 'Clima local activo • Zona Conurbada';
+      }
     }
 
-    function updateWeatherUI() {
-      const w = liveWeatherState;
-      const stormRisk = w.cape > 1000 ? '⚡ Alta energía eléctrica' : '✓ Sin tormenta severa';
+    const PRESET_DESTS = {
+      altamira: [22.4167, -97.9150],
+      centro: [22.2160, -97.8575],
+      miramar: [22.2755, -97.8012]
+    };
+    let currentRouteCoords = [];
 
-      document.getElementById('live-weather-ticker').innerHTML = `
-        <span class="font-extrabold">${w.temp}°C</span>
-        <span>• Viento ${w.windSpeed} km/h (rachas ${w.windGusts})</span>
-        <span class="hidden sm:inline">• Lluvia ${w.rainProb}%</span>
-      `;
-
-      document.getElementById('weather-card-details').innerHTML = `
-        <div>Temp: <strong>${w.temp}°C</strong> (ST ${w.apparent}°C)</div>
-        <div>Viento: <strong>${w.windSpeed} km/h</strong> • Rachas <strong>${w.windGusts} km/h</strong></div>
-        <div class="theme-text-muted">Prob. lluvia: <strong>${w.rainProb}%</strong> • ${stormRisk}</div>
-      `;
-
-      document.getElementById('text-weather-summary').innerHTML = `
-        <strong>Tampico / Madero / Altamira (Open-Meteo en vivo):</strong> Temperatura de <strong>${w.temp}°C</strong> (sensación ${w.apparent}°C), viento de <strong>${w.windSpeed} km/h</strong> con rachas de <strong>${w.windGusts} km/h</strong> y <strong>${w.rainProb}%</strong> de probabilidad de lluvia (${stormRisk}).
-      `;
+    async function drawRealRoute(destLatLng) {
+      try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${destLatLng[1]},${destLatLng[0]}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.routes && data.routes.length > 0) {
+          const r = data.routes[0];
+          currentRouteCoords = r.geometry.coordinates.map(c => [c[1], c[0]]);
+          if (routeLayer) map.removeLayer(routeLayer);
+          const color = THEMES[currentThemeIdx] === 'arcade' ? '#00ff66' : (THEMES[currentThemeIdx] === 'pastel' ? '#f06292' : '#000000');
+          routeLayer = L.polyline(currentRouteCoords, { color, weight: 5, opacity: 0.85 }).addTo(map);
+          map.fitBounds(routeLayer.getBounds(), { padding: [70, 140] });
+          const km = (r.distance / 1000).toFixed(1);
+          const min = Math.round(r.duration / 60);
+          document.getElementById('routeStatsLabel').textContent = `${km} km • ${min} min reales`;
+        }
+      } catch (e) {
+        showToast('No se pudo trazar la ruta en este momento');
+      }
     }
 
-    // -----------------------------------------------------------------------
-    // 5. DATOS DE REPORTES Y RUTAS REALES OSRM
-    // -----------------------------------------------------------------------
-    const REPORT_CATEGORIES = [
-      {
-        id: 'rain', label: 'Lluvia / Granizo', icon: '🌧️',
-        levels: [
-          { label: 'Llovizna / Pavimento mojado', delayMin: 5 },
-          { label: 'Lluvia fuerte (baja visibilidad)', delayMin: 15 },
-          { label: 'Tromba / Granizo en zona', delayMin: 25 }
-        ]
-      },
-      {
-        id: 'flood', label: 'Inundación / Charco', icon: '🌊',
-        levels: [
-          { label: 'Charco leve (pasan todos los autos)', delayMin: 10 },
-          { label: 'Nivel medio (solo camionetas)', delayMin: 20 },
-          { label: 'Paso inundado / Cerrado', delayMin: 35 }
-        ]
-      },
-      {
-        id: 'crash', label: 'Choque', icon: '🚗',
-        levels: [
-          { label: 'Alcance leve (acotamiento)', delayMin: 10 },
-          { label: 'Carril bloqueado', delayMin: 20 },
-          { label: 'Vialidad cerrada por choque', delayMin: 40 }
-        ]
-      },
-      {
-        id: 'traffic', label: 'Tráfico Pesado', icon: '🚦',
-        levels: [
-          { label: 'Tráfico lento (+10 min)', delayMin: 10 },
-          { label: 'Muy pesado (+25 min)', delayMin: 25 },
-          { label: 'Totalmente detenido', delayMin: 40 }
-        ]
-      },
-      {
-        id: 'closed', label: 'Calle Cerrada / Tren', icon: '⛔',
-        levels: [
-          { label: 'Cruce de tren bloqueado', delayMin: 15 },
-          { label: 'Calle cerrada por inundación/obra', delayMin: 30 },
-          { label: 'Fila larga en acceso Puerto Industrial', delayMin: 20 }
-        ]
-      },
-      {
-        id: 'wind', label: 'Viento / Cable / Árbol', icon: '💨',
-        levels: [
-          { label: 'Rachas fuertes de "Norte"', delayMin: 10 },
-          { label: 'Árbol o rama obstruye carril', delayMin: 15 },
-          { label: 'Cable caído / Semáforo apagado', delayMin: 25 }
-        ]
+    // =========================================================
+    // 6. SINCRONIZACIÓN REALTIME CON SUPABASE
+    // =========================================================
+    async function loadInitialData() {
+      const pill = document.getElementById('dbStatusPill');
+      try {
+        // 1. Cargar reportes activos
+        const { data: reps, error: errRep } = await sb
+          .from('reportes')
+          .select('*')
+          .eq('oculto', false)
+          .lt('votos_despejado', 3)
+          .order('creado_en', { ascending: false });
+
+        if (!errRep && reps) {
+          activeReports = reps;
+          renderReportsOnMap();
+        }
+
+        // 2. Cargar alerta global activa más reciente
+        const { data: alerts } = await sb
+          .from('alertas_globales')
+          .select('*')
+          .eq('activa', true)
+          .order('creado_en', { ascending: false })
+          .limit(1);
+
+        if (alerts && alerts.length > 0) {
+          applyGlobalAlertUI(alerts[0], false);
+        }
+
+        // 3. Cargar solicitudes de auxilio vial
+        await loadAuxilioList();
+
+        pill.textContent = 'EN VIVO';
+        pill.classList.remove('offline');
+      } catch (e) {
+        pill.textContent = 'LOCAL';
+        pill.classList.add('offline');
       }
-    ];
-
-    let activeReports = [
-      {
-        id: 'rep-1', categoryId: 'flood', categoryLabel: 'Inundación / Charco', icon: '🌊',
-        levelLabel: 'Nivel medio (solo camionetas)', zoneName: 'Av. Hidalgo esq. Faja de Oro (Tampico)',
-        lat: 22.2535, lng: -97.8712, timeAgo: 'Hace 9 min', confirmations: 4, clearVotes: 1,
-        authorId: 'usr_tampico_88', routeTags: ['centro-tampico']
-      },
-      {
-        id: 'rep-2', categoryId: 'traffic', categoryLabel: 'Tráfico Pesado', icon: '🚦',
-        levelLabel: 'Muy pesado (+25 min)', zoneName: 'Corredor Urbano Luis Donaldo Colosio',
-        lat: 22.3185, lng: -97.8540, timeAgo: 'Hace 6 min', confirmations: 3, clearVotes: 0,
-        authorId: 'usr_altamira_12', routeTags: ['puerto-altamira']
-      },
-      {
-        id: 'rep-3', categoryId: 'closed', categoryLabel: 'Calle Cerrada / Tren', icon: '⛔',
-        levelLabel: 'Cruce de tren bloqueado', zoneName: 'Acceso Puerto Industrial Altamira',
-        lat: 22.4120, lng: -97.9155, timeAgo: 'Hace 3 min', confirmations: 1, clearVotes: 0,
-        authorId: 'usr_obrero_45', routeTags: ['puerto-altamira']
-      },
-      {
-        id: 'rep-4', categoryId: 'wind', categoryLabel: 'Viento / Cable / Árbol', icon: '💨',
-        levelLabel: 'Rachas fuertes de "Norte"', zoneName: 'Blvd. Costero Playa Miramar (Cd. Madero)',
-        lat: 22.2755, lng: -97.7985, timeAgo: 'Hace 14 min', confirmations: 2, clearVotes: 2,
-        authorId: 'usr_madero_09', routeTags: ['playa-miramar']
-      }
-    ];
-
-    const ROUTES_DATA = [
-      {
-        id: 'puerto-altamira',
-        chipLabel: '🏠 Casa → 🏭 Puerto Altamira',
-        title: 'Casa → Puerto Industrial Altamira',
-        start: [22.2680, -97.8680],
-        end: [22.4120, -97.9155],
-        alertTime: '06:40',
-        alertEnabled: true
-      },
-      {
-        id: 'centro-tampico',
-        chipLabel: '🏠 Casa → 🏢 Centro Tampico',
-        title: 'Casa → Zona Centro Tampico',
-        start: [22.2750, -97.8740],
-        end: [22.2165, -97.8580],
-        alertTime: '07:30',
-        alertEnabled: true
-      },
-      {
-        id: 'playa-miramar',
-        chipLabel: '🏠 Casa → 🏖️ Playa Miramar',
-        title: 'Casa → Escolleras / Playa Miramar',
-        start: [22.2680, -97.8680],
-        end: [22.2755, -97.7985],
-        alertTime: '17:00',
-        alertEnabled: false
-      },
-      {
-        id: 'aeropuerto',
-        chipLabel: '✈️ Aeropuerto Tampico (MMTM)',
-        title: 'Ubicación Actual → Aeropuerto Tampico',
-        start: [22.2680, -97.8680],
-        end: [22.2965, -97.8655],
-        alertTime: '08:00',
-        alertEnabled: false
-      }
-    ];
-
-    let map, markersLayer, userMarker, activeRouteLayer = null, activeRouteCoords = [], selectedRouteId = null;
-    let isAdminMode = false, isTextMode = false;
-    let bannedUsers = new Set();
-    let userLocation = [22.2720, -97.8685];
-    let simInterval = null, simIndex = 0;
-
-    function initMap() {
-      map = L.map('map', { center: [22.275, -97.865], zoom: 12, zoomControl: false });
-
-      // Esri ArcGIS World_Street_Map (100% abierto, sin bloqueos 403 ni marcas de agua)
-      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, HERE, Garmin, OpenStreetMap contributors',
-        maxZoom: 19
-      }).addTo(map);
-
-      L.control.zoom({ position: 'bottomleft' }).addTo(map);
-      markersLayer = L.layerGroup().addTo(map);
-
-      userMarker = L.marker(userLocation, {
-        icon: L.divIcon({
-          className: '',
-          html: buildUserAvatarHTML(getCurrentTheme(), 0),
-          iconSize: [54, 54],
-          iconAnchor: [27, 27]
-        }),
-        zIndexOffset: 1000
-      }).addTo(map);
-
-      renderMarkers();
-      renderSavedRoutesChips();
-      renderTextModeList();
-      fetchLiveWeather();
     }
 
-    function updateUserAvatarMarker(headingDeg = 0) {
-      if (!userMarker) return;
-      userMarker.setIcon(
-        L.divIcon({
-          className: '',
-          html: buildUserAvatarHTML(getCurrentTheme(), headingDeg),
-          iconSize: [54, 54],
-          iconAnchor: [27, 27]
+    function subscribeRealtime() {
+      sb.channel('climaruta-live')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'reportes' }, payload => {
+          if (payload.eventType === 'INSERT') {
+            if (!payload.new.oculto && payload.new.votos_despejado < 3) {
+              activeReports.unshift(payload.new);
+              renderReportsOnMap();
+              showToast(`📍 Nuevo reporte: ${payload.new.subtipo}`);
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            const idx = activeReports.findIndex(r => r.id === payload.new.id);
+            if (payload.new.oculto || payload.new.votos_despejado >= 3) {
+              if (idx !== -1) activeReports.splice(idx, 1);
+              showToast('✓ Reporte despejado por la comunidad (3/3)');
+            } else if (idx !== -1) {
+              activeReports[idx] = payload.new;
+            }
+            renderReportsOnMap();
+          }
         })
-      );
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas_globales' }, payload => {
+          if (payload.new && payload.new.activa) {
+            applyGlobalAlertUI(payload.new, true);
+          } else {
+            hideGlobalAlertUI();
+          }
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'auxilio_vial' }, () => {
+          loadAuxilioList();
+        })
+        .subscribe();
     }
 
-    // -----------------------------------------------------------------------
-    // 6. SIMULACIÓN DE AVATAR EN MOVIMIENTO POR LA RUTA ACTIVA
-    // -----------------------------------------------------------------------
-    function toggleSimulateMovement() {
-      const btn = document.getElementById('btn-simulate-move');
-      const icon = document.getElementById('sim-icon');
-      const label = document.getElementById('sim-label');
+    function applyGlobalAlertUI(alertRow, playEffect) {
+      const banner = document.getElementById('globalAlertBanner');
+      const cfg = GLOBAL_ALERTS_CATALOG[alertRow.tipo] || { titulo: alertRow.titulo, fx: 'wind', tips: alertRow.precauciones || [] };
+      document.getElementById('alertBannerTitle').textContent = `🚨 ${alertRow.titulo} • ${alertRow.zona}`;
+      document.getElementById('alertZoneText').textContent = `Zona afectada: ${alertRow.zona}`;
+      const ul = document.getElementById('alertTipsList');
+      ul.innerHTML = '';
+      (alertRow.precauciones || cfg.tips).forEach(t => {
+        const li = document.createElement('li');
+        li.textContent = t;
+        ul.appendChild(li);
+      });
+      banner.classList.add('visible');
+      document.body.classList.add('has-alert');
+      banner.dataset.fx = cfg.fx;
+      if (playEffect) triggerAlertBurst(cfg.fx);
+    }
 
-      if (simInterval) {
-        clearInterval(simInterval);
-        simInterval = null;
-        icon.textContent = '▶';
-        label.textContent = 'Simular ruta';
-        btn.classList.remove('ring-2', 'ring-emerald-500');
+    function hideGlobalAlertUI() {
+      document.getElementById('globalAlertBanner').classList.remove('visible');
+      document.body.classList.remove('has-alert');
+    }
+
+    // =========================================================
+    // 7. ACCIONES DE USUARIO Y MODERACIÓN
+    // =========================================================
+    function openPinDetail(rep) {
+      selectedReportId = rep.id;
+      document.getElementById('pinModalTitle').textContent = rep.subtipo;
+      document.getElementById('pinModalMeta').textContent = `Ubicación: ${rep.colonia || 'Zona Conurbada'} • Reportado por comunidad`;
+      document.getElementById('pinConfirmCount').textContent = rep.confirmaciones;
+      document.getElementById('pinClearCount').textContent = rep.votos_despejado;
+      document.getElementById('adminDeletePinBtn').style.display = isAdmin ? 'block' : 'none';
+      document.getElementById('pinModal').classList.add('open');
+    }
+
+    document.getElementById('submitReportBtn').addEventListener('click', async () => {
+      // Verificar si dispositivo tiene shadowban
+      const { data: mod } = await sb.from('dispositivos_moderacion').select('shadowban').eq('device_id', deviceId).maybeSingle();
+      const isShadowbanned = mod?.shadowban === true;
+
+      const colonia = document.getElementById('reportColoniaInput').value.trim() || 'Zona Conurbada';
+      const newRep = {
+        tipo: pickedReportType.tipo,
+        subtipo: pickedReportType.subtipo,
+        lat: userCoords[0] + (Math.random() - 0.5) * 0.002,
+        lng: userCoords[1] + (Math.random() - 0.5) * 0.002,
+        colonia,
+        device_id: deviceId,
+        oculto: isShadowbanned
+      };
+
+      const { error } = await sb.from('reportes').insert([newRep]);
+      document.getElementById('reportModal').classList.remove('open');
+      document.getElementById('reportColoniaInput').value = '';
+      if (!error) showToast('✓ Reporte publicado en tiempo real');
+      else showToast('Error al publicar reporte');
+    });
+
+    document.getElementById('confirmPinBtn').addEventListener('click', async () => {
+      const rep = activeReports.find(r => r.id === selectedReportId);
+      if (!rep) return;
+      await sb.from('reportes').update({ confirmaciones: rep.confirmaciones + 1 }).eq('id', rep.id);
+      document.getElementById('pinModal').classList.remove('open');
+      showToast('👍 Reporte confirmado');
+    });
+
+    document.getElementById('clearPinBtn').addEventListener('click', async () => {
+      const rep = activeReports.find(r => r.id === selectedReportId);
+      if (!rep) return;
+      const nextVotes = rep.votos_despejado + 1;
+      await sb.from('reportes').update({
+        votos_despejado: nextVotes,
+        oculto: nextVotes >= 3
+      }).eq('id', rep.id);
+      document.getElementById('pinModal').classList.remove('open');
+      showToast(nextVotes >= 3 ? '✓ Despejado (3/3) y retirado del mapa' : `✓ Voto registrado (${nextVotes}/3)`);
+    });
+
+    document.getElementById('adminDeletePinBtn').addEventListener('click', async () => {
+      const rep = activeReports.find(r => r.id === selectedReportId);
+      if (!rep) return;
+      await sb.from('reportes').update({ oculto: true }).eq('id', rep.id);
+      await sb.from('dispositivos_moderacion').upsert({ device_id: rep.device_id, shadowban: true, reportes_falsos: 1 });
+      document.getElementById('pinModal').classList.remove('open');
+      showToast('🛡️ Reporte eliminado y dispositivo silenciado');
+    });
+
+    // Auxilio Vial en Vivo
+    async function loadAuxilioList() {
+      const { data } = await sb.from('auxilio_vial').select('*').neq('estado', 'completado').order('creado_en', { ascending: false }).limit(5);
+      const box = document.getElementById('auxilioListContainer');
+      if (!data || data.length === 0) {
+        box.innerHTML = '<div style="font-size:11px;color:var(--text-secondary);" class="arcade-xs">No hay solicitudes activas en este momento.</div>';
         return;
       }
-
-      // Si no hay ruta seleccionada aún, seleccionar automáticamente Centro Tampico o Puerto Altamira
-      if (!activeRouteCoords || activeRouteCoords.length < 2) {
-        selectRoute('centro-tampico');
-      }
-
-      icon.textContent = '⏹';
-      label.textContent = 'Detener';
-      btn.classList.add('ring-2', 'ring-emerald-500');
-      simIndex = 0;
-
-      simInterval = setInterval(() => {
-        if (!activeRouteCoords || activeRouteCoords.length < 2) return;
-        const curr = activeRouteCoords[simIndex];
-        const next = activeRouteCoords[(simIndex + 1) % activeRouteCoords.length];
-
-        // Calcular ángulo de dirección entre puntos
-        const dLat = next[0] - curr[0];
-        const dLng = next[1] - curr[1];
-        const angle = (Math.atan2(dLng, dLat) * 180) / Math.PI;
-
-        userLocation = curr;
-        userMarker.setLatLng(curr);
-        updateUserAvatarMarker(angle);
-        map.panTo(curr, { animate: true, duration: 0.35 });
-
-        simIndex = (simIndex + 1) % activeRouteCoords.length;
-      }, 420);
-    }
-
-    // -----------------------------------------------------------------------
-    // 7. TRAZADO REAL DE CALLES (OSRM) Y DIAGNÓSTICO DUAL
-    // -----------------------------------------------------------------------
-    async function selectRoute(routeId) {
-      const route = ROUTES_DATA.find((r) => r.id === routeId);
-      if (!route) return;
-      selectedRouteId = routeId;
-
-      document.getElementById('destination-suggestions').classList.add('hidden');
-      document.getElementById('destination-input').value = route.title;
-      document.getElementById('btn-clear-route').classList.remove('hidden');
-      document.getElementById('route-diagnosis-card').classList.remove('hidden');
-      document.getElementById('diag-route-title').textContent = route.title;
-      document.getElementById('route-alert-time').value = route.alertTime;
-      document.getElementById('route-alert-enabled').checked = route.alertEnabled;
-      document.getElementById('routing-status-badge').textContent = 'Trazando calles OSRM...';
-
-      if (activeRouteLayer) map.removeLayer(activeRouteLayer);
-
-      let coords = [route.start, route.end];
-      let distanceKm = '12.5';
-      let durationMin = 20;
-
-      try {
-        const osrmUrl = `https://router.project-osrm.org/route/v1/driving/${route.start[1]},${route.start[0]};${route.end[1]},${route.end[0]}?overview=full&geometries=geojson`;
-        const res = await fetch(osrmUrl);
-        const json = await res.json();
-        if (json.routes && json.routes.length > 0) {
-          const r = json.routes[0];
-          coords = r.geometry.coordinates.map((c) => [c[1], c[0]]);
-          distanceKm = (r.distance / 1000).toFixed(1);
-          durationMin = Math.round(r.duration / 60);
-        }
-      } catch (e) {}
-
-      activeRouteCoords = coords;
-      const routeReports = activeReports.filter(
-        (rep) => !bannedUsers.has(rep.authorId) && rep.routeTags.includes(routeId)
-      );
-      const extraDelay = routeReports.length * 12;
-      const lineColor = routeReports.length > 0 ? '#d97706' : '#0a0a0a';
-
-      activeRouteLayer = L.polyline(coords, { color: lineColor, weight: 6, opacity: 0.88 }).addTo(map);
-      map.fitBounds(activeRouteLayer.getBounds(), { padding: [50, 210] });
-
-      document.getElementById('routing-status-badge').textContent = 'Ruta real OSRM';
-      document.getElementById('diag-route-meta').innerHTML = `${distanceKm} km • Normal: ${durationMin} min • <strong class="text-amber-600">Hoy: ~${durationMin + extraDelay} min</strong>`;
-
-      const w = liveWeatherState;
-      document.getElementById('diag-official-weather').textContent =
-        `Temperatura ${w.temp}°C, viento de ${w.windSpeed} km/h (rachas de ${w.windGusts} km/h) y ${w.rainProb}% de probabilidad de lluvia en este corredor.`;
-
-      const badge = document.getElementById('diag-user-reports-badge');
-      const list = document.getElementById('diag-user-reports-list');
-      if (routeReports.length === 0) {
-        badge.textContent = 'Despejado';
-        list.innerHTML = `<p class="text-xs text-emerald-600 font-semibold">✅ Sin incidentes reportados por usuarios en este camino.</p>`;
-      } else {
-        badge.textContent = `${routeReports.length} reporte(s)`;
-        list.innerHTML = routeReports.map((rep) => `
-          <div class="theme-card p-2 text-xs">
-            <div class="font-bold">${rep.icon} ${rep.categoryLabel}: ${rep.levelLabel}</div>
-            <div class="text-[11px] theme-text-muted mt-0.5">📍 ${rep.zoneName} • ${rep.timeAgo}</div>
-          </div>
-        `).join('');
-      }
-
-      renderSavedRoutesChips();
-    }
-
-    function updateRouteAlertSchedule() {
-      const route = ROUTES_DATA.find((r) => r.id === selectedRouteId);
-      if (!route) return;
-      route.alertTime = document.getElementById('route-alert-time').value;
-      route.alertEnabled = document.getElementById('route-alert-enabled').checked;
-      showToast(
-        route.alertEnabled ? `⏰ Aviso activado a las ${route.alertTime} hrs.` : '🔕 Avisos desactivados para esta ruta.',
-        '⏰'
-      );
-    }
-
-    // -----------------------------------------------------------------------
-    // 8. MARCADORES DE REPORTES Y REGLA 3/3 PARA DESPEJAR
-    // -----------------------------------------------------------------------
-    function renderMarkers() {
-      markersLayer.clearLayers();
-      const theme = getCurrentTheme();
-      activeReports.forEach((rep) => {
-        if (bannedUsers.has(rep.authorId)) return;
-        const icon = L.divIcon({
-          className: '',
-          html: buildReportPinHTML(rep, theme),
-          iconSize: [40, 40],
-          iconAnchor: [20, 20],
-          popupAnchor: [0, -18]
-        });
-        L.marker([rep.lat, rep.lng], { icon }).bindPopup(() => buildPopupHTML(rep)).addTo(markersLayer);
-      });
-    }
-
-    function buildPopupHTML(rep) {
-      const adminBlock = isAdminMode ? `
-        <div class="mt-2.5 pt-2 border-t border-red-500/40 bg-red-600/10 -mx-3 -mb-3 p-2.5 rounded-b-xl space-y-1.5">
-          <div class="text-[10px] font-extrabold text-red-600 flex justify-between">
-            <span>🛡️ Moderación Admin</span><span>${rep.authorId}</span>
-          </div>
-          <div class="grid grid-cols-2 gap-1.5">
-            <button onclick="adminDeleteReport('${rep.id}')" class="bg-red-600 text-white font-bold text-[11px] py-1 rounded-lg">🗑️ Eliminar</button>
-            <button onclick="adminBanUser('${rep.authorId}','${rep.id}')" class="bg-black text-white font-bold text-[11px] py-1 rounded-lg">🚫 Shadowban</button>
-          </div>
-        </div>` : '';
-
-      return `
-        <div class="p-3">
-          <div class="flex items-center justify-between mb-1">
-            <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-amber-500 text-black">👥 Reporte Ciudadano</span>
-            <span class="text-[10px] theme-text-muted">${rep.timeAgo}</span>
-          </div>
-          <div class="flex items-center gap-2 mt-1.5">
-            <span class="text-2xl">${rep.icon}</span>
-            <div>
-              <h4 class="font-extrabold text-sm leading-tight">${rep.categoryLabel}</h4>
-              <p class="text-xs font-semibold theme-text-muted">${rep.levelLabel}</p>
+      box.innerHTML = data.map(item => `
+        <div class="list-item">
+          <div>
+            <strong style="font-size:11.5px;" class="arcade-xs">${item.falla}</strong>
+            <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">
+              ${item.estado === 'aceptado'
+                ? `✅ En camino: ${item.voluntario_nombre} • ${item.voluntario_vehiculo} (${item.voluntario_placas})`
+                : '⏳ Esperando voluntario cercano...'}
             </div>
           </div>
-          <p class="text-[11px] theme-text-muted mt-1.5">📍 ${rep.zoneName}</p>
-          <div class="mt-2 flex items-center justify-between text-[10px]">
-            <span class="text-emerald-600 font-extrabold">✓ ${rep.confirmations} confirmación(es)</span>
-            <span class="font-bold">Despejar: ${rep.clearVotes}/3 votos</span>
-          </div>
-          <div class="grid grid-cols-2 gap-1.5 mt-2.5">
-            <button onclick="confirmReport('${rep.id}')" class="theme-btn-solid font-bold text-[11px] py-1.5 rounded-xl">
-              👍 Sigue ahí (+1)
-            </button>
-            <button onclick="voteClearReport('${rep.id}')" class="theme-card font-bold text-[11px] py-1.5 rounded-xl border">
-              🧹 Ya se despejó (${rep.clearVotes}/3)
-            </button>
-          </div>
-          <button onclick="shareWhatsApp('${rep.id}')" class="mt-1.5 w-full bg-[#25D366] text-black font-extrabold text-[11px] py-1.5 rounded-xl">
-            📲 Compartir en WhatsApp
-          </button>
-          ${adminBlock}
-        </div>
-      `;
-    }
-
-    function confirmReport(id) {
-      const rep = activeReports.find((r) => r.id === id);
-      if (!rep) return;
-      rep.confirmations += 1;
-      renderMarkers();
-      renderTextModeList();
-      showToast('👍 Confirmación agregada al reporte.');
-    }
-
-    function voteClearReport(id) {
-      const rep = activeReports.find((r) => r.id === id);
-      if (!rep) return;
-      rep.clearVotes += 1;
-      if (rep.clearVotes >= 3) {
-        activeReports = activeReports.filter((r) => r.id !== id);
-        map.closePopup();
-        showToast('✅ ¡3/3 confirmaciones alcanzadas! Reporte retirado.');
-      } else {
-        showToast(`🧹 Voto registrado (${rep.clearVotes}/3 para retirar).`, '🧹');
-      }
-      renderMarkers();
-      renderTextModeList();
-      if (selectedRouteId) selectRoute(selectedRouteId);
-    }
-
-    // -----------------------------------------------------------------------
-    // 9. MENÚ DE 10 ALERTAS GLOBALES + RÁFAGA TEMPORAL DE 4 SEGUNDOS
-    // -----------------------------------------------------------------------
-    const GLOBAL_ALERT_SCENARIOS = [
-      {
-        id: 'hurricane', label: 'Huracán / Tormenta Tropical', icon: '🌀',
-        recs: [
-          'Resguárdate en un lugar seguro y evita salir a carretera o zonas bajas.',
-          'Ten a la mano documentos importantes, lámpara, radio y batería portátil.',
-          'Aléjate de ventanas, árboles grandes y cables de energía eléctrica.'
-        ]
-      },
-      {
-        id: 'norte', label: 'Evento de "Norte" Severo', icon: '💨',
-        recs: [
-          'Asegura láminas, tinacos, macetas y objetos sueltos en azoteas.',
-          'Extrema precaución al conducir en Corredor Urbano, puentes y zonas costeras.',
-          'Atiende el cierre de puertos a embarcaciones menores y oleaje elevado.'
-        ]
-      },
-      {
-        id: 'flood_alert', label: 'Lluvia Severa / Inundación', icon: '🌊',
-        recs: [
-          'Evita cruzar calles encharcadas o pasos a desnivel si no ves el pavimento.',
-          'Enciende luces bajas e intermitentes; reduce velocidad por acuaplaneo.',
-          'Desconecta aparatos eléctricos si el agua comienza a ingresar a tu domicilio.'
-        ]
-      },
-      {
-        id: 'hail', label: 'Granizo / Tormenta Eléctrica', icon: '⛈️',
-        recs: [
-          'Detén tu vehículo bajo techo seguro; no te estaciones debajo de árboles o espectaculares.',
-          'Evita actividades al aire libre, albercas, playas o patios abiertos.',
-          'Aléjate de estructuras metálicas altas hasta que pasen las descargas.'
-        ]
-      },
-      {
-        id: 'heatwave', label: 'Onda de Calor Extrema', icon: '☀️',
-        recs: [
-          'Hidrátate constantemente con agua natural aunque no sientas sed.',
-          'Evita exposición directa al sol entre las 11:00 AM y las 4:00 PM.',
-          'Nunca dejes niños, adultos mayores o mascotas dentro de autos estacionados.'
-        ]
-      },
-      {
-        id: 'cold', label: 'Descenso Brusco de Temperatura', icon: '❄️',
-        recs: [
-          'Abrígate por capas y protege especialmente a niños y adultos mayores.',
-          'Ventila adecuadamente si usas calentadores para evitar intoxicación por monóxido.',
-          'Resguarda mascotas y tuberías expuestas a la intemperie.'
-        ]
-      },
-      {
-        id: 'fire', label: 'Incendio de Alto Riesgo', icon: '🔥',
-        recs: [
-          'Evita circular cerca del perímetro para dejar libre el paso a Bomberos y Protección Civil.',
-          'Si hay humo denso en tu colonia, cierra puertas/ventanas y coloca trapos húmedos en rendijas.',
-          'Usa cubrebocas o pañuelo húmedo si presentas irritación en garganta u ojos.'
-        ]
-      },
-      {
-        id: 'gas_leak', label: 'Fuga de Gas / Sustancia Química', icon: '☣️',
-        recs: [
-          'Aléjate de inmediato en dirección contraria al viento (viento a tus espaldas).',
-          'No enciendas cerillos, cigarros, motores ni interruptores eléctricos en la zona.',
-          'Cierra ventanas y sistemas de aire acondicionado si estás en un inmueble cercano.'
-        ]
-      },
-      {
-        id: 'ash', label: 'Ceniza / Partículas / Hidroeléctrica', icon: '🌫️',
-        recs: [
-          'Utiliza cubrebocas (N95 de preferencia) y lentes protectores al salir.',
-          'Cubre tinacos, depósitos de agua y alimento de mascotas.',
-          'No laves la ceniza con agua en drenajes; bárrela en seco y guárdala en bolsas.'
-        ]
-      },
-      {
-        id: 'quake', label: 'Sismo / Actividad Sísmica', icon: '📳',
-        recs: [
-          'Mantén la calma y ubícate en zonas de menor riesgo (junto a columnas o muros estructurales).',
-          'Aléjate de ventanas, vidrios, espejos y objetos que puedan caer.',
-          'Tras el movimiento, revisa instalaciones de gas y electricidad antes de encender flamas.'
-        ]
-      }
-    ];
-
-    function openBroadcastModal() {
-      const modal = document.getElementById('broadcast-modal');
-      modal.classList.remove('hidden');
-      document.getElementById('broadcast-scenarios-grid').innerHTML = GLOBAL_ALERT_SCENARIOS.map((sc) => `
-        <button onclick="triggerGlobalAlert('${sc.id}')" class="theme-card p-3 text-left flex items-center gap-2.5 active:scale-95">
-          <span class="text-2xl">${sc.icon}</span>
-          <span class="font-bold text-xs leading-tight">${sc.label}</span>
-        </button>
-      `).join('');
-    }
-
-    function closeBroadcastModal() {
-      document.getElementById('broadcast-modal').classList.add('hidden');
-    }
-
-    function triggerGlobalAlert(scenarioId) {
-      const sc = GLOBAL_ALERT_SCENARIOS.find((s) => s.id === scenarioId);
-      if (!sc) return;
-      currentGlobalScenario = scenarioId;
-      const sector = document.getElementById('broadcast-sector-input').value.trim() || 'Zona Conurbada';
-      closeBroadcastModal();
-
-      // Disparar ráfaga de 4 segundos (destello + efecto canvas)
-      triggerBurstEffect(sc.id);
-
-      // Mostrar píldora minimizada persistente arriba
-      const pill = document.getElementById('global-alert-pill');
-      pill.classList.remove('hidden');
-      document.getElementById('alert-pill-icon').textContent = sc.icon;
-      document.getElementById('alert-pill-title').textContent = sc.label;
-      document.getElementById('alert-pill-sector').textContent = `• ${sector}`;
-      document.getElementById('alert-pill-time').textContent = `Emitida: ${new Date().toTimeString().slice(0, 5)} hrs`;
-
-      document.getElementById('alert-recommendations-list').innerHTML = sc.recs
-        .map((r) => `<li>${r}</li>`)
-        .join('');
-
-      if (isAdminMode) {
-        document.getElementById('admin-clear-alert-box').classList.remove('hidden');
-      }
-    }
-
-    function toggleGlobalAlertDetails() {
-      const box = document.getElementById('global-alert-expanded');
-      const chev = document.getElementById('alert-pill-chevron');
-      const isHidden = box.classList.contains('hidden');
-      box.classList.toggle('hidden');
-      chev.textContent = isHidden ? 'Ocultar ▲' : 'Precauciones ▼';
-
-      // Si el usuario abre la alerta minimizada, reactivar el efecto atmosférico por 4 segundos
-      if (isHidden && currentGlobalScenario) {
-        triggerBurstEffect(currentGlobalScenario);
-      }
-    }
-
-    function clearGlobalAlert() {
-      currentGlobalScenario = null;
-      stopWeatherFX();
-      document.getElementById('global-alert-pill').classList.add('hidden');
-      document.getElementById('global-alert-expanded').classList.add('hidden');
-      showToast('✓ Alerta General finalizada.');
-    }
-
-    // -----------------------------------------------------------------------
-    // 10. AUXILIO VIAL VECINAL, REPORTES EN 3 TOQUES Y UTILIDADES
-    // -----------------------------------------------------------------------
-    function openAssistanceModal() { document.getElementById('assistance-modal').classList.remove('hidden'); }
-    function closeAssistanceModal() { document.getElementById('assistance-modal').classList.add('hidden'); }
-
-    function requestRoadsideHelp(issueLabel) {
-      document.getElementById('roadside-request-box').classList.add('hidden');
-      const card = document.getElementById('volunteer-assigned-card');
-      card.classList.remove('hidden');
-      document.getElementById('vol-issue').textContent = `Motivo reportado: ${issueLabel}`;
-      showToast('🦺 Solicitud aceptada por voluntario cercano.', '🆘');
-    }
-
-    function cancelRoadsideHelp() {
-      document.getElementById('volunteer-assigned-card').classList.add('hidden');
-      document.getElementById('roadside-request-box').classList.remove('hidden');
-      showToast('✓ Solicitud de auxilio finalizada.');
-    }
-
-    let selectedCategoryForReport = null;
-
-    function openReportModal() {
-      selectedCategoryForReport = null;
-      document.getElementById('report-modal').classList.remove('hidden');
-      document.getElementById('report-step-badge').textContent = 'Toque 2 de 3 • Categoría';
-      document.getElementById('report-modal-title').textContent = '¿Qué ocurre en tu ubicación?';
-      document.getElementById('report-categories-grid').classList.remove('hidden');
-      document.getElementById('report-severity-panel').classList.add('hidden');
-
-      document.getElementById('report-categories-grid').innerHTML = REPORT_CATEGORIES.map((cat) => `
-        <button onclick="selectReportCategory('${cat.id}')" class="theme-card p-4 flex flex-col items-center justify-center gap-1.5 text-center active:scale-95">
-          <span class="text-3xl">${cat.icon}</span>
-          <span class="font-extrabold text-xs">${cat.label}</span>
-        </button>
-      `).join('');
-    }
-
-    function selectReportCategory(catId) {
-      const cat = REPORT_CATEGORIES.find((c) => c.id === catId);
-      if (!cat) return;
-      selectedCategoryForReport = cat;
-      document.getElementById('report-step-badge').textContent = 'Toque 3 de 3 • Publicar al instante';
-      document.getElementById('report-modal-title').textContent = `${cat.icon} ${cat.label}`;
-      document.getElementById('report-categories-grid').classList.add('hidden');
-      document.getElementById('report-severity-panel').classList.remove('hidden');
-
-      document.getElementById('report-severity-options').innerHTML = cat.levels.map((lvl, idx) => `
-        <button onclick="publishInstantReport(${idx})" class="w-full text-left theme-card p-3.5 flex items-center justify-between active:scale-95">
-          <div>
-            <span class="font-extrabold text-xs sm:text-sm block">${lvl.label}</span>
-            <span class="text-[10px] theme-text-muted">Impacto estimado: +${lvl.delayMin} min</span>
-          </div>
-          <span class="px-2.5 py-1 rounded-xl text-xs font-extrabold theme-btn-solid">Publicar →</span>
-        </button>
-      `).join('');
-    }
-
-    function publishInstantReport(levelIndex) {
-      if (!selectedCategoryForReport) return;
-      const lvl = selectedCategoryForReport.levels[levelIndex];
-      const center = map.getCenter();
-
-      activeReports.unshift({
-        id: 'rep-' + Date.now(),
-        categoryId: selectedCategoryForReport.id,
-        categoryLabel: selectedCategoryForReport.label,
-        icon: selectedCategoryForReport.icon,
-        levelLabel: lvl.label,
-        zoneName: 'Ubicación reportada en vivo (GPS)',
-        lat: center.lat,
-        lng: center.lng,
-        timeAgo: 'Hace unos segundos',
-        confirmations: 1,
-        clearVotes: 0,
-        authorId: 'tu_dispositivo',
-        routeTags: selectedRouteId ? [selectedRouteId] : ['centro-tampico']
-      });
-
-      closeReportModal();
-      renderMarkers();
-      renderTextModeList();
-      if (selectedRouteId) selectRoute(selectedRouteId);
-      showToast('✅ Publicado al instante para todos.');
-    }
-
-    function closeReportModal() { document.getElementById('report-modal').classList.add('hidden'); }
-
-    function renderSavedRoutesChips() {
-      document.getElementById('saved-routes-chips').innerHTML = ROUTES_DATA.slice(0, 3).map((r) => {
-        const active = r.id === selectedRouteId ? 'theme-btn-solid font-extrabold' : 'theme-card font-semibold';
-        return `<button onclick="selectRoute('${r.id}')" class="shrink-0 px-3 py-1.5 rounded-xl text-xs border transition ${active}">${r.chipLabel}</button>`;
-      }).join('');
-    }
-
-    function showDestinationSuggestions() {
-      document.getElementById('destination-suggestions').classList.remove('hidden');
-      filterDestinations(document.getElementById('destination-input').value);
-    }
-
-    function filterDestinations(query) {
-      const q = query.toLowerCase().trim();
-      const filtered = ROUTES_DATA.filter((r) => r.title.toLowerCase().includes(q) || r.chipLabel.toLowerCase().includes(q));
-      document.getElementById('suggestions-list').innerHTML = filtered.map((d) => `
-        <button onclick="selectRoute('${d.id}')" class="w-full text-left px-3 py-2.5 hover:bg-neutral-500/10 flex items-center justify-between text-xs">
-          <span class="font-bold">${d.title}</span>
-          <span class="text-[10px] font-extrabold">Trazar →</span>
-        </button>
-      `).join('');
-    }
-
-    function clearSelectedRoute() {
-      selectedRouteId = null;
-      document.getElementById('route-diagnosis-card').classList.add('hidden');
-      document.getElementById('destination-input').value = '';
-      document.getElementById('btn-clear-route').classList.add('hidden');
-      if (activeRouteLayer) {
-        map.removeLayer(activeRouteLayer);
-        activeRouteLayer = null;
-      }
-      renderSavedRoutesChips();
-    }
-
-    function toggleAdminMode() {
-      isAdminMode = !isAdminMode;
-      document.getElementById('admin-dot').className = isAdminMode ? 'w-2 h-2 rounded-full bg-red-600' : 'w-2 h-2 rounded-full bg-neutral-400';
-      document.getElementById('admin-toolbar').classList.toggle('hidden', !isAdminMode);
-      const clearAlertBox = document.getElementById('admin-clear-alert-box');
-      if (clearAlertBox) clearAlertBox.classList.toggle('hidden', !isAdminMode);
-      map.closePopup();
-      renderMarkers();
-      renderTextModeList();
-      showToast(isAdminMode ? '🛡️ Modo Administrador activado' : 'Modo Administrador desactivado', '🛡️');
-    }
-
-    function adminDeleteReport(id) {
-      activeReports = activeReports.filter((r) => r.id !== id);
-      map.closePopup();
-      renderMarkers();
-      renderTextModeList();
-      showToast('🗑️ Reporte eliminado por administrador.', '🛡️');
-    }
-
-    function adminBanUser(authorId, reportId) {
-      bannedUsers.add(authorId);
-      activeReports = activeReports.filter((r) => r.id !== reportId);
-      document.getElementById('banned-counter').textContent = `${bannedUsers.size} bloqueado(s)`;
-      map.closePopup();
-      renderMarkers();
-      renderTextModeList();
-      showToast(`🚫 Shadowban aplicado a ${authorId}.`, '🛡️');
-    }
-
-    function shareWhatsApp(id) {
-      const rep = activeReports.find((r) => r.id === id);
-      if (!rep) return;
-      const msg = `⚠️ *ALERTA CLIMARUTA SUR*\n${rep.icon} *${rep.categoryLabel}:* ${rep.levelLabel}\n📍 *Zona:* ${rep.zoneName}\n👥 *Confirmaciones:* ${rep.confirmations} (${rep.timeAgo})`;
-      window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-    }
-
-    function toggleTextMode() {
-      isTextMode = !isTextMode;
-      document.getElementById('map-view').classList.toggle('hidden', isTextMode);
-      document.getElementById('text-mode-view').classList.toggle('hidden', !isTextMode);
-      document.getElementById('text-mode-icon').textContent = isTextMode ? '🗺️' : '📄';
-      if (!isTextMode) setTimeout(() => map.invalidateSize(), 100);
-    }
-
-    function renderTextModeList() {
-      const visible = activeReports.filter((r) => !bannedUsers.has(r.authorId));
-      document.getElementById('text-mode-count').textContent = `${visible.length} activos`;
-      document.getElementById('text-mode-reports-list').innerHTML = visible.map((rep) => `
-        <div class="theme-surface border rounded-2xl p-3.5 space-y-1">
-          <div class="flex justify-between text-[10px]">
-            <span class="font-extrabold px-1.5 py-0.5 rounded bg-amber-500 text-black">👥 Reporte Ciudadano</span>
-            <span class="theme-text-muted">${rep.timeAgo}</span>
-          </div>
-          <div class="font-extrabold text-sm pt-1">${rep.icon} ${rep.categoryLabel} — ${rep.levelLabel}</div>
-          <div class="text-xs theme-text-muted">📍 ${rep.zoneName}</div>
-          <div class="flex items-center justify-between pt-1.5 text-xs">
-            <span class="text-emerald-600 font-bold">✓ ${rep.confirmations} conf. • Despejar: ${rep.clearVotes}/3</span>
-            <button onclick="voteClearReport('${rep.id}')" class="font-extrabold underline">+ Votar despejado</button>
-          </div>
+          ${item.estado === 'pendiente'
+            ? `<button class="chip-btn active arcade-xs" onclick="acceptAuxilio(${item.id})">Acudir</button>`
+            : `<button class="chip-btn arcade-xs" onclick="finishAuxilio(${item.id})">Cerrar</button>`}
         </div>
       `).join('');
     }
 
-    function centerOnUser() {
-      map.flyTo(userLocation, 14, { duration: 0.8 });
-    }
+    document.getElementById('requestAuxilioBtn').addEventListener('click', async () => {
+      const falla = document.getElementById('sosFallaSelect').value;
+      await sb.from('auxilio_vial').insert([{
+        falla,
+        lat: userCoords[0],
+        lng: userCoords[1],
+        solicitante_device: deviceId
+      }]);
+      showToast('🆘 Solicitud enviada a voluntarios cercanos');
+      loadAuxilioList();
+    });
 
-    function toggleDrawerSize() {
-      document.getElementById('bottom-drawer').classList.toggle('h-[72vh]');
-    }
+    window.acceptAuxilio = async (id) => {
+      const nombre = prompt('Tu nombre (visible por seguridad):', 'Carlos M.') || 'Voluntario Local';
+      const vehiculo = prompt('Tu vehículo y color:', 'Nissan Versa Blanco') || 'Vehículo particular';
+      const placas = prompt('Terminación o placas:', 'XTM-482') || 'Verificado';
+      await sb.from('auxilio_vial').update({
+        estado: 'aceptado',
+        voluntario_nombre: nombre,
+        voluntario_vehiculo: vehiculo,
+        voluntario_placas: placas
+      }).eq('id', id);
+      showToast('✅ Datos enviados al conductor');
+    };
 
-    function showToast(message, icon = '✅') {
-      const toast = document.getElementById('toast-notification');
-      document.getElementById('toast-message').textContent = message;
-      document.getElementById('toast-icon').textContent = icon;
-      toast.classList.remove('hidden');
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => toast.classList.add('hidden'), 3200);
-    }
+    window.finishAuxilio = async (id) => {
+      await sb.from('auxilio_vial').update({ estado: 'completado' }).eq('id', id);
+      showToast('✓ Auxilio finalizado');
+    };
 
-    document.addEventListener('click', (e) => {
-      const input = document.getElementById('destination-input');
-      const box = document.getElementById('destination-suggestions');
-      if (input && box && !input.contains(e.target) && !box.contains(e.target)) {
-        box.classList.add('hidden');
+    // Panel Admin Alertas Globales
+    document.getElementById('publishGlobalAlertBtn').addEventListener('click', async () => {
+      const cfg = GLOBAL_ALERTS_CATALOG[pickedAlertKey];
+      const zona = document.getElementById('alertZoneInput').value.trim() || 'Toda la Zona Conurbada';
+      // Desactivar anteriores
+      await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
+      // Insertar nueva alerta global
+      await sb.from('alertas_globales').insert([{
+        tipo: pickedAlertKey,
+        titulo: cfg.titulo,
+        zona,
+        precauciones: cfg.tips,
+        activa: true
+      }]);
+      document.getElementById('adminModal').classList.remove('open');
+      showToast('🚨 Alerta global emitida a todos');
+    });
+
+    document.getElementById('clearGlobalAlertBtn').addEventListener('click', async () => {
+      await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
+      document.getElementById('adminModal').classList.remove('open');
+      showToast('✓ Alerta global desactivada');
+    });
+
+    // =========================================================
+    // 8. CONTROLES UI, TEMAS, BRÚJULA Y SIMULACIÓN
+    // =========================================================
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
+      const t = THEMES[currentThemeIdx];
+      document.body.className = `theme-${t}` + (document.getElementById('globalAlertBanner').classList.contains('visible') ? ' has-alert' : '');
+      const labels = { minimal: '◻ Minimalista', arcade: '👾 Arcade', pastel: '🌸 Pastel' };
+      document.getElementById('themeToggleBtn').textContent = labels[t];
+      refreshUserMarker();
+      renderReportsOnMap();
+      if (routeLayer) {
+        const color = t === 'arcade' ? '#00ff66' : (t === 'pastel' ? '#f06292' : '#000000');
+        routeLayer.setStyle({ color });
       }
     });
 
-    window.onload = function () {
-      initMap();
-    };
+    document.getElementById('adminToggleBtn').addEventListener('click', () => {
+      if (!isAdmin) {
+        const pin = prompt('Ingresa el PIN de Administrador (por defecto: 2026):');
+        if (pin !== '2026') {
+          showToast('PIN incorrecto');
+          return;
+        }
+        isAdmin = true;
+        document.getElementById('adminToggleBtn').classList.add('active');
+        document.getElementById('adminPanelFab').style.display = 'flex';
+        showToast('🛡️ Modo Administrador activo');
+      } else {
+        isAdmin = false;
+        document.getElementById('adminToggleBtn').classList.remove('active');
+        document.getElementById('adminPanelFab').style.display = 'none';
+        showToast('Modo Administrador desactivado');
+      }
+    });
+
+    document.getElementById('alertExpandBtn').addEventListener('click', () => {
+      const det = document.getElementById('alertBannerDetails');
+      const isOpen = det.classList.toggle('open');
+      document.getElementById('alertExpandBtn').textContent = isOpen ? 'Ocultar ▲' : 'Precauciones ▼';
+      if (isOpen) {
+        const fx = document.getElementById('globalAlertBanner').dataset.fx || 'wind';
+        triggerAlertBurst(fx);
+      }
+    });
+
+    document.getElementById('compassBtn').addEventListener('click', () => {
+      followHeading = !followHeading;
+      document.getElementById('compassBtn').classList.toggle('active', followHeading);
+      showToast(followHeading ? '🧭 Mapa siguiendo tu ruta' : '🧭 Mapa fijo Norte arriba');
+    });
+
+    document.getElementById('simRouteBtn').addEventListener('click', () => {
+      const btn = document.getElementById('simRouteBtn');
+      if (simInterval) {
+        clearInterval(simInterval);
+        simInterval = null;
+        btn.textContent = '▶ Simular ruta';
+        btn.classList.remove('running');
+        refreshUserMarker();
+        return;
+      }
+      if (currentRouteCoords.length < 2) return;
+      let idx = 0;
+      btn.textContent = '⏹ Detener';
+      btn.classList.add('running');
+      simInterval = setInterval(() => {
+        if (idx >= currentRouteCoords.length - 1) idx = 0;
+        const p1 = currentRouteCoords[idx];
+        const p2 = currentRouteCoords[idx + 1];
+        userCoords = p2;
+        userHeading = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180 / Math.PI;
+        refreshUserMarker();
+        if (followHeading) map.panTo(userCoords);
+        idx++;
+      }, 350);
+    });
+
+    // Selección de chips y modales
+    document.querySelectorAll('#reportTypeGrid .opt-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#reportTypeGrid .opt-card').forEach(b => b.classList.remove('picked'));
+        btn.classList.add('picked');
+        pickedReportType = { tipo: btn.dataset.tipo, subtipo: btn.dataset.subtipo };
+      });
+    });
+
+    document.querySelectorAll('#globalAlertGrid .opt-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#globalAlertGrid .opt-card').forEach(b => b.classList.remove('picked'));
+        btn.classList.add('picked');
+        pickedAlertKey = btn.dataset.alert;
+      });
+    });
+
+    document.querySelectorAll('.route-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.route-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        drawRealRoute(PRESET_DESTS[chip.dataset.route]);
+      });
+    });
+
+    document.getElementById('openReportBtn').addEventListener('click', () => document.getElementById('reportModal').classList.add('open'));
+    document.getElementById('openSosBtn').addEventListener('click', () => { loadAuxilioList(); document.getElementById('sosModal').classList.add('open'); });
+    document.getElementById('adminPanelFab').addEventListener('click', () => document.getElementById('adminModal').classList.add('open'));
+    document.getElementById('refreshWeatherBtn').addEventListener('click', fetchRealWeather);
+    document.getElementById('locateBtn').addEventListener('click', () => map.setView(userCoords, 15));
+
+    document.querySelectorAll('.close-btn').forEach(btn => {
+      btn.addEventListener('click', () => document.getElementById(btn.dataset.close).classList.remove('open'));
+    });
+
+    // GPS Real del Dispositivo (Velocidad y Rumbo)
+    if ('geolocation' in navigator) {
+      navigator.geolocation.watchPosition(pos => {
+        if (!simInterval) {
+          userCoords = [pos.coords.latitude, pos.coords.longitude];
+          if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
+          userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
+          refreshUserMarker();
+          if (followHeading) map.panTo(userCoords);
+        }
+      }, () => {}, { enableHighAccuracy: true });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // Arranque Inicial
+    fetchRealWeather();
+    drawRealRoute(PRESET_DESTS.altamira);
+    loadInitialData();
+    subscribeRealtime();
   </script>
 </body>
 </html>
