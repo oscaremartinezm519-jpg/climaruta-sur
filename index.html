@@ -180,6 +180,15 @@
       display: flex; align-items: center; gap: 6px;
     }
     .ctrl-pill.running { background: var(--success-bg); color: #fff; border-color: var(--success-bg); }
+    .ctrl-pill.admin-alert-btn {
+      display: none;
+      background: var(--danger-bg);
+      color: #ffffff;
+      border-color: var(--danger-bg);
+    }
+    .ctrl-pill.admin-alert-btn.visible {
+      display: flex;
+    }
     .ctrl-icon {
       width: 38px; height: 38px; border-radius: 50%;
       background: var(--bg-card); color: var(--text-primary);
@@ -293,7 +302,6 @@
     }
     .toast.show { opacity: 1; }
 
-    /* Ocultar atribución estorbosa en móvil pero mantener crédito */
     .leaflet-control-attribution { font-size: 9px !important; opacity: 0.7; }
   </style>
 </head>
@@ -344,10 +352,10 @@
 
   <!-- Controles Derechos del Mapa -->
   <div class="map-controls">
+    <button id="adminPanelFab" class="ctrl-pill admin-alert-btn arcade-xs">🚨 Emitir Alerta</button>
     <button id="simRouteBtn" class="ctrl-pill arcade-xs">▶ Simular ruta</button>
     <button id="compassBtn" class="ctrl-icon" title="Alternar Norte arriba / Seguir rumbo">🧭</button>
     <button id="locateBtn" class="ctrl-icon" title="Mi ubicación GPS">◎</button>
-    <button id="adminPanelFab" class="ctrl-pill arcade-xs" style="display:none;background:var(--danger-bg);color:#fff;border-color:var(--danger-bg);">🚨 Emitir Alerta</button>
   </div>
 
   <!-- Botones Flotantes Inferiores -->
@@ -388,7 +396,7 @@
       </div>
       <p style="font-size:11px;color:var(--text-secondary);margin-bottom:10px;" class="arcade-xs">Se publica al instante para toda la zona conurbada. Desaparece con 3 confirmaciones de despejado.</p>
       <div class="grid-options" id="reportTypeGrid">
-        <button class="opt-card arcade-xs" data-tipo="clima" data-subtipo="Lluvia fuerte / Chubasco">🌧️ Lluvia fuerte</button>
+        <button class="opt-card picked arcade-xs" data-tipo="clima" data-subtipo="Lluvia fuerte / Chubasco">🌧️ Lluvia fuerte</button>
         <button class="opt-card arcade-xs" data-tipo="clima" data-subtipo="Viento / Rachas de Norte">💨 Rachas de Norte</button>
         <button class="opt-card arcade-xs" data-tipo="vial" data-subtipo="Calle inundada / Encharcamiento">🌊 Calle inundada</button>
         <button class="opt-card arcade-xs" data-tipo="vial" data-subtipo="Tráfico pesado / Embotellamiento">🚦 Tráfico pesado</button>
@@ -462,7 +470,7 @@
       <p style="font-size:11px;color:var(--text-secondary);margin-bottom:10px;" class="arcade-xs">Selecciona el escenario real para emitir aviso global inmediato a toda la zona:</p>
       <div class="grid-options" id="globalAlertGrid">
         <button class="opt-card arcade-xs" data-alert="huracan">🌀 Huracán / Tormenta</button>
-        <button class="opt-card arcade-xs" data-alert="norte">💨 Norte / Rachas Fuertes</button>
+        <button class="opt-card picked arcade-xs" data-alert="norte">💨 Norte / Rachas Fuertes</button>
         <button class="opt-card arcade-xs" data-alert="inundacion">🌊 Lluvia Severa / Inundación</button>
         <button class="opt-card arcade-xs" data-alert="granizo">⛈️ Granizo / Tormenta Eléctrica</button>
         <button class="opt-card arcade-xs" data-alert="calor">☀️ Onda de Calor Extrema</button>
@@ -484,13 +492,13 @@
 
   <script>
     // =========================================================
-    // 1. CONEXIÓN REAL A SUPABASE (TUS CREDENCIALES)
+    // 1. CONEXIÓN REAL A SUPABASE CON LLAVE ANON PUBLIC (JWT)
     // =========================================================
     const SUPABASE_URL = 'https://uxwumwwevynsuocnfkby.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable_E5Mw3f0wgfeu-W25B5O0ag_H3tAAUzS';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4d3Vtd3dldnluc3VvY25ma2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwOTk3OTIsImV4cCI6MjExMDY3NTc5Mn0.wRuOH1QBTx5VlkaiEiMSJK6APTcsqjjMd2wnrEQB3FI';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ID único persistente por dispositivo para moderación y votos
+    // ID único persistente por dispositivo
     let deviceId = localStorage.getItem('crs_device_id');
     if (!deviceId) {
       deviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
@@ -500,9 +508,9 @@
     // Estado Global
     const THEMES = ['minimal', 'arcade', 'pastel'];
     let currentThemeIdx = 0;
-    let isAdmin = false;
-    let followHeading = false; // Norte arriba por defecto
-    let userCoords = [22.2553, -97.8686]; // Centro Tampico-Madero
+    let isAdmin = sessionStorage.getItem('crs_admin_active') === '1';
+    let followHeading = false;
+    let userCoords = [22.2553, -97.8686];
     let userHeading = 0;
     let userSpeedKmh = 0;
     let activeReports = [];
@@ -512,7 +520,21 @@
     let routeLayer = null;
     let simInterval = null;
 
-    // Catálogo de 10 Alertas Globales con recomendaciones y tipo de efecto
+    function syncAdminUI() {
+      const toggleBtn = document.getElementById('adminToggleBtn');
+      const alertFab = document.getElementById('adminPanelFab');
+      if (isAdmin) {
+        toggleBtn.classList.add('active');
+        toggleBtn.textContent = '🛡️ Admin ON';
+        alertFab.classList.add('visible');
+      } else {
+        toggleBtn.classList.remove('active');
+        toggleBtn.textContent = '● Admin';
+        alertFab.classList.remove('visible');
+      }
+    }
+
+    // Catálogo de 10 Alertas Globales
     const GLOBAL_ALERTS_CATALOG = {
       huracan: {
         titulo: 'HURACÁN / TORMENTA TROPICAL',
@@ -567,7 +589,7 @@
     };
 
     // =========================================================
-    // 2. INICIALIZACIÓN DEL MAPA (ESRI ARCGIS SIN BLOQUEOS)
+    // 2. INICIALIZACIÓN DEL MAPA
     // =========================================================
     const map = L.map('map', { zoomControl: false }).setView(userCoords, 13);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
@@ -585,660 +607,18 @@
       const isWalking = userSpeedKmh < 6 && !simInterval;
 
       if (theme === 'arcade') {
-        // OVNI con Alien Verde brillante bien visible; solo se balancea +-12° (nunca de cabeza)
         const tilt = Math.max(-14, Math.min(14, Math.sin(userHeading * Math.PI / 180) * 14));
         return `
           <div style="width:44px;height:44px;display:grid;place-items:center;transform:rotate(${tilt}deg);transition:transform 0.25s ease;">
             <svg width="42" height="42" viewBox="0 0 16 16" shape-rendering="crispEdges">
-              <!-- Antenitas del alien -->
               <rect x="6" y="1" width="1" height="2" fill="#00ff66"/>
               <rect x="9" y="1" width="1" height="2" fill="#00ff66"/>
-              <!-- Cúpula transparente -->
               <rect x="5" y="2" width="6" height="1" fill="#7ef9ff"/>
               <rect x="4" y="3" width="1" height="4" fill="#7ef9ff"/>
               <rect x="11" y="3" width="1" height="4" fill="#7ef9ff"/>
-              <!-- Cabeza del Alien Verde Neón -->
               <rect x="6" y="3" width="4" height="4" fill="#00ff66"/>
               <rect x="5" y="4" width="6" height="2" fill="#00ff66"/>
-              <!-- Ojos negros pixelados -->
               <rect x="6" y="4" width="1" height="2" fill="#05080f"/>
               <rect x="9" y="4" width="1" height="2" fill="#05080f"/>
-              <!-- Cuerpo del Platillo Volador -->
               <rect x="2" y="7" width="12" height="2" fill="#b8c7d9"/>
-              <rect x="1" y="9" width="14" height="2" fill="#5c6f87"/>
-              <!-- Luces del OVNI -->
-              <rect x="3" y="9" width="2" height="1" fill="#ff2a55"/>
-              <rect x="7" y="9" width="2" height="1" fill="#ffe600"/>
-              <rect x="11" y="9" width="2" height="1" fill="#00ff66"/>
-              <!-- Rayo tractor sutil -->
-              <rect x="6" y="12" width="4" height="1" fill="rgba(0,255,102,0.55)"/>
-              <rect x="5" y="14" width="6" height="1" fill="rgba(0,255,102,0.3)"/>
-            </svg>
-          </div>`;
-      }
-
-      if (theme === 'pastel') {
-        // Auto compacto blanco y rosa pastel limpio (sin símbolos extra)
-        const rot = isWalking ? 0 : userHeading;
-        return `
-          <div style="width:40px;height:40px;display:grid;place-items:center;transform:rotate(${rot}deg);transition:transform 0.25s ease;">
-            <svg width="34" height="34" viewBox="0 0 36 36">
-              <rect x="8" y="4" width="20" height="28" rx="9" fill="#ffffff" stroke="#f06292" stroke-width="2.5"/>
-              <rect x="10" y="9" width="16" height="6" rx="3" fill="#ffd6e5"/>
-              <rect x="10" y="21" width="16" height="5" rx="2.5" fill="#ffd6e5"/>
-              <rect x="11" y="15" width="14" height="6" rx="2" fill="#ff94b8"/>
-              <circle cx="11" cy="6" r="1.5" fill="#ffe082"/>
-              <circle cx="25" cy="6" r="1.5" fill="#ffe082"/>
-            </svg>
-          </div>`;
-      }
-
-      // Tema Minimalista: Sedán eléctrico blanco/negro vista superior
-      const rot = isWalking ? 0 : userHeading;
-      return `
-        <div style="width:40px;height:40px;display:grid;place-items:center;transform:rotate(${rot}deg);transition:transform 0.25s ease;">
-          <svg width="34" height="34" viewBox="0 0 36 36">
-            <ellipse cx="18" cy="19" rx="10" ry="14" fill="rgba(0,0,0,0.18)"/>
-            <rect x="9" y="4" width="18" height="28" rx="7" fill="#ffffff" stroke="#111111" stroke-width="2.2"/>
-            <path d="M11 11 Q18 8 25 11 L24 15 L12 15 Z" fill="#1a1a1a"/>
-            <path d="M12 22 L24 22 L23 26 Q18 28 13 26 Z" fill="#1a1a1a"/>
-            <rect x="12" y="15" width="12" height="7" rx="1.5" fill="#f0f0f0"/>
-          </svg>
-        </div>`;
-    }
-
-    const userMarker = L.marker(userCoords, {
-      icon: L.divIcon({ className: '', html: getUserAvatarHTML(), iconSize: [44, 44], iconAnchor: [22, 22] }),
-      zIndexOffset: 1000
-    }).addTo(map);
-
-    function refreshUserMarker() {
-      userMarker.setLatLng(userCoords);
-      userMarker.setIcon(L.divIcon({ className: '', html: getUserAvatarHTML(), iconSize: [44, 44], iconAnchor: [22, 22] }));
-    }
-
-    function getPinHTML(rep) {
-      const theme = THEMES[currentThemeIdx];
-      const symbolMap = {
-        'Lluvia fuerte / Chubasco': '🌧',
-        'Viento / Rachas de Norte': '💨',
-        'Calle inundada / Encharcamiento': '🌊',
-        'Tráfico pesado / Embotellamiento': '🚦',
-        'Choque / Accidente vial': '💥',
-        'Calle cerrada / Obra / Cable caído': '🚧'
-      };
-      const iconChar = symbolMap[rep.subtipo] || '⚠️';
-
-      if (theme === 'arcade') {
-        return `<div style="background:#0b0e17;border:2px solid #00ff66;color:#00ff66;width:34px;height:34px;display:grid;place-items:center;font-size:14px;box-shadow:0 3px 0 #005522;position:relative;">
-          ${iconChar}
-          <span style="position:absolute;bottom:-6px;right:-6px;background:#00ff66;color:#0b0e17;font-size:8px;padding:1px 3px;font-weight:800;">${rep.confirmaciones}</span>
-        </div>`;
-      }
-      if (theme === 'pastel') {
-        return `<div style="background:#fff9fb;border:2.5px solid #f06292;color:#4a3541;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 4px 10px rgba(240,98,146,0.28);position:relative;">
-          ${iconChar}
-          <span style="position:absolute;bottom:-3px;right:-3px;background:#f06292;color:#fff;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span>
-        </div>`;
-      }
-      // Minimalista
-      return `<div style="background:#000000;border:2px solid #ffffff;color:#ffffff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 4px 12px rgba(0,0,0,0.28);position:relative;">
-        ${iconChar}
-        <span style="position:absolute;bottom:-3px;right:-3px;background:#ffffff;color:#000000;border:1.5px solid #000;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span>
-      </div>`;
-    }
-
-    function renderReportsOnMap() {
-      reportMarkersLayer.clearLayers();
-      activeReports.forEach(rep => {
-        if (rep.oculto || rep.votos_despejado >= 3) return;
-        const m = L.marker([rep.lat, rep.lng], {
-          icon: L.divIcon({ className: '', html: getPinHTML(rep), iconSize: [36, 36], iconAnchor: [18, 18] })
-        });
-        m.on('click', () => openPinDetail(rep));
-        m.addTo(reportMarkersLayer);
-      });
-    }
-
-    // =========================================================
-    // 4. MOTOR ATMOSFÉRICO TEMPORAL (4 SEGUNDOS ESTILO ZOOM EARTH)
-    // =========================================================
-    const fxCanvas = document.getElementById('fxCanvas');
-    const ctx = fxCanvas.getContext('2d');
-    let fxAnimId = null;
-    let fxTimeout = null;
-    let fxParticles = [];
-
-    function resizeCanvas() {
-      fxCanvas.width = window.innerWidth;
-      fxCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    function triggerAlertBurst(fxType) {
-      if (fxAnimId) cancelAnimationFrame(fxAnimId);
-      if (fxTimeout) clearTimeout(fxTimeout);
-
-      const theme = THEMES[currentThemeIdx];
-      fxParticles = [];
-      const count = fxType === 'wind' ? 45 : 75;
-
-      for (let i = 0; i < count; i++) {
-        fxParticles.push({
-          x: Math.random() * fxCanvas.width,
-          y: Math.random() * fxCanvas.height,
-          vx: fxType === 'wind' ? (7 + Math.random() * 8) : (fxType === 'rain_storm' ? -2.5 : (Math.random() - 0.5) * 1.6),
-          vy: fxType === 'rain_storm' ? (11 + Math.random() * 7) : (fxType === 'fire' || fxType === 'heat' ? -(1.5 + Math.random() * 2.5) : (0.6 + Math.random() * 1.4)),
-          size: 2 + Math.random() * 4,
-          alpha: 0.35 + Math.random() * 0.55
-        });
-      }
-
-      fxCanvas.classList.add('active');
-      document.getElementById('alertEdgeFlash').classList.add('active');
-
-      let tick = 0;
-      function drawFx() {
-        tick++;
-        ctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-
-        const palette = {
-          minimal: { rain: 'rgba(30,60,110,0.45)', wind: 'rgba(20,20,20,0.32)', fire: 'rgba(225,25,0,0.5)', gas: 'rgba(130,80,200,0.28)', ash: 'rgba(70,70,70,0.4)', heat: 'rgba(235,110,0,0.32)', quake: '#111111' },
-          arcade: { rain: '#00e5ff', wind: '#00ff66', fire: '#ff2a55', gas: '#d500f9', ash: '#b0bec5', heat: '#ff9100', quake: '#00ff66' },
-          pastel: { rain: 'rgba(100,181,246,0.55)', wind: 'rgba(240,98,146,0.4)', fire: 'rgba(255,112,67,0.5)', gas: 'rgba(186,104,200,0.38)', ash: 'rgba(144,164,174,0.45)', heat: 'rgba(255,167,38,0.42)', quake: '#f06292' }
-        }[theme];
-
-        const colorKey = fxType === 'rain_storm' ? 'rain' : fxType;
-        ctx.strokeStyle = palette[colorKey] || palette.wind;
-        ctx.fillStyle = palette[colorKey] || palette.wind;
-
-        if (fxType === 'quake') {
-          ctx.lineWidth = theme === 'arcade' ? 3 : 2;
-          ctx.beginPath();
-          const baseY = fxCanvas.height * 0.5;
-          for (let x = 0; x < fxCanvas.width; x += 8) {
-            const amp = Math.sin((x + tick * 14) * 0.04) * 28 * Math.sin(tick * 0.15);
-            if (x === 0) ctx.moveTo(x, baseY + amp);
-            else ctx.lineTo(x, baseY + amp);
-          }
-          ctx.stroke();
-        } else {
-          fxParticles.forEach(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            if (p.x > fxCanvas.width) p.x = 0;
-            if (p.x < 0) p.x = fxCanvas.width;
-            if (p.y > fxCanvas.height) p.y = 0;
-            if (p.y < 0) p.y = fxCanvas.height;
-
-            if (theme === 'arcade') {
-              const s = Math.round(p.size * 1.5);
-              ctx.fillRect(Math.round(p.x), Math.round(p.y), fxType === 'wind' ? s * 4 : s, fxType === 'rain_storm' ? s * 3 : s);
-            } else if (fxType === 'wind') {
-              ctx.lineWidth = 1.6;
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(p.x - 36, p.y);
-              ctx.stroke();
-            } else if (fxType === 'rain_storm') {
-              ctx.lineWidth = 1.5;
-              ctx.beginPath();
-              ctx.moveTo(p.x, p.y);
-              ctx.lineTo(p.x - 4, p.y + 16);
-              ctx.stroke();
-            } else {
-              ctx.beginPath();
-              ctx.arc(p.x, p.y, fxType === 'gas' ? p.size * 5 : p.size, 0, Math.PI * 2);
-              ctx.fill();
-            }
-          });
-        }
-        fxAnimId = requestAnimationFrame(drawFx);
-      }
-      drawFx();
-
-      // Se detiene automáticamente a los 4 segundos para no estorbar la conducción
-      fxTimeout = setTimeout(() => {
-        fxCanvas.classList.remove('active');
-        document.getElementById('alertEdgeFlash').classList.remove('active');
-        setTimeout(() => { if (fxAnimId) cancelAnimationFrame(fxAnimId); }, 650);
-      }, 4000);
-    }
-
-    // =========================================================
-    // 5. CLIMA REAL OPEN-METEO & TRAZADO OSRM
-    // =========================================================
-    async function fetchRealWeather() {
-      try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${userCoords[0]}&longitude=${userCoords[1]}&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability,cape&forecast_days=1&timezone=auto`;
-        const res = await fetch(url);
-        const data = await res.json();
-        const c = data.current;
-        const prob = data.hourly?.precipitation_probability?.[0] ?? 0;
-        const cape = data.hourly?.cape?.[0] ?? 0;
-        const stormText = cape > 1000 ? '⚡ Inestabilidad eléctrica' : '✓ Sin tormenta severa';
-
-        document.getElementById('topWeatherLine').textContent =
-          `${Math.round(c.temperature_2m)}°C • Viento ${Math.round(c.wind_speed_10m)} km/h (rachas ${Math.round(c.wind_gusts_10m)}) • Lluvia ${prob}%`;
-        document.getElementById('weatherDetailBox').innerHTML = `
-          Temp: <strong>${Math.round(c.temperature_2m)}°C</strong> (ST ${Math.round(c.apparent_temperature)}°C)<br>
-          Viento: <strong>${Math.round(c.wind_speed_10m)} km/h</strong> • Rachas <strong>${Math.round(c.wind_gusts_10m)} km/h</strong><br>
-          Prob. lluvia: <strong>${prob}%</strong> • ${stormText}
-        `;
-      } catch (e) {
-        document.getElementById('topWeatherLine').textContent = 'Clima local activo • Zona Conurbada';
-      }
-    }
-
-    const PRESET_DESTS = {
-      altamira: [22.4167, -97.9150],
-      centro: [22.2160, -97.8575],
-      miramar: [22.2755, -97.8012]
-    };
-    let currentRouteCoords = [];
-
-    async function drawRealRoute(destLatLng) {
-      try {
-        const url = `https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${destLatLng[1]},${destLatLng[0]}?overview=full&geometries=geojson`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.routes && data.routes.length > 0) {
-          const r = data.routes[0];
-          currentRouteCoords = r.geometry.coordinates.map(c => [c[1], c[0]]);
-          if (routeLayer) map.removeLayer(routeLayer);
-          const color = THEMES[currentThemeIdx] === 'arcade' ? '#00ff66' : (THEMES[currentThemeIdx] === 'pastel' ? '#f06292' : '#000000');
-          routeLayer = L.polyline(currentRouteCoords, { color, weight: 5, opacity: 0.85 }).addTo(map);
-          map.fitBounds(routeLayer.getBounds(), { padding: [70, 140] });
-          const km = (r.distance / 1000).toFixed(1);
-          const min = Math.round(r.duration / 60);
-          document.getElementById('routeStatsLabel').textContent = `${km} km • ${min} min reales`;
-        }
-      } catch (e) {
-        showToast('No se pudo trazar la ruta en este momento');
-      }
-    }
-
-    // =========================================================
-    // 6. SINCRONIZACIÓN REALTIME CON SUPABASE
-    // =========================================================
-    async function loadInitialData() {
-      const pill = document.getElementById('dbStatusPill');
-      try {
-        // 1. Cargar reportes activos
-        const { data: reps, error: errRep } = await sb
-          .from('reportes')
-          .select('*')
-          .eq('oculto', false)
-          .lt('votos_despejado', 3)
-          .order('creado_en', { ascending: false });
-
-        if (!errRep && reps) {
-          activeReports = reps;
-          renderReportsOnMap();
-        }
-
-        // 2. Cargar alerta global activa más reciente
-        const { data: alerts } = await sb
-          .from('alertas_globales')
-          .select('*')
-          .eq('activa', true)
-          .order('creado_en', { ascending: false })
-          .limit(1);
-
-        if (alerts && alerts.length > 0) {
-          applyGlobalAlertUI(alerts[0], false);
-        }
-
-        // 3. Cargar solicitudes de auxilio vial
-        await loadAuxilioList();
-
-        pill.textContent = 'EN VIVO';
-        pill.classList.remove('offline');
-      } catch (e) {
-        pill.textContent = 'LOCAL';
-        pill.classList.add('offline');
-      }
-    }
-
-    function subscribeRealtime() {
-      sb.channel('climaruta-live')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'reportes' }, payload => {
-          if (payload.eventType === 'INSERT') {
-            if (!payload.new.oculto && payload.new.votos_despejado < 3) {
-              activeReports.unshift(payload.new);
-              renderReportsOnMap();
-              showToast(`📍 Nuevo reporte: ${payload.new.subtipo}`);
-            }
-          } else if (payload.eventType === 'UPDATE') {
-            const idx = activeReports.findIndex(r => r.id === payload.new.id);
-            if (payload.new.oculto || payload.new.votos_despejado >= 3) {
-              if (idx !== -1) activeReports.splice(idx, 1);
-              showToast('✓ Reporte despejado por la comunidad (3/3)');
-            } else if (idx !== -1) {
-              activeReports[idx] = payload.new;
-            }
-            renderReportsOnMap();
-          }
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas_globales' }, payload => {
-          if (payload.new && payload.new.activa) {
-            applyGlobalAlertUI(payload.new, true);
-          } else {
-            hideGlobalAlertUI();
-          }
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'auxilio_vial' }, () => {
-          loadAuxilioList();
-        })
-        .subscribe();
-    }
-
-    function applyGlobalAlertUI(alertRow, playEffect) {
-      const banner = document.getElementById('globalAlertBanner');
-      const cfg = GLOBAL_ALERTS_CATALOG[alertRow.tipo] || { titulo: alertRow.titulo, fx: 'wind', tips: alertRow.precauciones || [] };
-      document.getElementById('alertBannerTitle').textContent = `🚨 ${alertRow.titulo} • ${alertRow.zona}`;
-      document.getElementById('alertZoneText').textContent = `Zona afectada: ${alertRow.zona}`;
-      const ul = document.getElementById('alertTipsList');
-      ul.innerHTML = '';
-      (alertRow.precauciones || cfg.tips).forEach(t => {
-        const li = document.createElement('li');
-        li.textContent = t;
-        ul.appendChild(li);
-      });
-      banner.classList.add('visible');
-      document.body.classList.add('has-alert');
-      banner.dataset.fx = cfg.fx;
-      if (playEffect) triggerAlertBurst(cfg.fx);
-    }
-
-    function hideGlobalAlertUI() {
-      document.getElementById('globalAlertBanner').classList.remove('visible');
-      document.body.classList.remove('has-alert');
-    }
-
-    // =========================================================
-    // 7. ACCIONES DE USUARIO Y MODERACIÓN
-    // =========================================================
-    function openPinDetail(rep) {
-      selectedReportId = rep.id;
-      document.getElementById('pinModalTitle').textContent = rep.subtipo;
-      document.getElementById('pinModalMeta').textContent = `Ubicación: ${rep.colonia || 'Zona Conurbada'} • Reportado por comunidad`;
-      document.getElementById('pinConfirmCount').textContent = rep.confirmaciones;
-      document.getElementById('pinClearCount').textContent = rep.votos_despejado;
-      document.getElementById('adminDeletePinBtn').style.display = isAdmin ? 'block' : 'none';
-      document.getElementById('pinModal').classList.add('open');
-    }
-
-    document.getElementById('submitReportBtn').addEventListener('click', async () => {
-      // Verificar si dispositivo tiene shadowban
-      const { data: mod } = await sb.from('dispositivos_moderacion').select('shadowban').eq('device_id', deviceId).maybeSingle();
-      const isShadowbanned = mod?.shadowban === true;
-
-      const colonia = document.getElementById('reportColoniaInput').value.trim() || 'Zona Conurbada';
-      const newRep = {
-        tipo: pickedReportType.tipo,
-        subtipo: pickedReportType.subtipo,
-        lat: userCoords[0] + (Math.random() - 0.5) * 0.002,
-        lng: userCoords[1] + (Math.random() - 0.5) * 0.002,
-        colonia,
-        device_id: deviceId,
-        oculto: isShadowbanned
-      };
-
-      const { error } = await sb.from('reportes').insert([newRep]);
-      document.getElementById('reportModal').classList.remove('open');
-      document.getElementById('reportColoniaInput').value = '';
-      if (!error) showToast('✓ Reporte publicado en tiempo real');
-      else showToast('Error al publicar reporte');
-    });
-
-    document.getElementById('confirmPinBtn').addEventListener('click', async () => {
-      const rep = activeReports.find(r => r.id === selectedReportId);
-      if (!rep) return;
-      await sb.from('reportes').update({ confirmaciones: rep.confirmaciones + 1 }).eq('id', rep.id);
-      document.getElementById('pinModal').classList.remove('open');
-      showToast('👍 Reporte confirmado');
-    });
-
-    document.getElementById('clearPinBtn').addEventListener('click', async () => {
-      const rep = activeReports.find(r => r.id === selectedReportId);
-      if (!rep) return;
-      const nextVotes = rep.votos_despejado + 1;
-      await sb.from('reportes').update({
-        votos_despejado: nextVotes,
-        oculto: nextVotes >= 3
-      }).eq('id', rep.id);
-      document.getElementById('pinModal').classList.remove('open');
-      showToast(nextVotes >= 3 ? '✓ Despejado (3/3) y retirado del mapa' : `✓ Voto registrado (${nextVotes}/3)`);
-    });
-
-    document.getElementById('adminDeletePinBtn').addEventListener('click', async () => {
-      const rep = activeReports.find(r => r.id === selectedReportId);
-      if (!rep) return;
-      await sb.from('reportes').update({ oculto: true }).eq('id', rep.id);
-      await sb.from('dispositivos_moderacion').upsert({ device_id: rep.device_id, shadowban: true, reportes_falsos: 1 });
-      document.getElementById('pinModal').classList.remove('open');
-      showToast('🛡️ Reporte eliminado y dispositivo silenciado');
-    });
-
-    // Auxilio Vial en Vivo
-    async function loadAuxilioList() {
-      const { data } = await sb.from('auxilio_vial').select('*').neq('estado', 'completado').order('creado_en', { ascending: false }).limit(5);
-      const box = document.getElementById('auxilioListContainer');
-      if (!data || data.length === 0) {
-        box.innerHTML = '<div style="font-size:11px;color:var(--text-secondary);" class="arcade-xs">No hay solicitudes activas en este momento.</div>';
-        return;
-      }
-      box.innerHTML = data.map(item => `
-        <div class="list-item">
-          <div>
-            <strong style="font-size:11.5px;" class="arcade-xs">${item.falla}</strong>
-            <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">
-              ${item.estado === 'aceptado'
-                ? `✅ En camino: ${item.voluntario_nombre} • ${item.voluntario_vehiculo} (${item.voluntario_placas})`
-                : '⏳ Esperando voluntario cercano...'}
-            </div>
-          </div>
-          ${item.estado === 'pendiente'
-            ? `<button class="chip-btn active arcade-xs" onclick="acceptAuxilio(${item.id})">Acudir</button>`
-            : `<button class="chip-btn arcade-xs" onclick="finishAuxilio(${item.id})">Cerrar</button>`}
-        </div>
-      `).join('');
-    }
-
-    document.getElementById('requestAuxilioBtn').addEventListener('click', async () => {
-      const falla = document.getElementById('sosFallaSelect').value;
-      await sb.from('auxilio_vial').insert([{
-        falla,
-        lat: userCoords[0],
-        lng: userCoords[1],
-        solicitante_device: deviceId
-      }]);
-      showToast('🆘 Solicitud enviada a voluntarios cercanos');
-      loadAuxilioList();
-    });
-
-    window.acceptAuxilio = async (id) => {
-      const nombre = prompt('Tu nombre (visible por seguridad):', 'Carlos M.') || 'Voluntario Local';
-      const vehiculo = prompt('Tu vehículo y color:', 'Nissan Versa Blanco') || 'Vehículo particular';
-      const placas = prompt('Terminación o placas:', 'XTM-482') || 'Verificado';
-      await sb.from('auxilio_vial').update({
-        estado: 'aceptado',
-        voluntario_nombre: nombre,
-        voluntario_vehiculo: vehiculo,
-        voluntario_placas: placas
-      }).eq('id', id);
-      showToast('✅ Datos enviados al conductor');
-    };
-
-    window.finishAuxilio = async (id) => {
-      await sb.from('auxilio_vial').update({ estado: 'completado' }).eq('id', id);
-      showToast('✓ Auxilio finalizado');
-    };
-
-    // Panel Admin Alertas Globales
-    document.getElementById('publishGlobalAlertBtn').addEventListener('click', async () => {
-      const cfg = GLOBAL_ALERTS_CATALOG[pickedAlertKey];
-      const zona = document.getElementById('alertZoneInput').value.trim() || 'Toda la Zona Conurbada';
-      // Desactivar anteriores
-      await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
-      // Insertar nueva alerta global
-      await sb.from('alertas_globales').insert([{
-        tipo: pickedAlertKey,
-        titulo: cfg.titulo,
-        zona,
-        precauciones: cfg.tips,
-        activa: true
-      }]);
-      document.getElementById('adminModal').classList.remove('open');
-      showToast('🚨 Alerta global emitida a todos');
-    });
-
-    document.getElementById('clearGlobalAlertBtn').addEventListener('click', async () => {
-      await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
-      document.getElementById('adminModal').classList.remove('open');
-      showToast('✓ Alerta global desactivada');
-    });
-
-    // =========================================================
-    // 8. CONTROLES UI, TEMAS, BRÚJULA Y SIMULACIÓN
-    // =========================================================
-    document.getElementById('themeToggleBtn').addEventListener('click', () => {
-      currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
-      const t = THEMES[currentThemeIdx];
-      document.body.className = `theme-${t}` + (document.getElementById('globalAlertBanner').classList.contains('visible') ? ' has-alert' : '');
-      const labels = { minimal: '◻ Minimalista', arcade: '👾 Arcade', pastel: '🌸 Pastel' };
-      document.getElementById('themeToggleBtn').textContent = labels[t];
-      refreshUserMarker();
-      renderReportsOnMap();
-      if (routeLayer) {
-        const color = t === 'arcade' ? '#00ff66' : (t === 'pastel' ? '#f06292' : '#000000');
-        routeLayer.setStyle({ color });
-      }
-    });
-
-    document.getElementById('adminToggleBtn').addEventListener('click', () => {
-      if (!isAdmin) {
-        const pin = prompt('Ingresa el PIN de Administrador (por defecto: 2026):');
-        if (pin !== '2026') {
-          showToast('PIN incorrecto');
-          return;
-        }
-        isAdmin = true;
-        document.getElementById('adminToggleBtn').classList.add('active');
-        document.getElementById('adminPanelFab').style.display = 'flex';
-        showToast('🛡️ Modo Administrador activo');
-      } else {
-        isAdmin = false;
-        document.getElementById('adminToggleBtn').classList.remove('active');
-        document.getElementById('adminPanelFab').style.display = 'none';
-        showToast('Modo Administrador desactivado');
-      }
-    });
-
-    document.getElementById('alertExpandBtn').addEventListener('click', () => {
-      const det = document.getElementById('alertBannerDetails');
-      const isOpen = det.classList.toggle('open');
-      document.getElementById('alertExpandBtn').textContent = isOpen ? 'Ocultar ▲' : 'Precauciones ▼';
-      if (isOpen) {
-        const fx = document.getElementById('globalAlertBanner').dataset.fx || 'wind';
-        triggerAlertBurst(fx);
-      }
-    });
-
-    document.getElementById('compassBtn').addEventListener('click', () => {
-      followHeading = !followHeading;
-      document.getElementById('compassBtn').classList.toggle('active', followHeading);
-      showToast(followHeading ? '🧭 Mapa siguiendo tu ruta' : '🧭 Mapa fijo Norte arriba');
-    });
-
-    document.getElementById('simRouteBtn').addEventListener('click', () => {
-      const btn = document.getElementById('simRouteBtn');
-      if (simInterval) {
-        clearInterval(simInterval);
-        simInterval = null;
-        btn.textContent = '▶ Simular ruta';
-        btn.classList.remove('running');
-        refreshUserMarker();
-        return;
-      }
-      if (currentRouteCoords.length < 2) return;
-      let idx = 0;
-      btn.textContent = '⏹ Detener';
-      btn.classList.add('running');
-      simInterval = setInterval(() => {
-        if (idx >= currentRouteCoords.length - 1) idx = 0;
-        const p1 = currentRouteCoords[idx];
-        const p2 = currentRouteCoords[idx + 1];
-        userCoords = p2;
-        userHeading = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180 / Math.PI;
-        refreshUserMarker();
-        if (followHeading) map.panTo(userCoords);
-        idx++;
-      }, 350);
-    });
-
-    // Selección de chips y modales
-    document.querySelectorAll('#reportTypeGrid .opt-card').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#reportTypeGrid .opt-card').forEach(b => b.classList.remove('picked'));
-        btn.classList.add('picked');
-        pickedReportType = { tipo: btn.dataset.tipo, subtipo: btn.dataset.subtipo };
-      });
-    });
-
-    document.querySelectorAll('#globalAlertGrid .opt-card').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#globalAlertGrid .opt-card').forEach(b => b.classList.remove('picked'));
-        btn.classList.add('picked');
-        pickedAlertKey = btn.dataset.alert;
-      });
-    });
-
-    document.querySelectorAll('.route-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.route-chip').forEach(c => c.classList.remove('selected'));
-        chip.classList.add('selected');
-        drawRealRoute(PRESET_DESTS[chip.dataset.route]);
-      });
-    });
-
-    document.getElementById('openReportBtn').addEventListener('click', () => document.getElementById('reportModal').classList.add('open'));
-    document.getElementById('openSosBtn').addEventListener('click', () => { loadAuxilioList(); document.getElementById('sosModal').classList.add('open'); });
-    document.getElementById('adminPanelFab').addEventListener('click', () => document.getElementById('adminModal').classList.add('open'));
-    document.getElementById('refreshWeatherBtn').addEventListener('click', fetchRealWeather);
-    document.getElementById('locateBtn').addEventListener('click', () => map.setView(userCoords, 15));
-
-    document.querySelectorAll('.close-btn').forEach(btn => {
-      btn.addEventListener('click', () => document.getElementById(btn.dataset.close).classList.remove('open'));
-    });
-
-    // GPS Real del Dispositivo (Velocidad y Rumbo)
-    if ('geolocation' in navigator) {
-      navigator.geolocation.watchPosition(pos => {
-        if (!simInterval) {
-          userCoords = [pos.coords.latitude, pos.coords.longitude];
-          if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
-          userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
-          refreshUserMarker();
-          if (followHeading) map.panTo(userCoords);
-        }
-      }, () => {}, { enableHighAccuracy: true });
-    }
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2800);
-    }
-
-    // Arranque Inicial
-    fetchRealWeather();
-    drawRealRoute(PRESET_DESTS.altamira);
-    loadInitialData();
-    subscribeRealtime();
-  </script>
-</body>
-</html>
+              <rect x="1" y="9" width="14"
