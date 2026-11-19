@@ -3,11 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ClimaRuta Sur — Tampico • Madero • Altamira</title>
-  
-  <!-- Leaflet CSS -->
+  <title>ClimaRuta Sur — EIDOS LABs</title>
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
@@ -31,7 +29,6 @@
       --border-width: 1px;
     }
 
-    /* TEMA ARCADE RETRO */
     body.theme-arcade {
       --bg-card: #0b0e17;
       --bg-secondary: #151b2b;
@@ -53,7 +50,6 @@
     body.theme-arcade .arcade-sm { font-size: 9px !important; line-height: 1.5 !important; }
     body.theme-arcade .arcade-xs { font-size: 8px !important; line-height: 1.4 !important; }
 
-    /* TEMA PASTEL */
     body.theme-pastel {
       --bg-card: #fff9fb;
       --bg-secondary: #ffeef4;
@@ -80,14 +76,12 @@
     body.theme-arcade #map .leaflet-tile-pane { filter: invert(0.92) hue-rotate(155deg) saturate(2.2) contrast(1.2); }
     body.theme-pastel #map .leaflet-tile-pane { filter: sepia(0.15) hue-rotate(305deg) saturate(1.15) brightness(1.04); }
 
-    /* Canvas Atmosférico Estilo Zoom Earth */
     #fxCanvas {
       position: fixed; inset: 0; pointer-events: none; z-index: 900;
       opacity: 0; transition: opacity 0.6s ease;
     }
     #fxCanvas.active { opacity: 1; }
 
-    /* Borde de alerta temporal */
     #alertEdgeFlash {
       position: fixed; inset: 0; pointer-events: none; z-index: 899;
       box-shadow: inset 0 0 0 0 rgba(225, 25, 0, 0);
@@ -97,7 +91,6 @@
       box-shadow: inset 0 0 28px 6px rgba(225, 25, 0, 0.65);
     }
 
-    /* Barra Superior */
     .top-bar {
       position: fixed; top: 12px; left: 12px; right: 12px; z-index: 500;
       background: var(--bg-card); border: var(--border-width) solid var(--border-color);
@@ -129,7 +122,6 @@
     }
     .chip-btn.active { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
-    /* Banner Alerta Global */
     .global-alert-banner {
       position: fixed; top: 76px; left: 12px; right: 12px; z-index: 510;
       background: var(--danger-bg); color: #ffffff;
@@ -152,7 +144,6 @@
     .alert-details.open { display: block; }
     .alert-details ul { margin-left: 16px; margin-top: 4px; }
 
-    /* Tarjeta Clima Flotante */
     .weather-card {
       position: fixed; top: 82px; left: 12px; z-index: 450;
       background: var(--bg-card); border: var(--border-width) solid var(--border-color);
@@ -164,7 +155,6 @@
     .weather-row { font-size: 11px; color: var(--text-secondary); line-height: 1.45; }
     .weather-row strong { color: var(--text-primary); }
 
-    /* Controles Derecha Mapa */
     .map-controls {
       position: fixed; top: 82px; right: 12px; z-index: 450;
       display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
@@ -186,9 +176,7 @@
       color: #ffffff;
       border-color: var(--danger-bg);
     }
-    .ctrl-pill.admin-alert-btn.visible {
-      display: flex;
-    }
+    .ctrl-pill.admin-alert-btn.visible { display: flex; }
     .ctrl-icon {
       width: 38px; height: 38px; border-radius: 50%;
       background: var(--bg-card); color: var(--text-primary);
@@ -198,7 +186,6 @@
     }
     .ctrl-icon.active { background: var(--accent-bg); color: var(--accent-text); }
 
-    /* Botones Flotantes Inferiores */
     .bottom-fab-row {
       position: fixed; bottom: 132px; left: 12px; right: 12px; z-index: 460;
       display: flex; justify-content: space-between; align-items: center; pointer-events: none;
@@ -213,7 +200,6 @@
     .fab-sos { background: var(--bg-card); color: var(--text-primary); }
     .fab-report { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
-    /* Panel Inferior de Rutas */
     .bottom-sheet {
       position: fixed; bottom: 0; left: 0; right: 0; z-index: 480;
       background: var(--bg-card); border-top: var(--border-width) solid var(--border-color);
@@ -240,7 +226,6 @@
     }
     .route-chip.selected { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
-    /* Modales */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 800;
       display: none; align-items: flex-end; justify-content: center; padding: 12px;
@@ -291,7 +276,6 @@
       display: flex; justify-content: space-between; align-items: center; gap: 8px;
     }
 
-    /* Toast */
     .toast {
       position: fixed; top: 84px; left: 50%; transform: translateX(-50%); z-index: 950;
       background: var(--accent-bg); color: var(--accent-text);
@@ -301,33 +285,29 @@
       white-space: nowrap;
     }
     .toast.show { opacity: 1; }
-
     .leaflet-control-attribution { font-size: 9px !important; opacity: 0.7; }
   </style>
 </head>
 <body class="theme-minimal">
 
-  <!-- Canvas para efectos atmosféricos temporales (4s) -->
   <canvas id="fxCanvas"></canvas>
   <div id="alertEdgeFlash"></div>
   <div id="toast" class="toast"></div>
 
-  <!-- Barra Superior -->
   <header class="top-bar">
     <div class="brand">
-      <div class="logo-badge">CR</div>
+      <div class="logo-badge">EL</div>
       <div class="brand-text">
         <h1 class="arcade-sm">ClimaRuta Sur <span id="dbStatusPill" class="live-pill">CONECTANDO</span></h1>
-        <div id="topWeatherLine" class="brand-sub arcade-xs">Cargando clima real de Tampico...</div>
+        <div id="topWeatherLine" class="brand-sub arcade-xs">EIDOS LABs • Tampico, Madero y Altamira</div>
       </div>
     </div>
     <div class="top-actions">
-      <button id="themeToggleBtn" class="chip-btn arcade-xs" title="Cambiar apariencia">◻ Minimalista</button>
+      <button id="themeToggleBtn" class="chip-btn arcade-xs">◻ Minimalista</button>
       <button id="adminToggleBtn" class="chip-btn arcade-xs">● Admin</button>
     </div>
   </header>
 
-  <!-- Banner de Alerta Global en Vivo -->
   <section id="globalAlertBanner" class="global-alert-banner">
     <div class="alert-header-row">
       <div id="alertBannerTitle" class="alert-title arcade-xs">🚨 ALERTA GENERAL</div>
@@ -339,18 +319,16 @@
     </div>
   </section>
 
-  <!-- Tarjeta Clima Open-Meteo -->
   <aside class="weather-card">
     <div class="weather-card-head arcade-xs">
       <span>📡 Open-Meteo Oficial</span>
       <button id="refreshWeatherBtn" style="background:none;border:none;color:inherit;cursor:pointer;font-weight:800;">↻</button>
     </div>
     <div id="weatherDetailBox" class="weather-row arcade-xs">
-      Consultando estación Tampico-Altamira...
+      Clima en vivo • Zona Conurbada
     </div>
   </aside>
 
-  <!-- Controles Derechos del Mapa -->
   <div class="map-controls">
     <button id="adminPanelFab" class="ctrl-pill admin-alert-btn arcade-xs">🚨 Emitir Alerta</button>
     <button id="simRouteBtn" class="ctrl-pill arcade-xs">▶ Simular ruta</button>
@@ -358,7 +336,6 @@
     <button id="locateBtn" class="ctrl-icon" title="Mi ubicación GPS">◎</button>
   </div>
 
-  <!-- Botones Flotantes Inferiores -->
   <div class="bottom-fab-row">
     <button id="openSosBtn" class="fab-btn fab-sos arcade-xs">
       <span style="background:#e11900;color:#fff;padding:2px 5px;border-radius:4px;font-size:9px;">SOS</span> Auxilio / 911
@@ -366,10 +343,8 @@
     <button id="openReportBtn" class="fab-btn fab-report arcade-xs">+ REPORTAR</button>
   </div>
 
-  <!-- Mapa Principal -->
   <main id="map"></main>
 
-  <!-- Panel Inferior de Rutas -->
   <section class="bottom-sheet">
     <div class="search-box">
       <span>🔍</span>
@@ -377,7 +352,7 @@
       <button id="searchRouteBtn" class="chip-btn active arcade-xs">Ir</button>
     </div>
     <div class="routes-header arcade-xs">
-      <span>Tus Trayectos Guardados (Aviso automático)</span>
+      <span>EIDOS LABs • Trayectos Guardados</span>
       <span id="routeStatsLabel">Trazado real OSRM</span>
     </div>
     <div class="routes-scroll" id="savedRoutesRow">
@@ -387,7 +362,6 @@
     </div>
   </section>
 
-  <!-- MODAL 1: REPORTAR INCIDENTE / CLIMA -->
   <div id="reportModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -408,7 +382,6 @@
     </div>
   </div>
 
-  <!-- MODAL 2: DETALLE DE PIN Y DESPEJE 3/3 -->
   <div id="pinModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -424,7 +397,6 @@
     </div>
   </div>
 
-  <!-- MODAL 3: AUXILIO VIAL Y DIRECTORIO 911 -->
   <div id="sosModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -445,7 +417,6 @@
         </div>
         <a href="tel:8333052624" class="chip-btn arcade-xs" style="text-decoration:none;">Llamar</a>
       </div>
-
       <hr style="border:none;border-top:1px solid var(--border-color);margin:12px 0;" />
       <h3 style="font-size:12px;margin-bottom:6px;" class="arcade-xs">🤝 Auxilio Vial Vecinal en Vivo</h3>
       <p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Si aceptas ayudar o pides apoyo, se muestra nombre, vehículo y placas por seguridad.</p>
@@ -460,7 +431,6 @@
     </div>
   </div>
 
-  <!-- MODAL 4: PANEL ADMINISTRADOR (ALERTAS GENERALES) -->
   <div id="adminModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -486,26 +456,20 @@
     </div>
   </div>
 
-  <!-- Scripts: Leaflet + Supabase JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // =========================================================
-    // 1. CONEXIÓN REAL A SUPABASE CON LLAVE ANON PUBLIC (JWT)
-    // =========================================================
     const SUPABASE_URL = 'https://uxwumwwevynsuocnfkby.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4d3Vtd3dldnluc3VvY25ma2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwOTk3OTIsImV4cCI6MjExMDY3NTc5Mn0.wRuOH1QBTx5VlkaiEiMSJK6APTcsqjjMd2wnrEQB3FI';
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // ID único persistente por dispositivo
     let deviceId = localStorage.getItem('crs_device_id');
     if (!deviceId) {
       deviceId = 'dev_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
       localStorage.setItem('crs_device_id', deviceId);
     }
 
-    // Estado Global
     const THEMES = ['minimal', 'arcade', 'pastel'];
     let currentThemeIdx = 0;
     let isAdmin = sessionStorage.getItem('crs_admin_active') === '1';
@@ -534,91 +498,525 @@
       }
     }
 
-    // Catálogo de 10 Alertas Globales
     const GLOBAL_ALERTS_CATALOG = {
-      huracan: {
-        titulo: 'HURACÁN / TORMENTA TROPICAL',
-        fx: 'rain_storm',
-        tips: ['Resguárdate en un lugar seguro lejos de ventanas.', 'Evita cruzar calles inundadas o pasos a desnivel.', 'Ten a la mano lámpara, batería portátil y documentos.']
-      },
-      norte: {
-        titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES',
-        fx: 'wind',
-        tips: ['Extrema precaución al conducir en Bulevar Costero y puentes.', 'Aléjate de espectaculares, árboles viejos y cables sueltos.', 'Asegura láminas y objetos sueltos en azoteas.']
-      },
-      inundacion: {
-        titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL',
-        fx: 'rain_storm',
-        tips: ['No intentes cruzar corrientes de agua en vehículo.', 'Usa vías altas y respeta cierres de Tránsito.', 'Si el agua sube dentro del auto, abandónalo hacia zona alta.']
-      },
-      granizo: {
-        titulo: 'GRANIZO / TORMENTA ELÉCTRICA',
-        fx: 'rain_storm',
-        tips: ['Oríllate bajo techo seguro si cae granizo intenso.', 'No te resguardes debajo de árboles ni estructuras metálicas.', 'Enciende luces intermitentes si baja la visibilidad.']
-      },
-      calor: {
-        titulo: 'ONDA DE CALOR EXTREMA',
-        fx: 'heat',
-        tips: ['Hidrátate constantemente aunque no tengas sed.', 'Nunca dejes niños ni mascotas dentro de vehículos estacionados.', 'Evita exposición directa al sol entre 11:00 y 16:00 hrs.']
-      },
-      frio: {
-        titulo: 'DESCENSO BRUSCO DE TEMPERATURA',
-        fx: 'wind',
-        tips: ['Abrígate por capas y protege a niños y adultos mayores.', 'Ventila habitaciones si usas calefactores.', 'Precaución por neblina en carreteras hacia Altamira.']
-      },
-      incendio: {
-        titulo: 'INCENDIO DE ALTO RIESGO',
-        fx: 'fire',
-        tips: ['Cede el paso total a Bomberos y Protección Civil.', 'Si hay humo denso, cierra ventanas y usa cubrebocas húmedo.', 'No te acerques a grabar para evitar bloquear accesos.']
-      },
-      gas: {
-        titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA',
-        fx: 'gas',
-        tips: ['Ubica la dirección del viento y aléjate en sentido contrario.', 'Cierra puertas, ventanas y apaga aires acondicionados.', 'No enciendas flamas, cigarros ni interruptores eléctricos.']
-      },
-      ceniza: {
-        titulo: 'CAÍDA DE CENIZA / PARTÍCULAS EN SUSPENSIÓN',
-        fx: 'ash',
-        tips: ['Usa cubrebocas y protege tus ojos al salir.', 'No uses el limpiaparabrisas en seco (raya el cristal).', 'Barre la ceniza en seco; no la arrojes al drenaje.']
-      },
-      sismo: {
-        titulo: 'ACTIVIDAD SÍSMICA DETECTADA',
-        fx: 'quake',
-        tips: ['Mantén la calma y ubícate en zonas de menor riesgo.', 'Aléjate de ventanas, vidrios y objetos que puedan caer.', 'Después del movimiento, revisa instalaciones de gas y luz.']
-      }
+      huracan: { titulo: 'HURACÁN / TORMENTA TROPICAL', fx: 'rain_storm', tips: ['Resguárdate en un lugar seguro lejos de ventanas.', 'Evita cruzar calles inundadas o pasos a desnivel.', 'Ten a la mano lámpara, batería portátil y documentos.'] },
+      norte: { titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES', fx: 'wind', tips: ['Extrema precaución al conducir en Bulevar Costero y puentes.', 'Aléjate de espectaculares, árboles viejos y cables sueltos.', 'Asegura láminas y objetos sueltos en azoteas.'] },
+      inundacion: { titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL', fx: 'rain_storm', tips: ['No intentes cruzar corrientes de agua en vehículo.', 'Usa vías altas y respeta cierres de Tránsito.', 'Si el agua sube dentro del auto, abandónalo hacia zona alta.'] },
+      granizo: { titulo: 'GRANIZO / TORMENTA ELÉCTRICA', fx: 'rain_storm', tips: ['Oríllate bajo techo seguro si cae granizo intenso.', 'No te resguardes debajo de árboles ni estructuras metálicas.', 'Enciende luces intermitentes si baja la visibilidad.'] },
+      calor: { titulo: 'ONDA DE CALOR EXTREMA', fx: 'heat', tips: ['Hidrátate constantemente aunque no tengas sed.', 'Nunca dejes niños ni mascotas dentro de vehículos estacionados.', 'Evita exposición directa al sol entre 11:00 y 16:00 hrs.'] },
+      frio: { titulo: 'DESCENSO BRUSCO DE TEMPERATURA', fx: 'wind', tips: ['Abrígate por capas y protege a niños y adultos mayores.', 'Ventila habitaciones si usas calefactores.', 'Precaución por neblina en carreteras hacia Altamira.'] },
+      incendio: { titulo: 'INCENDIO DE ALTO RIESGO', fx: 'fire', tips: ['Cede el paso total a Bomberos y Protección Civil.', 'Si hay humo denso, cierra ventanas y usa cubrebocas húmedo.', 'No te acerques a grabar para evitar bloquear accesos.'] },
+      gas: { titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA', fx: 'gas', tips: ['Ubica la dirección del viento y aléjate en sentido contrario.', 'Cierra puertas, ventanas y apaga aires acondicionados.', 'No enciendas flamas, cigarros ni interruptores eléctricos.'] },
+      ceniza: { titulo: 'CAÍDA DE CENIZA / PARTÍCULAS EN SUSPENSIÓN', fx: 'ash', tips: ['Usa cubrebocas y protege tus ojos al salir.', 'No uses el limpiaparabrisas en seco (raya el cristal).', 'Barre la ceniza en seco; no la arrojes al drenaje.'] },
+      sismo: { titulo: 'ACTIVIDAD SÍSMICA DETECTADA', fx: 'quake', tips: ['Mantén la calma y ubícate en zonas de menor riesgo.', 'Aléjate de ventanas, vidrios y objetos que puedan caer.', 'Después del movimiento, revisa instalaciones de gas y luz.'] }
     };
 
-    // =========================================================
-    // 2. INICIALIZACIÓN DEL MAPA
-    // =========================================================
     const map = L.map('map', { zoomControl: false }).setView(userCoords, 13);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19,
-      attribution: 'Esri • Open-Meteo • OSRM'
+      attribution: 'EIDOS LABs • Esri • Open-Meteo • OSRM'
     }).addTo(map);
+    setTimeout(() => map.invalidateSize(), 250);
 
     const reportMarkersLayer = L.layerGroup().addTo(map);
 
-    // =========================================================
-    // 3. GENERADOR DE ICONOS Y AVATARES POR APARIENCIA
-    // =========================================================
     function getUserAvatarHTML() {
       const theme = THEMES[currentThemeIdx];
       const isWalking = userSpeedKmh < 6 && !simInterval;
-
       if (theme === 'arcade') {
         const tilt = Math.max(-14, Math.min(14, Math.sin(userHeading * Math.PI / 180) * 14));
-        return `
-          <div style="width:44px;height:44px;display:grid;place-items:center;transform:rotate(${tilt}deg);transition:transform 0.25s ease;">
-            <svg width="42" height="42" viewBox="0 0 16 16" shape-rendering="crispEdges">
-              <rect x="6" y="1" width="1" height="2" fill="#00ff66"/>
-              <rect x="9" y="1" width="1" height="2" fill="#00ff66"/>
-              <rect x="5" y="2" width="6" height="1" fill="#7ef9ff"/>
-              <rect x="4" y="3" width="1" height="4" fill="#7ef9ff"/>
-              <rect x="11" y="3" width="1" height="4" fill="#7ef9ff"/>
-              <rect x="6" y="3" width="4" height="4" fill="#00ff66"/>
-              <rect x="5" y="4" width="6" height="2" fill="#00ff66"/>
-              <rect x="6" y="4" width="1" height="2" fill="#05080f"/>
-              <rect x="9" y="4" width="1" height="2" fill="#05080f"/>
-              <rect x="2" y="7" width="12" height="2" fill="#b8c7d9"/>
-              <rect x="1" y="9" width="14"
+        return `<div style="width:44px;height:44px;display:grid;place-items:center;transform:rotate(${tilt}deg);transition:transform 0.25s ease;">
+          <svg width="42" height="42" viewBox="0 0 16 16" shape-rendering="crispEdges">
+            <rect x="6" y="1" width="1" height="2" fill="#00ff66"/><rect x="9" y="1" width="1" height="2" fill="#00ff66"/>
+            <rect x="5" y="2" width="6" height="1" fill="#7ef9ff"/><rect x="4" y="3" width="1" height="4" fill="#7ef9ff"/><rect x="11" y="3" width="1" height="4" fill="#7ef9ff"/>
+            <rect x="6" y="3" width="4" height="4" fill="#00ff66"/><rect x="5" y="4" width="6" height="2" fill="#00ff66"/>
+            <rect x="6" y="4" width="1" height="2" fill="#05080f"/><rect x="9" y="4" width="1" height="2" fill="#05080f"/>
+            <rect x="2" y="7" width="12" height="2" fill="#b8c7d9"/><rect x="1" y="9" width="14" height="2" fill="#5c6f87"/>
+            <rect x="3" y="9" width="2" height="1" fill="#ff2a55"/><rect x="7" y="9" width="2" height="1" fill="#ffe600"/><rect x="11" y="9" width="2" height="1" fill="#00ff66"/>
+          </svg></div>`;
+      }
+      if (theme === 'pastel') {
+        const rot = isWalking ? 0 : userHeading;
+        return `<div style="width:40px;height:40px;display:grid;place-items:center;transform:rotate(${rot}deg);transition:transform 0.25s ease;">
+          <svg width="34" height="34" viewBox="0 0 36 36">
+            <rect x="8" y="4" width="20" height="28" rx="9" fill="#ffffff" stroke="#f06292" stroke-width="2.5"/>
+            <rect x="10" y="9" width="16" height="6" rx="3" fill="#ffd6e5"/><rect x="10" y="21" width="16" height="5" rx="2.5" fill="#ffd6e5"/>
+            <rect x="11" y="15" width="14" height="6" rx="2" fill="#ff94b8"/>
+          </svg></div>`;
+      }
+      const rot = isWalking ? 0 : userHeading;
+      return `<div style="width:40px;height:40px;display:grid;place-items:center;transform:rotate(${rot}deg);transition:transform 0.25s ease;">
+        <svg width="34" height="34" viewBox="0 0 36 36">
+          <ellipse cx="18" cy="19" rx="10" ry="14" fill="rgba(0,0,0,0.18)"/>
+          <rect x="9" y="4" width="18" height="28" rx="7" fill="#ffffff" stroke="#111111" stroke-width="2.2"/>
+          <path d="M11 11 Q18 8 25 11 L24 15 L12 15 Z" fill="#1a1a1a"/>
+          <path d="M12 22 L24 22 L23 26 Q18 28 13 26 Z" fill="#1a1a1a"/>
+          <rect x="12" y="15" width="12" height="7" rx="1.5" fill="#f0f0f0"/>
+        </svg></div>`;
+    }
+
+    const userMarker = L.marker(userCoords, {
+      icon: L.divIcon({ className: '', html: getUserAvatarHTML(), iconSize: [44, 44], iconAnchor: [22, 22] }),
+      zIndexOffset: 1000
+    }).addTo(map);
+
+    function refreshUserMarker() {
+      userMarker.setLatLng(userCoords);
+      userMarker.setIcon(L.divIcon({ className: '', html: getUserAvatarHTML(), iconSize: [44, 44], iconAnchor: [22, 22] }));
+    }
+
+    function getPinHTML(rep) {
+      const theme = THEMES[currentThemeIdx];
+      const symbolMap = {
+        'Lluvia fuerte / Chubasco': '🌧',
+        'Viento / Rachas de Norte': '💨',
+        'Calle inundada / Encharcamiento': '🌊',
+        'Tráfico pesado / Embotellamiento': '🚦',
+        'Choque / Accidente vial': '💥',
+        'Calle cerrada / Obra / Cable caído': '🚧'
+      };
+      const iconChar = symbolMap[rep.subtipo] || '⚠️';
+      if (theme === 'arcade') {
+        return `<div style="background:#0b0e17;border:2px solid #00ff66;color:#00ff66;width:34px;height:34px;display:grid;place-items:center;font-size:14px;box-shadow:0 3px 0 #005522;position:relative;">${iconChar}<span style="position:absolute;bottom:-6px;right:-6px;background:#00ff66;color:#0b0e17;font-size:8px;padding:1px 3px;font-weight:800;">${rep.confirmaciones}</span></div>`;
+      }
+      if (theme === 'pastel') {
+        return `<div style="background:#fff9fb;border:2.5px solid #f06292;color:#4a3541;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 4px 10px rgba(240,98,146,0.28);position:relative;">${iconChar}<span style="position:absolute;bottom:-3px;right:-3px;background:#f06292;color:#fff;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span></div>`;
+      }
+      return `<div style="background:#000000;border:2px solid #ffffff;color:#ffffff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 4px 12px rgba(0,0,0,0.28);position:relative;">${iconChar}<span style="position:absolute;bottom:-3px;right:-3px;background:#ffffff;color:#000000;border:1.5px solid #000;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span></div>`;
+    }
+
+    function renderReportsOnMap() {
+      reportMarkersLayer.clearLayers();
+      activeReports.forEach(rep => {
+        if (rep.oculto || rep.votos_despejado >= 3) return;
+        const m = L.marker([rep.lat, rep.lng], {
+          icon: L.divIcon({ className: '', html: getPinHTML(rep), iconSize: [36, 36], iconAnchor: [18, 18] })
+        });
+        m.on('click', () => openPinDetail(rep));
+        m.addTo(reportMarkersLayer);
+      });
+    }
+
+    const fxCanvas = document.getElementById('fxCanvas');
+    const ctx = fxCanvas.getContext('2d');
+    let fxAnimId = null;
+    let fxTimeout = null;
+    let fxParticles = [];
+
+    function resizeCanvas() {
+      fxCanvas.width = window.innerWidth;
+      fxCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function triggerAlertBurst(fxType) {
+      if (fxAnimId) cancelAnimationFrame(fxAnimId);
+      if (fxTimeout) clearTimeout(fxTimeout);
+      const theme = THEMES[currentThemeIdx];
+      fxParticles = [];
+      const count = fxType === 'wind' ? 45 : 75;
+      for (let i = 0; i < count; i++) {
+        fxParticles.push({
+          x: Math.random() * fxCanvas.width,
+          y: Math.random() * fxCanvas.height,
+          vx: fxType === 'wind' ? (7 + Math.random() * 8) : (fxType === 'rain_storm' ? -2.5 : (Math.random() - 0.5) * 1.6),
+          vy: fxType === 'rain_storm' ? (11 + Math.random() * 7) : (fxType === 'fire' || fxType === 'heat' ? -(1.5 + Math.random() * 2.5) : (0.6 + Math.random() * 1.4)),
+          size: 2 + Math.random() * 4
+        });
+      }
+      fxCanvas.classList.add('active');
+      document.getElementById('alertEdgeFlash').classList.add('active');
+      let tick = 0;
+      function drawFx() {
+        tick++;
+        ctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+        const palette = {
+          minimal: { rain: 'rgba(30,60,110,0.45)', wind: 'rgba(20,20,20,0.32)', fire: 'rgba(225,25,0,0.5)', gas: 'rgba(130,80,200,0.28)', ash: 'rgba(70,70,70,0.4)', heat: 'rgba(235,110,0,0.32)', quake: '#111111' },
+          arcade: { rain: '#00e5ff', wind: '#00ff66', fire: '#ff2a55', gas: '#d500f9', ash: '#b0bec5', heat: '#ff9100', quake: '#00ff66' },
+          pastel: { rain: 'rgba(100,181,246,0.55)', wind: 'rgba(240,98,146,0.4)', fire: 'rgba(255,112,67,0.5)', gas: 'rgba(186,104,200,0.38)', ash: 'rgba(144,164,174,0.45)', heat: 'rgba(255,167,38,0.42)', quake: '#f06292' }
+        }[theme];
+        const colorKey = fxType === 'rain_storm' ? 'rain' : fxType;
+        ctx.strokeStyle = palette[colorKey] || palette.wind;
+        ctx.fillStyle = palette[colorKey] || palette.wind;
+        if (fxType === 'quake') {
+          ctx.lineWidth = theme === 'arcade' ? 3 : 2;
+          ctx.beginPath();
+          const baseY = fxCanvas.height * 0.5;
+          for (let x = 0; x < fxCanvas.width; x += 8) {
+            const amp = Math.sin((x + tick * 14) * 0.04) * 28 * Math.sin(tick * 0.15);
+            if (x === 0) ctx.moveTo(x, baseY + amp); else ctx.lineTo(x, baseY + amp);
+          }
+          ctx.stroke();
+        } else {
+          fxParticles.forEach(p => {
+            p.x += p.vx; p.y += p.vy;
+            if (p.x > fxCanvas.width) p.x = 0; if (p.x < 0) p.x = fxCanvas.width;
+            if (p.y > fxCanvas.height) p.y = 0; if (p.y < 0) p.y = fxCanvas.height;
+            if (theme === 'arcade') {
+              const s = Math.round(p.size * 1.5);
+              ctx.fillRect(Math.round(p.x), Math.round(p.y), fxType === 'wind' ? s * 4 : s, fxType === 'rain_storm' ? s * 3 : s);
+            } else if (fxType === 'wind') {
+              ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 36, p.y); ctx.stroke();
+            } else if (fxType === 'rain_storm') {
+              ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 4, p.y + 16); ctx.stroke();
+            } else {
+              ctx.beginPath(); ctx.arc(p.x, p.y, fxType === 'gas' ? p.size * 5 : p.size, 0, Math.PI * 2); ctx.fill();
+            }
+          });
+        }
+        fxAnimId = requestAnimationFrame(drawFx);
+      }
+      drawFx();
+      fxTimeout = setTimeout(() => {
+        fxCanvas.classList.remove('active');
+        document.getElementById('alertEdgeFlash').classList.remove('active');
+        setTimeout(() => { if (fxAnimId) cancelAnimationFrame(fxAnimId); }, 650);
+      }, 4000);
+    }
+
+    async function fetchRealWeather() {
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${userCoords[0]}&longitude=${userCoords[1]}&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability,cape&forecast_days=1&timezone=auto`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const c = data.current;
+        const prob = data.hourly?.precipitation_probability?.[0] ?? 0;
+        const cape = data.hourly?.cape?.[0] ?? 0;
+        const stormText = cape > 1000 ? '⚡ Inestabilidad eléctrica' : '✓ Sin tormenta severa';
+        document.getElementById('topWeatherLine').textContent = `${Math.round(c.temperature_2m)}°C • Viento ${Math.round(c.wind_speed_10m)} km/h (rachas ${Math.round(c.wind_gusts_10m)}) • Lluvia ${prob}%`;
+        document.getElementById('weatherDetailBox').innerHTML = `Temp: <strong>${Math.round(c.temperature_2m)}°C</strong> (ST ${Math.round(c.apparent_temperature)}°C)<br>Viento: <strong>${Math.round(c.wind_speed_10m)} km/h</strong> • Rachas <strong>${Math.round(c.wind_gusts_10m)} km/h</strong><br>Prob. lluvia: <strong>${prob}%</strong> • ${stormText}`;
+      } catch (e) {
+        document.getElementById('topWeatherLine').textContent = 'EIDOS LABs • Clima local activo';
+      }
+    }
+
+    const PRESET_DESTS = { altamira: [22.4167, -97.9150], centro: [22.2160, -97.8575], miramar: [22.2755, -97.8012] };
+    let currentRouteCoords = [];
+
+    async function drawRealRoute(destLatLng) {
+      try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${destLatLng[1]},${destLatLng[0]}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.routes && data.routes.length > 0) {
+          const r = data.routes[0];
+          currentRouteCoords = r.geometry.coordinates.map(c => [c[1], c[0]]);
+          if (routeLayer) map.removeLayer(routeLayer);
+          const color = THEMES[currentThemeIdx] === 'arcade' ? '#00ff66' : (THEMES[currentThemeIdx] === 'pastel' ? '#f06292' : '#000000');
+          routeLayer = L.polyline(currentRouteCoords, { color, weight: 5, opacity: 0.85 }).addTo(map);
+          map.fitBounds(routeLayer.getBounds(), { padding: [70, 140] });
+          document.getElementById('routeStatsLabel').textContent = `${(r.distance / 1000).toFixed(1)} km • ${Math.round(r.duration / 60)} min reales`;
+        }
+      } catch (e) {}
+    }
+
+    async function loadInitialData() {
+      const pill = document.getElementById('dbStatusPill');
+      if (!sb) {
+        pill.textContent = 'LOCAL';
+        pill.classList.add('offline');
+        return;
+      }
+      try {
+        const { data: reps, error: errRep } = await sb.from('reportes').select('*').eq('oculto', false).lt('votos_despejado', 3).order('creado_en', { ascending: false });
+        if (errRep) throw errRep;
+        activeReports = reps || [];
+        renderReportsOnMap();
+
+        const { data: alerts } = await sb.from('alertas_globales').select('*').eq('activa', true).order('creado_en', { ascending: false }).limit(1);
+        if (alerts && alerts.length > 0) applyGlobalAlertUI(alerts[0], false);
+
+        await loadAuxilioList();
+        pill.textContent = 'EN VIVO';
+        pill.classList.remove('offline');
+      } catch (e) {
+        pill.textContent = 'LOCAL';
+        pill.classList.add('offline');
+      }
+    }
+
+    function subscribeRealtime() {
+      if (!sb) return;
+      sb.channel('climaruta-live')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'reportes' }, payload => {
+          if (payload.eventType === 'INSERT' && !payload.new.oculto && payload.new.votos_despejado < 3) {
+            if (!activeReports.some(r => r.id === payload.new.id)) {
+              activeReports.unshift(payload.new);
+              renderReportsOnMap();
+              showToast(`📍 Nuevo reporte: ${payload.new.subtipo}`);
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            const idx = activeReports.findIndex(r => r.id === payload.new.id);
+            if (payload.new.oculto || payload.new.votos_despejado >= 3) {
+              if (idx !== -1) activeReports.splice(idx, 1);
+              showToast('✓ Reporte despejado (3/3)');
+            } else if (idx !== -1) {
+              activeReports[idx] = payload.new;
+            }
+            renderReportsOnMap();
+          }
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas_globales' }, payload => {
+          if (payload.new && payload.new.activa) applyGlobalAlertUI(payload.new, true);
+          else hideGlobalAlertUI();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'auxilio_vial' }, () => loadAuxilioList())
+        .subscribe();
+    }
+
+    function applyGlobalAlertUI(alertRow, playEffect) {
+      const banner = document.getElementById('globalAlertBanner');
+      const cfg = GLOBAL_ALERTS_CATALOG[alertRow.tipo] || { titulo: alertRow.titulo, fx: 'wind', tips: alertRow.precauciones || [] };
+      document.getElementById('alertBannerTitle').textContent = `🚨 ${alertRow.titulo} • ${alertRow.zona}`;
+      document.getElementById('alertZoneText').textContent = `Zona afectada: ${alertRow.zona}`;
+      const ul = document.getElementById('alertTipsList');
+      ul.innerHTML = '';
+      (alertRow.precauciones || cfg.tips).forEach(t => {
+        const li = document.createElement('li'); li.textContent = t; ul.appendChild(li);
+      });
+      banner.classList.add('visible');
+      document.body.classList.add('has-alert');
+      banner.dataset.fx = cfg.fx;
+      if (playEffect) triggerAlertBurst(cfg.fx);
+    }
+
+    function hideGlobalAlertUI() {
+      document.getElementById('globalAlertBanner').classList.remove('visible');
+      document.body.classList.remove('has-alert');
+    }
+
+    function openPinDetail(rep) {
+      selectedReportId = rep.id;
+      document.getElementById('pinModalTitle').textContent = rep.subtipo;
+      document.getElementById('pinModalMeta').textContent = `Ubicación: ${rep.colonia || 'Zona Conurbada'}`;
+      document.getElementById('pinConfirmCount').textContent = rep.confirmaciones;
+      document.getElementById('pinClearCount').textContent = rep.votos_despejado;
+      document.getElementById('adminDeletePinBtn').style.display = isAdmin ? 'block' : 'none';
+      document.getElementById('pinModal').classList.add('open');
+    }
+
+    document.getElementById('submitReportBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('submitReportBtn');
+      btn.disabled = true; btn.textContent = 'Publicando...';
+      try {
+        const { data: mod } = await sb.from('dispositivos_moderacion').select('shadowban').eq('device_id', deviceId).maybeSingle();
+        const isShadowbanned = mod?.shadowban === true;
+        const colonia = document.getElementById('reportColoniaInput').value.trim() || 'Zona Conurbada';
+        const { data, error } = await sb.from('reportes').insert([{
+          tipo: pickedReportType.tipo, subtipo: pickedReportType.subtipo,
+          lat: userCoords[0] + (Math.random() - 0.5) * 0.002,
+          lng: userCoords[1] + (Math.random() - 0.5) * 0.002,
+          colonia, device_id: deviceId, oculto: isShadowbanned
+        }]).select().single();
+        if (error) throw error;
+        if (data && !isShadowbanned && !activeReports.some(r => r.id === data.id)) {
+          activeReports.unshift(data); renderReportsOnMap();
+        }
+        document.getElementById('reportModal').classList.remove('open');
+        document.getElementById('reportColoniaInput').value = '';
+        showToast('✓ Reporte publicado en tiempo real');
+      } catch (err) {
+        showToast(`Error: ${err.message || 'Revisa conexión'}`);
+      } finally {
+        btn.disabled = false; btn.textContent = 'Publicar Reporte Ahora';
+      }
+    });
+
+    document.getElementById('confirmPinBtn').addEventListener('click', async () => {
+      const rep = activeReports.find(r => r.id === selectedReportId);
+      if (!rep) return;
+      await sb.from('reportes').update({ confirmaciones: rep.confirmaciones + 1 }).eq('id', rep.id);
+      document.getElementById('pinModal').classList.remove('open');
+      showToast('👍 Reporte confirmado');
+    });
+
+    document.getElementById('clearPinBtn').addEventListener('click', async () => {
+      const rep = activeReports.find(r => r.id === selectedReportId);
+      if (!rep) return;
+      const nextVotes = rep.votos_despejado + 1;
+      await sb.from('reportes').update({ votos_despejado: nextVotes, oculto: nextVotes >= 3 }).eq('id', rep.id);
+      document.getElementById('pinModal').classList.remove('open');
+      showToast(nextVotes >= 3 ? '✓ Despejado (3/3)' : `✓ Voto registrado (${nextVotes}/3)`);
+    });
+
+    document.getElementById('adminDeletePinBtn').addEventListener('click', async () => {
+      const rep = activeReports.find(r => r.id === selectedReportId);
+      if (!rep) return;
+      await sb.from('reportes').update({ oculto: true }).eq('id', rep.id);
+      await sb.from('dispositivos_moderacion').upsert({ device_id: rep.device_id, shadowban: true, reportes_falsos: 1 });
+      document.getElementById('pinModal').classList.remove('open');
+      showToast('🛡️ Reporte eliminado');
+    });
+
+    async function loadAuxilioList() {
+      if (!sb) return;
+      const { data } = await sb.from('auxilio_vial').select('*').neq('estado', 'completado').order('creado_en', { ascending: false }).limit(5);
+      const box = document.getElementById('auxilioListContainer');
+      if (!data || data.length === 0) {
+        box.innerHTML = '<div style="font-size:11px;color:var(--text-secondary);" class="arcade-xs">No hay solicitudes activas en este momento.</div>';
+        return;
+      }
+      box.innerHTML = data.map(item => `
+        <div class="list-item">
+          <div>
+            <strong style="font-size:11.5px;" class="arcade-xs">${item.falla}</strong>
+            <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">
+              ${item.estado === 'aceptado' ? `✅ En camino: ${item.voluntario_nombre} • ${item.voluntario_vehiculo} (${item.voluntario_placas})` : '⏳ Esperando voluntario cercano...'}
+            </div>
+          </div>
+          ${item.estado === 'pendiente' ? `<button class="chip-btn active arcade-xs" onclick="acceptAuxilio(${item.id})">Acudir</button>` : `<button class="chip-btn arcade-xs" onclick="finishAuxilio(${item.id})">Cerrar</button>`}
+        </div>`).join('');
+    }
+
+    document.getElementById('requestAuxilioBtn').addEventListener('click', async () => {
+      const falla = document.getElementById('sosFallaSelect').value;
+      const { error } = await sb.from('auxilio_vial').insert([{ falla, lat: userCoords[0], lng: userCoords[1], solicitante_device: deviceId }]);
+      if (!error) { showToast('🆘 Solicitud enviada'); loadAuxilioList(); }
+    });
+
+    window.acceptAuxilio = async (id) => {
+      const nombre = prompt('Tu nombre:', 'Voluntario EIDOS LABs') || 'Voluntario';
+      const vehiculo = prompt('Tu vehículo y color:', 'Sedán Blanco') || 'Vehículo';
+      const placas = prompt('Placas:', 'VER-101') || 'Verificado';
+      await sb.from('auxilio_vial').update({ estado: 'aceptado', voluntario_nombre: nombre, voluntario_vehiculo: vehiculo, voluntario_placas: placas }).eq('id', id);
+      showToast('✅ Datos enviados al conductor');
+    };
+
+    window.finishAuxilio = async (id) => {
+      await sb.from('auxilio_vial').update({ estado: 'completado' }).eq('id', id);
+      showToast('✓ Auxilio finalizado');
+    };
+
+    document.getElementById('publishGlobalAlertBtn').addEventListener('click', async () => {
+      const cfg = GLOBAL_ALERTS_CATALOG[pickedAlertKey];
+      const zona = document.getElementById('alertZoneInput').value.trim() || 'Toda la Zona Conurbada';
+      await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
+      const { data, error } = await sb.from('alertas_globales').insert([{ tipo: pickedAlertKey, titulo: cfg.titulo, zona, precauciones: cfg.tips, activa: true }]).select().single();
+      if (!error && data) {
+        applyGlobalAlertUI(data, true);
+        document.getElementById('adminModal').classList.remove('open');
+        showToast('🚨 Alerta global emitida');
+      } else {
+        showToast('Error al emitir alerta');
+      }
+    });
+
+    document.getElementById('clearGlobalAlertBtn').addEventListener('click', async () => {
+      await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
+      hideGlobalAlertUI();
+      document.getElementById('adminModal').classList.remove('open');
+      showToast('✓ Alerta desactivada');
+    });
+
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
+      const t = THEMES[currentThemeIdx];
+      document.body.className = `theme-${t}` + (document.getElementById('globalAlertBanner').classList.contains('visible') ? ' has-alert' : '');
+      const labels = { minimal: '◻ Minimalista', arcade: '👾 Arcade', pastel: '🌸 Pastel' };
+      document.getElementById('themeToggleBtn').textContent = labels[t];
+      refreshUserMarker(); renderReportsOnMap();
+      if (routeLayer) routeLayer.setStyle({ color: t === 'arcade' ? '#00ff66' : (t === 'pastel' ? '#f06292' : '#000000') });
+    });
+
+    document.getElementById('adminToggleBtn').addEventListener('click', () => {
+      if (!isAdmin) {
+        const pin = prompt('Ingresa el PIN de Administrador:');
+        if (pin !== '2026') { showToast('PIN incorrecto'); return; }
+        isAdmin = true; sessionStorage.setItem('crs_admin_active', '1'); syncAdminUI();
+        showToast('🛡️ Modo Administrador activo');
+      } else {
+        isAdmin = false; sessionStorage.removeItem('crs_admin_active'); syncAdminUI();
+        showToast('Modo Administrador desactivado');
+      }
+    });
+
+    document.getElementById('alertExpandBtn').addEventListener('click', () => {
+      const det = document.getElementById('alertBannerDetails');
+      const isOpen = det.classList.toggle('open');
+      document.getElementById('alertExpandBtn').textContent = isOpen ? 'Ocultar ▲' : 'Precauciones ▼';
+      if (isOpen) triggerAlertBurst(document.getElementById('globalAlertBanner').dataset.fx || 'wind');
+    });
+
+    document.getElementById('compassBtn').addEventListener('click', () => {
+      followHeading = !followHeading;
+      document.getElementById('compassBtn').classList.toggle('active', followHeading);
+      showToast(followHeading ? '🧭 Mapa siguiendo tu ruta' : '🧭 Mapa fijo Norte arriba');
+    });
+
+    document.getElementById('simRouteBtn').addEventListener('click', () => {
+      const btn = document.getElementById('simRouteBtn');
+      if (simInterval) {
+        clearInterval(simInterval); simInterval = null;
+        btn.textContent = '▶ Simular ruta'; btn.classList.remove('running'); refreshUserMarker(); return;
+      }
+      if (currentRouteCoords.length < 2) return;
+      let idx = 0; btn.textContent = '⏹ Detener'; btn.classList.add('running');
+      simInterval = setInterval(() => {
+        if (idx >= currentRouteCoords.length - 1) idx = 0;
+        const p1 = currentRouteCoords[idx], p2 = currentRouteCoords[idx + 1];
+        userCoords = p2;
+        userHeading = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180 / Math.PI;
+        refreshUserMarker();
+        if (followHeading) map.panTo(userCoords);
+        idx++;
+      }, 350);
+    });
+
+    document.querySelectorAll('#reportTypeGrid .opt-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#reportTypeGrid .opt-card').forEach(b => b.classList.remove('picked'));
+        btn.classList.add('picked');
+        pickedReportType = { tipo: btn.dataset.tipo, subtipo: btn.dataset.subtipo };
+      });
+    });
+
+    document.querySelectorAll('#globalAlertGrid .opt-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#globalAlertGrid .opt-card').forEach(b => b.classList.remove('picked'));
+        btn.classList.add('picked');
+        pickedAlertKey = btn.dataset.alert;
+      });
+    });
+
+    document.querySelectorAll('.route-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.route-chip').forEach(c => c.classList.remove('selected'));
+        chip.classList.add('selected');
+        drawRealRoute(PRESET_DESTS[chip.dataset.route]);
+      });
+    });
+
+    document.getElementById('openReportBtn').addEventListener('click', () => document.getElementById('reportModal').classList.add('open'));
+    document.getElementById('openSosBtn').addEventListener('click', () => { loadAuxilioList(); document.getElementById('sosModal').classList.add('open'); });
+    document.getElementById('adminPanelFab').addEventListener('click', () => document.getElementById('adminModal').classList.add('open'));
+    document.getElementById('refreshWeatherBtn').addEventListener('click', fetchRealWeather);
+    document.getElementById('locateBtn').addEventListener('click', () => map.setView(userCoords, 15));
+    document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', () => document.getElementById(btn.dataset.close).classList.remove('open')));
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.watchPosition(pos => {
+        if (!simInterval) {
+          userCoords = [pos.coords.latitude, pos.coords.longitude];
+          if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
+          userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
+          refreshUserMarker();
+          if (followHeading) map.panTo(userCoords);
+        }
+      }, () => {}, { enableHighAccuracy: true });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    syncAdminUI();
+    fetchRealWeather();
+    drawRealRoute(PRESET_DESTS.altamira);
+    loadInitialData();
+    subscribeRealtime();
+  </script>
+</body>
+</html>
