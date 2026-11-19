@@ -13,15 +13,16 @@
   <style>
     :root {
       --bg-card: #ffffff;
-      --bg-secondary: #f6f6f6;
-      --text-primary: #000000;
-      --text-secondary: #545454;
-      --border-color: #e2e2e2;
-      --accent-bg: #000000;
+      --bg-secondary: #f5f6f8;
+      --text-primary: #0f1115;
+      --text-secondary: #5a606d;
+      --border-color: #e2e5ec;
+      --accent-bg: #111318;
       --accent-text: #ffffff;
       --danger-bg: #e11900;
       --success-bg: #05944f;
-      --radius-lg: 16px;
+      --gold-bg: #d97706;
+      --radius-lg: 18px;
       --radius-md: 12px;
       --radius-pill: 999px;
       --shadow-card: 0 8px 24px rgba(0,0,0,0.12);
@@ -39,6 +40,7 @@
       --accent-text: #0b0e17;
       --danger-bg: #ff2a55;
       --success-bg: #00ff66;
+      --gold-bg: #ffe600;
       --radius-lg: 4px;
       --radius-md: 4px;
       --radius-pill: 4px;
@@ -60,11 +62,31 @@
       --accent-text: #ffffff;
       --danger-bg: #ff6b8b;
       --success-bg: #5ec29b;
+      --gold-bg: #f59e0b;
       --radius-lg: 24px;
       --radius-md: 18px;
       --radius-pill: 999px;
       --shadow-card: 0 8px 24px rgba(240, 98, 146, 0.16);
       --font-main: 'Quicksand', sans-serif;
+      --border-width: 1.5px;
+    }
+
+    body.theme-gold {
+      --bg-card: #141210;
+      --bg-secondary: #221e19;
+      --text-primary: #f5d061;
+      --text-secondary: #cbb682;
+      --border-color: #d4af37;
+      --accent-bg: #d4af37;
+      --accent-text: #141210;
+      --danger-bg: #dc2626;
+      --success-bg: #10b981;
+      --gold-bg: #f59e0b;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+      --shadow-card: 0 8px 28px rgba(212, 175, 55, 0.25);
+      --font-main: 'Inter', sans-serif;
       --border-width: 1.5px;
     }
 
@@ -75,36 +97,28 @@
     body.theme-minimal #map .leaflet-tile-pane { filter: grayscale(0.85) contrast(1.04) brightness(1.02); }
     body.theme-arcade #map .leaflet-tile-pane { filter: invert(0.92) hue-rotate(155deg) saturate(2.2) contrast(1.2); }
     body.theme-pastel #map .leaflet-tile-pane { filter: sepia(0.15) hue-rotate(305deg) saturate(1.15) brightness(1.04); }
+    body.theme-gold #map .leaflet-tile-pane { filter: invert(0.88) sepia(0.35) hue-rotate(10deg) contrast(1.15); }
 
-    #fxCanvas {
-      position: fixed; inset: 0; pointer-events: none; z-index: 900;
-      opacity: 0; transition: opacity 0.6s ease;
-    }
+    #fxCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 900; opacity: 0; transition: opacity 0.6s ease; }
     #fxCanvas.active { opacity: 1; }
+    #alertEdgeFlash { position: fixed; inset: 0; pointer-events: none; z-index: 899; box-shadow: inset 0 0 0 0 rgba(225, 25, 0, 0); transition: box-shadow 0.4s ease; }
+    #alertEdgeFlash.active { box-shadow: inset 0 0 28px 6px rgba(225, 25, 0, 0.65); }
 
-    #alertEdgeFlash {
-      position: fixed; inset: 0; pointer-events: none; z-index: 899;
-      box-shadow: inset 0 0 0 0 rgba(225, 25, 0, 0);
-      transition: box-shadow 0.4s ease;
-    }
-    #alertEdgeFlash.active {
-      box-shadow: inset 0 0 28px 6px rgba(225, 25, 0, 0.65);
-    }
-
+    /* Barra Superior Minimalista */
     .top-bar {
       position: fixed; top: 12px; left: 12px; right: 12px; z-index: 500;
       background: var(--bg-card); border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-lg); padding: 10px 14px;
+      border-radius: var(--radius-lg); padding: 9px 12px;
       box-shadow: var(--shadow-card);
       display: flex; align-items: center; justify-content: space-between; gap: 8px;
     }
-    .brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
     .logo-badge {
       width: 34px; height: 34px; border-radius: 10px;
       background: var(--accent-bg); color: var(--accent-text);
       font-weight: 800; font-size: 13px; display: grid; place-items: center; flex-shrink: 0;
     }
-    .brand-text h1 { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .brand-text h1 { font-size: 13.5px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
     .live-pill {
       font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 6px;
       background: var(--accent-bg); color: var(--accent-text); text-transform: uppercase;
@@ -116,14 +130,15 @@
     .chip-btn {
       background: var(--bg-secondary); color: var(--text-primary);
       border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-pill); padding: 7px 11px;
+      border-radius: var(--radius-pill); padding: 7px 10px;
       font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
       display: inline-flex; align-items: center; gap: 5px;
     }
     .chip-btn.active { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
+    /* Banner Alerta Global */
     .global-alert-banner {
-      position: fixed; top: 76px; left: 12px; right: 12px; z-index: 510;
+      position: fixed; top: 74px; left: 12px; right: 12px; z-index: 510;
       background: var(--danger-bg); color: #ffffff;
       border-radius: var(--radius-md); padding: 10px 14px;
       box-shadow: 0 10px 25px rgba(225, 25, 0, 0.35);
@@ -131,36 +146,47 @@
     }
     .global-alert-banner.visible { display: flex; }
     .alert-header-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .alert-title { font-size: 12px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .alert-title { font-size: 12px; font-weight: 800; }
     .alert-toggle-btn {
       background: rgba(0,0,0,0.28); color: #fff; border: none;
       border-radius: var(--radius-pill); padding: 5px 10px;
-      font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; flex-shrink: 0;
+      font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
     }
-    .alert-details {
-      display: none; background: rgba(0,0,0,0.22); border-radius: 10px; padding: 10px;
-      font-size: 11.5px; line-height: 1.45;
-    }
+    .alert-details { display: none; background: rgba(0,0,0,0.22); border-radius: 10px; padding: 10px; font-size: 11.5px; line-height: 1.45; }
     .alert-details.open { display: block; }
     .alert-details ul { margin-left: 16px; margin-top: 4px; }
 
-    .weather-card {
-      position: fixed; top: 82px; left: 12px; z-index: 450;
-      background: var(--bg-card); border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-md); padding: 10px 12px; width: 220px;
-      box-shadow: var(--shadow-card); transition: top 0.25s ease;
+    /* Tarjeta Deslizable Tipo DiDi para Voluntarios */
+    .didi-dispatch-card {
+      position: fixed; top: 76px; left: 12px; right: 12px; z-index: 650;
+      background: var(--bg-card); color: var(--text-primary);
+      border: 2px solid var(--success-bg); border-radius: var(--radius-lg);
+      padding: 14px; box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+      display: none; flex-direction: column; gap: 10px;
+      touch-action: pan-y; transition: transform 0.25s ease, opacity 0.25s ease;
     }
-    body.has-alert .weather-card { top: 132px; }
-    .weather-card-head { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; margin-bottom: 6px; }
-    .weather-row { font-size: 11px; color: var(--text-secondary); line-height: 1.45; }
-    .weather-row strong { color: var(--text-primary); }
+    .didi-dispatch-card.visible { display: flex; }
+    .didi-head { display: flex; justify-content: space-between; align-items: center; }
+    .didi-badge { background: var(--success-bg); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+    .didi-user-row { display: flex; align-items: center; gap: 10px; }
+    .avatar-circle { width: 42px; height: 42px; border-radius: 50%; background: var(--bg-secondary); border: 1.5px solid var(--border-color); display: grid; place-items: center; font-weight: 800; font-size: 15px; overflow: hidden; flex-shrink: 0; }
+    .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
 
+    /* Controles Laterales Compactos (Mapa Despejado) */
     .map-controls {
-      position: fixed; top: 82px; right: 12px; z-index: 450;
+      position: fixed; top: 78px; right: 12px; z-index: 450;
       display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
       transition: top 0.25s ease;
     }
     body.has-alert .map-controls { top: 132px; }
+    .ctrl-icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: var(--bg-card); color: var(--text-primary);
+      border: var(--border-width) solid var(--border-color);
+      box-shadow: var(--shadow-card); cursor: pointer;
+      display: grid; place-items: center; font-size: 16px; font-weight: 700;
+    }
+    .ctrl-icon.active { background: var(--accent-bg); color: var(--accent-text); }
     .ctrl-pill {
       background: var(--bg-card); color: var(--text-primary);
       border: var(--border-width) solid var(--border-color);
@@ -169,63 +195,87 @@
       box-shadow: var(--shadow-card); cursor: pointer;
       display: flex; align-items: center; gap: 6px;
     }
+    .ctrl-pill.danger { background: var(--danger-bg); color: #fff; border-color: var(--danger-bg); }
     .ctrl-pill.running { background: var(--success-bg); color: #fff; border-color: var(--success-bg); }
-    .ctrl-pill.admin-alert-btn {
-      display: none;
-      background: var(--danger-bg);
-      color: #ffffff;
-      border-color: var(--danger-bg);
-    }
-    .ctrl-pill.admin-alert-btn.visible { display: flex; }
-    .ctrl-icon {
-      width: 38px; height: 38px; border-radius: 50%;
-      background: var(--bg-card); color: var(--text-primary);
-      border: var(--border-width) solid var(--border-color);
-      box-shadow: var(--shadow-card); cursor: pointer;
-      display: grid; place-items: center; font-size: 16px;
-    }
-    .ctrl-icon.active { background: var(--accent-bg); color: var(--accent-text); }
 
-    .bottom-fab-row {
-      position: fixed; bottom: 132px; left: 12px; right: 12px; z-index: 460;
-      display: flex; justify-content: space-between; align-items: center; pointer-events: none;
+    /* Cajón Lateral (Side Drawer) para Clima, Trayectos y Configuración */
+    .side-drawer-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 700;
+      display: none;
+    }
+    .side-drawer-backdrop.open { display: block; }
+    .side-drawer {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 86%; max-width: 360px; z-index: 710;
+      background: var(--bg-card); color: var(--text-primary);
+      border-right: var(--border-width) solid var(--border-color);
+      padding: 16px; overflow-y: auto;
+      transform: translateX(-105%); transition: transform 0.28s ease;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    .side-drawer.open { transform: translateX(0); }
+
+    /* Banner modo marcar punto en el mapa */
+    .pick-point-banner {
+      position: fixed; top: 76px; left: 50%; transform: translateX(-50%); z-index: 620;
+      background: var(--accent-bg); color: var(--accent-text);
+      padding: 9px 14px; border-radius: var(--radius-pill);
+      font-size: 11px; font-weight: 700; box-shadow: var(--shadow-card);
+      display: none; align-items: center; gap: 8px; white-space: nowrap;
+    }
+    .pick-point-banner.visible { display: flex; }
+
+    /* Contenedor Inferior Dinámico (Sin traslapes con SOS / Reportar) */
+    .bottom-dock {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 480;
+      display: flex; flex-direction: column; pointer-events: none;
+    }
+    .fab-strip {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 12px 10px; pointer-events: none;
     }
     .fab-btn {
       pointer-events: auto; border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-pill); padding: 12px 18px;
+      border-radius: var(--radius-pill); padding: 11px 16px;
       font-family: inherit; font-size: 12px; font-weight: 800;
       box-shadow: var(--shadow-card); cursor: pointer;
-      display: inline-flex; align-items: center; gap: 8px;
+      display: inline-flex; align-items: center; gap: 7px;
     }
     .fab-sos { background: var(--bg-card); color: var(--text-primary); }
     .fab-report { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
     .bottom-sheet {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 480;
+      pointer-events: auto;
       background: var(--bg-card); border-top: var(--border-width) solid var(--border-color);
-      border-radius: 20px 20px 0 0; padding: 12px 14px 16px;
+      border-radius: 20px 20px 0 0; padding: 8px 14px 14px;
       box-shadow: 0 -6px 24px rgba(0,0,0,0.1);
+      transition: all 0.25s ease;
     }
+    .sheet-handle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px; cursor: pointer;
+    }
+    .sheet-body.collapsed { display: none; }
     .search-box {
       display: flex; align-items: center; gap: 8px;
       background: var(--bg-secondary); border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-md); padding: 9px 12px; margin-bottom: 10px;
+      border-radius: var(--radius-md); padding: 8px 10px; margin-bottom: 8px;
     }
     .search-box input {
       border: none; background: transparent; width: 100%;
       font-family: inherit; font-size: 12px; color: var(--text-primary); outline: none;
     }
-    .routes-header { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 700; margin-bottom: 8px; color: var(--text-secondary); }
     .routes-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
     .routes-scroll::-webkit-scrollbar { display: none; }
     .route-chip {
       flex-shrink: 0; background: var(--bg-secondary); color: var(--text-primary);
       border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-pill); padding: 7px 12px;
+      border-radius: var(--radius-pill); padding: 6px 11px;
       font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 6px;
     }
     .route-chip.selected { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
+    /* Modales */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 800;
       display: none; align-items: flex-end; justify-content: center; padding: 12px;
@@ -234,8 +284,8 @@
     .modal-card {
       background: var(--bg-card); color: var(--text-primary);
       border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-lg); width: 100%; max-width: 460px;
-      max-height: 84vh; overflow-y: auto; padding: 16px;
+      border-radius: var(--radius-lg); width: 100%; max-width: 480px;
+      max-height: 86vh; overflow-y: auto; padding: 16px;
       box-shadow: 0 16px 40px rgba(0,0,0,0.3);
     }
     .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -245,28 +295,34 @@
       border: none; width: 30px; height: 30px; border-radius: 50%;
       font-weight: 800; cursor: pointer;
     }
+    .tabs-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
+    .tab-btn {
+      padding: 7px 11px; border-radius: var(--radius-pill); border: var(--border-width) solid var(--border-color);
+      background: var(--bg-secondary); color: var(--text-primary); font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;
+    }
+    .tab-btn.active { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
     .grid-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 12px; }
     .opt-card {
       background: var(--bg-secondary); color: var(--text-primary);
       border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-md); padding: 11px 10px;
-      text-align: left; font-family: inherit; font-size: 11.5px; font-weight: 700;
-      cursor: pointer; display: flex; align-items: center; gap: 8px;
+      border-radius: var(--radius-md); padding: 10px;
+      text-align: left; font-family: inherit; font-size: 11px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 7px;
     }
     .opt-card:hover, .opt-card.picked { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
     .input-field {
-      width: 100%; padding: 10px 12px; margin-bottom: 10px;
+      width: 100%; padding: 9px 11px; margin-bottom: 9px;
       background: var(--bg-secondary); color: var(--text-primary);
       border: var(--border-width) solid var(--border-color);
       border-radius: var(--radius-md); font-family: inherit; font-size: 12px;
     }
     .primary-btn {
-      width: 100%; padding: 12px; border: none; border-radius: var(--radius-md);
+      width: 100%; padding: 11px; border: none; border-radius: var(--radius-md);
       background: var(--accent-bg); color: var(--accent-text);
       font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer;
     }
     .danger-btn {
-      width: 100%; padding: 11px; border: none; border-radius: var(--radius-md);
+      width: 100%; padding: 10px; border: none; border-radius: var(--radius-md);
       background: var(--danger-bg); color: #fff;
       font-family: inherit; font-size: 12px; font-weight: 800; cursor: pointer; margin-top: 6px;
     }
@@ -275,14 +331,20 @@
       border-radius: var(--radius-md); padding: 10px 12px; margin-bottom: 8px;
       display: flex; justify-content: space-between; align-items: center; gap: 8px;
     }
+    .days-row { display: flex; gap: 4px; margin-bottom: 10px; }
+    .day-pill {
+      flex: 1; padding: 6px 0; text-align: center; border-radius: 8px;
+      background: var(--bg-secondary); border: 1px solid var(--border-color);
+      font-size: 10px; font-weight: 700; cursor: pointer;
+    }
+    .day-pill.on { background: var(--accent-bg); color: var(--accent-text); }
 
     .toast {
-      position: fixed; top: 84px; left: 50%; transform: translateX(-50%); z-index: 950;
+      position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 950;
       background: var(--accent-bg); color: var(--accent-text);
       padding: 9px 16px; border-radius: var(--radius-pill);
       font-size: 11.5px; font-weight: 700; box-shadow: var(--shadow-card);
-      opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
-      white-space: nowrap;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s ease; white-space: nowrap;
     }
     .toast.show { opacity: 1; }
     .leaflet-control-attribution { font-size: 9px !important; opacity: 0.7; }
@@ -294,8 +356,16 @@
   <div id="alertEdgeFlash"></div>
   <div id="toast" class="toast"></div>
 
+  <!-- Banner cuando el usuario está eligiendo un punto exacto en el mapa -->
+  <div id="pickPointBanner" class="pick-point-banner arcade-xs">
+    <span>📍 Toca cualquier calle en el mapa para marcar el reporte</span>
+    <button id="cancelPickPointBtn" class="chip-btn arcade-xs" style="padding:3px 8px;">Cancelar</button>
+  </div>
+
+  <!-- Barra Superior Limpia (Sin botones de Admin expuestos) -->
   <header class="top-bar">
     <div class="brand">
+      <button id="openDrawerBtn" class="chip-btn arcade-xs" title="Clima, Trayectos y Ajustes">☰</button>
       <div class="logo-badge">EL</div>
       <div class="brand-text">
         <h1 class="arcade-sm">ClimaRuta Sur <span id="dbStatusPill" class="live-pill">CONECTANDO</span></h1>
@@ -303,11 +373,12 @@
       </div>
     </div>
     <div class="top-actions">
-      <button id="themeToggleBtn" class="chip-btn arcade-xs">◻ Minimalista</button>
-      <button id="adminToggleBtn" class="chip-btn arcade-xs">● Admin</button>
+      <button id="themeToggleBtn" class="chip-btn arcade-xs" title="Cambiar apariencia">◻</button>
+      <button id="openProfileBtn" class="chip-btn arcade-xs">👤 <span id="topUserLabel">Entrar</span></button>
     </div>
   </header>
 
+  <!-- Banner de Alerta Global -->
   <section id="globalAlertBanner" class="global-alert-banner">
     <div class="alert-header-row">
       <div id="alertBannerTitle" class="alert-title arcade-xs">🚨 ALERTA GENERAL</div>
@@ -319,56 +390,131 @@
     </div>
   </section>
 
-  <aside class="weather-card">
-    <div class="weather-card-head arcade-xs">
-      <span>📡 Open-Meteo Oficial</span>
-      <button id="refreshWeatherBtn" style="background:none;border:none;color:inherit;cursor:pointer;font-weight:800;">↻</button>
+  <!-- Tarjeta Deslizable Tipo DiDi para Voluntarios Verificados -->
+  <aside id="didiDispatchCard" class="didi-dispatch-card">
+    <div class="didi-head">
+      <span class="didi-badge arcade-xs">🆘 SOLICITUD DE AUXILIO CERCANA</span>
+      <span style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Desliza para descartar →</span>
     </div>
-    <div id="weatherDetailBox" class="weather-row arcade-xs">
-      Clima en vivo • Zona Conurbada
+    <div class="didi-user-row">
+      <div id="didiUserAvatar" class="avatar-circle">👤</div>
+      <div style="flex:1;min-width:0;">
+        <div id="didiUserName" style="font-size:12.5px;font-weight:800;" class="arcade-xs">Usuario Verificado ⭐ 5.0</div>
+        <div id="didiFallaText" style="font-size:11px;color:var(--danger-bg);font-weight:700;" class="arcade-xs">Falla reportada</div>
+        <div id="didiVehiculoText" style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Vehículo y placas</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button id="didiDismissBtn" class="chip-btn arcade-xs" style="flex:1;justify-content:center;">Ignorar</button>
+      <button id="didiAcceptBtn" class="primary-btn arcade-xs" style="flex:2;background:var(--success-bg);color:#fff;">✓ Aceptar y Acudir</button>
     </div>
   </aside>
 
-  <div class="map-controls">
-    <button id="adminPanelFab" class="ctrl-pill admin-alert-btn arcade-xs">🚨 Emitir Alerta</button>
-    <button id="simRouteBtn" class="ctrl-pill arcade-xs">▶ Simular ruta</button>
+  <!-- Controles Derechos del Mapa (Solo Brújula/GPS para público; herramientas Admin se inyectan solo tras login real) -->
+  <div class="map-controls" id="mapControlsContainer">
     <button id="compassBtn" class="ctrl-icon" title="Alternar Norte arriba / Seguir rumbo">🧭</button>
     <button id="locateBtn" class="ctrl-icon" title="Mi ubicación GPS">◎</button>
   </div>
 
-  <div class="bottom-fab-row">
-    <button id="openSosBtn" class="fab-btn fab-sos arcade-xs">
-      <span style="background:#e11900;color:#fff;padding:2px 5px;border-radius:4px;font-size:9px;">SOS</span> Auxilio / 911
-    </button>
-    <button id="openReportBtn" class="fab-btn fab-report arcade-xs">+ REPORTAR</button>
-  </div>
+  <!-- Cajón Lateral Izquierdo (Clima Detallado, Trayectos con Alarma y Notificaciones) -->
+  <div id="drawerBackdrop" class="side-drawer-backdrop"></div>
+  <aside id="sideDrawer" class="side-drawer">
+    <div class="modal-head" style="margin-bottom:4px;">
+      <div>
+        <h2 class="arcade-sm">EIDOS LABs • Panel</h2>
+        <div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">ClimaRuta Sur v4.0</div>
+      </div>
+      <button id="closeDrawerBtn" class="close-btn">✕</button>
+    </div>
 
+    <!-- Clima Open-Meteo -->
+    <div class="list-item" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <strong style="font-size:11.5px;" class="arcade-xs">📡 Estación Open-Meteo</strong>
+        <button id="refreshWeatherBtn" class="chip-btn arcade-xs" style="padding:3px 8px;">↻ Actualizar</button>
+      </div>
+      <div id="weatherDetailBox" style="font-size:11px;color:var(--text-secondary);line-height:1.45;" class="arcade-xs">
+        Consultando datos meteorológicos...
+      </div>
+    </div>
+
+    <!-- Trayectos Guardados con Alarmas -->
+    <div class="list-item" style="flex-direction:column;align-items:stretch;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <strong style="font-size:11.5px;" class="arcade-xs">⏰ Mis Trayectos y Alarmas</strong>
+        <button id="openNewRouteBtn" class="chip-btn active arcade-xs" style="padding:4px 9px;">+ Nuevo</button>
+      </div>
+      <p style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Recibe aviso automático si hay lluvia, Norte o incidentes en tu ruta antes de salir.</p>
+      <div id="drawerRoutesList"></div>
+    </div>
+
+    <!-- Configuración de Notificaciones y Sonido -->
+    <div class="list-item" style="flex-direction:column;align-items:stretch;">
+      <strong style="font-size:11.5px;margin-bottom:6px;" class="arcade-xs">🔔 Alertas y Sonido en Celular</strong>
+      <label style="font-size:10.5px;color:var(--text-secondary);margin-bottom:4px;" class="arcade-xs">Tono sutil de notificación:</label>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <select id="notifSoundSelect" class="input-field arcade-xs" style="margin-bottom:0;">
+          <option value="chime">🎵 Pulso suave (2 notas)</option>
+          <option value="crystal">✨ Destello cristalino corto</option>
+          <option value="mute">🔇 Silencio (Solo visual)</option>
+        </select>
+        <button id="testSoundBtn" class="chip-btn arcade-xs">Probar</button>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:11px;cursor:pointer;" class="arcade-xs">
+        <input type="checkbox" id="notifVibrateCheck" checked /> Vibración háptica en alertas
+      </label>
+      <button id="enablePushPermBtn" class="chip-btn arcade-xs" style="margin-top:8px;justify-content:center;">📲 Activar permisos del navegador</button>
+    </div>
+  </aside>
+
+  <!-- Mapa Principal -->
   <main id="map"></main>
 
-  <section class="bottom-sheet">
-    <div class="search-box">
-      <span>🔍</span>
-      <input id="destInput" type="text" placeholder="¿A dónde vas? Ej. Puerto Altamira, Centro Tampico, Miramar..." />
-      <button id="searchRouteBtn" class="chip-btn active arcade-xs">Ir</button>
+  <!-- Dock Inferior Unificado (Evita cualquier sobreposición con SOS y Reportar) -->
+  <div class="bottom-dock">
+    <div class="fab-strip">
+      <button id="openSosBtn" class="fab-btn fab-sos arcade-xs">
+        <span style="background:#e11900;color:#fff;padding:2px 5px;border-radius:4px;font-size:9px;">SOS</span> Auxilio / 911
+      </button>
+      <button id="openReportBtn" class="fab-btn fab-report arcade-xs">+ REPORTAR</button>
     </div>
-    <div class="routes-header arcade-xs">
-      <span>EIDOS LABs • Trayectos Guardados</span>
-      <span id="routeStatsLabel">Trazado real OSRM</span>
-    </div>
-    <div class="routes-scroll" id="savedRoutesRow">
-      <button class="route-chip selected arcade-xs" data-route="altamira">🏠 Casa → 🏭 Puerto Altamira (06:40)</button>
-      <button class="route-chip arcade-xs" data-route="centro">🏠 Casa → 🏛️ Centro Tampico (07:30)</button>
-      <button class="route-chip arcade-xs" data-route="miramar">🏠 Casa → 🏖️ Playa Miramar (17:00)</button>
-    </div>
-  </section>
 
+    <section class="bottom-sheet">
+      <div class="sheet-handle-row" id="toggleSheetBtn">
+        <span style="font-size:11px;font-weight:800;color:var(--text-secondary);" class="arcade-xs">🧭 Navegación y Trayectos</span>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="routeStatsLabel" style="font-size:10.5px;font-weight:700;color:var(--text-secondary);" class="arcade-xs"></span>
+          <button id="clearActiveRouteBtn" class="chip-btn arcade-xs" style="display:none;padding:3px 8px;">✕ Quitar ruta</button>
+          <span id="sheetChevron" style="font-size:12px;font-weight:800;">▼</span>
+        </div>
+      </div>
+
+      <div id="bottomSheetBody" class="sheet-body">
+        <div class="search-box">
+          <span>🔍</span>
+          <input id="destInput" type="text" placeholder="Buscar calle, colonia o lugar (ej. Playa Miramar, Av. Hidalgo)..." />
+          <button id="searchRouteBtn" class="chip-btn active arcade-xs">Ir</button>
+        </div>
+        <div class="routes-scroll" id="bottomSavedRoutesRow">
+          <span style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Ningún trayecto seleccionado. Busca un destino o abre ☰ para programar tus rutas.</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- MODAL 1: REPORTAR INCIDENTE (GPS ACTUAL O PUNTO EN EL MAPA) -->
   <div id="reportModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
         <h2 class="arcade-sm">Nuevo Reporte en Vivo</h2>
         <button class="close-btn" data-close="reportModal">✕</button>
       </div>
-      <p style="font-size:11px;color:var(--text-secondary);margin-bottom:10px;" class="arcade-xs">Se publica al instante para toda la zona conurbada. Desaparece con 3 confirmaciones de despejado.</p>
+      <div style="display:flex;gap:6px;margin-bottom:10px;">
+        <button id="useCurrentGpsBtn" class="chip-btn active arcade-xs" style="flex:1;justify-content:center;">📡 Mi ubicación actual</button>
+        <button id="pickOnMapBtn" class="chip-btn arcade-xs" style="flex:1;justify-content:center;">📍 Marcar en el mapa</button>
+      </div>
+      <div id="reportCoordsLabel" style="font-size:10.5px;color:var(--text-secondary);margin-bottom:10px;" class="arcade-xs">Usando tu ubicación GPS actual</div>
+
       <div class="grid-options" id="reportTypeGrid">
         <button class="opt-card picked arcade-xs" data-tipo="clima" data-subtipo="Lluvia fuerte / Chubasco">🌧️ Lluvia fuerte</button>
         <button class="opt-card arcade-xs" data-tipo="clima" data-subtipo="Viento / Rachas de Norte">💨 Rachas de Norte</button>
@@ -377,11 +523,59 @@
         <button class="opt-card arcade-xs" data-tipo="vial" data-subtipo="Choque / Accidente vial">💥 Choque / Accidente</button>
         <button class="opt-card arcade-xs" data-tipo="peligro" data-subtipo="Calle cerrada / Obra / Cable caído">🚧 Calle cerrada / Peligro</button>
       </div>
-      <input id="reportColoniaInput" class="input-field arcade-xs" type="text" placeholder="Colonia o referencia (ej. Av. Hidalgo, Blvd. Petrocel...)" />
+      <input id="reportColoniaInput" class="input-field arcade-xs" type="text" placeholder="Colonia o referencia (ej. Blvd. Costero, Ejido La Pedrera...)" />
       <button id="submitReportBtn" class="primary-btn arcade-xs">Publicar Reporte Ahora</button>
     </div>
   </div>
 
+  <!-- MODAL 2: PROGRAMAR NUEVO TRAYECTO CON ALARMA -->
+  <div id="routePlannerModal" class="modal-backdrop">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h2 class="arcade-sm">Programar Trayecto y Alarma</h2>
+        <button class="close-btn" data-close="routePlannerModal">✕</button>
+      </div>
+      <input id="routeNameInput" class="input-field arcade-xs" type="text" placeholder="Nombre (ej. Casa → Trabajo Altamira)" />
+      <input id="routeDestTextInput" class="input-field arcade-xs" type="text" placeholder="Destino en Tampico/Madero/Altamira..." />
+
+      <div style="display:flex;gap:8px;margin-bottom:8px;">
+        <div style="flex:1;">
+          <label style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Hora de salida:</label>
+          <input id="routeTimeInput" class="input-field arcade-xs" type="time" value="07:00" />
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Recordar antes:</label>
+          <select id="routeAdvanceSelect" class="input-field arcade-xs">
+            <option value="15">15 min antes</option>
+            <option value="30" selected>30 min antes</option>
+            <option value="120">2 horas antes</option>
+            <option value="1440">1 día antes</option>
+          </select>
+        </div>
+      </div>
+
+      <label style="font-size:10px;color:var(--text-secondary);display:block;margin-bottom:4px;" class="arcade-xs">Frecuencia:</label>
+      <div style="display:flex;gap:6px;margin-bottom:8px;">
+        <button type="button" id="freqDaysBtn" class="chip-btn active arcade-xs" style="flex:1;justify-content:center;">Días de la semana</button>
+        <button type="button" id="freqDateBtn" class="chip-btn arcade-xs" style="flex:1;justify-content:center;">Fecha específica</button>
+      </div>
+
+      <div id="daysSelectorBox" class="days-row">
+        <div class="day-pill on" data-day="Lun">Lun</div>
+        <div class="day-pill on" data-day="Mar">Mar</div>
+        <div class="day-pill on" data-day="Mie">Mié</div>
+        <div class="day-pill on" data-day="Jue">Jue</div>
+        <div class="day-pill on" data-day="Vie">Vie</div>
+        <div class="day-pill" data-day="Sab">Sáb</div>
+        <div class="day-pill" data-day="Dom">Dom</div>
+      </div>
+      <input id="routeSpecificDateInput" class="input-field arcade-xs" type="date" style="display:none;" />
+
+      <button id="saveScheduledRouteBtn" class="primary-btn arcade-xs">Guardar Trayecto y Activar Alarma</button>
+    </div>
+  </div>
+
+  <!-- MODAL 3: DETALLE DE PIN Y DESPEJE 3/3 -->
   <div id="pinModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -393,10 +587,11 @@
         <button id="confirmPinBtn" class="primary-btn arcade-xs" style="flex:1;">👍 Sigue ahí (<span id="pinConfirmCount">1</span>)</button>
         <button id="clearPinBtn" class="primary-btn arcade-xs" style="flex:1;background:var(--success-bg);color:#fff;">✓ Ya se despejó (<span id="pinClearCount">0</span>/3)</button>
       </div>
-      <button id="adminDeletePinBtn" class="danger-btn arcade-xs" style="display:none;">🛡️ [Admin] Eliminar reporte y sancionar dispositivo</button>
+      <div id="adminPinActionsContainer"></div>
     </div>
   </div>
 
+  <!-- MODAL 4: AUXILIO VIAL BIDIRECCIONAL Y DIRECTORIO 911 -->
   <div id="sosModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -406,63 +601,142 @@
       <div class="list-item">
         <div>
           <strong style="font-size:12px;" class="arcade-xs">🚨 Emergencias Nacionales (911)</strong>
-          <div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Cruz Roja, Bomberos, Tránsito y Protección Civil</div>
+          <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Cruz Roja, Bomberos, Tránsito y Protección Civil</div>
         </div>
         <a href="tel:911" class="chip-btn active arcade-xs" style="text-decoration:none;">Llamar 911</a>
       </div>
-      <div class="list-item">
-        <div>
-          <strong style="font-size:12px;" class="arcade-xs">🚒 Protección Civil Regional</strong>
-          <div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Tampico • Madero • Altamira</div>
-        </div>
-        <a href="tel:8333052624" class="chip-btn arcade-xs" style="text-decoration:none;">Llamar</a>
+
+      <hr style="border:none;border-top:1px solid var(--border-color);margin:10px 0;" />
+      <h3 style="font-size:12px;margin-bottom:6px;" class="arcade-xs">🤝 Auxilio Vial Verificado (EIDOS LABs)</h3>
+
+      <!-- Estado de mi solicitud activa (si tengo una en curso) -->
+      <div id="myActiveAuxilioBox" style="display:none;margin-bottom:10px;"></div>
+
+      <!-- Formulario para pedir auxilio (requiere cuenta verificada) -->
+      <div id="requestAuxilioFormBox">
+        <p style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Por seguridad mutua, tanto tú como el voluntario comparten identidad verificada con foto en vivo.</p>
+        <select id="sosFallaSelect" class="input-field arcade-xs">
+          <option value="Ponchadura de llanta">🛞 Ponchadura de llanta</option>
+          <option value="Paso de corriente / Batería">🔋 Paso de corriente / Batería</option>
+          <option value="Vehículo varado por agua">🌊 Vehículo varado por encharcamiento</option>
+          <option value="Sin combustible">⛽ Sin combustible</option>
+        </select>
+        <button id="requestAuxilioBtn" class="primary-btn arcade-xs">Solicitar Auxilio en mi Ubicación</button>
       </div>
-      <hr style="border:none;border-top:1px solid var(--border-color);margin:12px 0;" />
-      <h3 style="font-size:12px;margin-bottom:6px;" class="arcade-xs">🤝 Auxilio Vial Vecinal en Vivo</h3>
-      <p style="font-size:11px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Si aceptas ayudar o pides apoyo, se muestra nombre, vehículo y placas por seguridad.</p>
-      <select id="sosFallaSelect" class="input-field arcade-xs">
-        <option value="Ponchadura de llanta">🛞 Ponchadura de llanta</option>
-        <option value="Paso de corriente / Batería">🔋 Paso de corriente / Batería</option>
-        <option value="Vehículo varado por agua">🌊 Vehículo varado por encharcamiento</option>
-        <option value="Sin combustible">⛽ Sin combustible</option>
-      </select>
-      <button id="requestAuxilioBtn" class="primary-btn arcade-xs">Solicitar Auxilio en mi Ubicación</button>
+
       <div id="auxilioListContainer" style="margin-top:10px;"></div>
     </div>
   </div>
 
-  <div id="adminModal" class="modal-backdrop">
+  <!-- MODAL 5: PERFIL, REGISTRO, VERIFICACIÓN EN VIVO Y RECOMPENSAS -->
+  <div id="profileModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
-        <h2 class="arcade-sm">🚨 Panel Admin: Alerta General</h2>
-        <button class="close-btn" data-close="adminModal">✕</button>
+        <h2 class="arcade-sm">👤 Perfil y Seguridad</h2>
+        <button class="close-btn" data-close="profileModal">✕</button>
       </div>
-      <p style="font-size:11px;color:var(--text-secondary);margin-bottom:10px;" class="arcade-xs">Selecciona el escenario real para emitir aviso global inmediato a toda la zona:</p>
-      <div class="grid-options" id="globalAlertGrid">
-        <button class="opt-card arcade-xs" data-alert="huracan">🌀 Huracán / Tormenta</button>
-        <button class="opt-card picked arcade-xs" data-alert="norte">💨 Norte / Rachas Fuertes</button>
-        <button class="opt-card arcade-xs" data-alert="inundacion">🌊 Lluvia Severa / Inundación</button>
-        <button class="opt-card arcade-xs" data-alert="granizo">⛈️ Granizo / Tormenta Eléctrica</button>
-        <button class="opt-card arcade-xs" data-alert="calor">☀️ Onda de Calor Extrema</button>
-        <button class="opt-card arcade-xs" data-alert="frio">❄️ Descenso Brusco Temp.</button>
-        <button class="opt-card arcade-xs" data-alert="incendio">🔥 Incendio de Alto Riesgo</button>
-        <button class="opt-card arcade-xs" data-alert="gas">☣️ Fuga de Gas / Química</button>
-        <button class="opt-card arcade-xs" data-alert="ceniza">🌫️ Ceniza / Emisión Planta</button>
-        <button class="opt-card arcade-xs" data-alert="sismo">📳 Sismo / Actividad Sísmica</button>
+
+      <!-- Vista No Autenticado: Login / Registro -->
+      <div id="authFormsView">
+        <div class="tabs-row">
+          <button id="tabLoginBtn" class="tab-btn active arcade-xs">Iniciar Sesión</button>
+          <button id="tabRegisterBtn" class="tab-btn arcade-xs">Crear Cuenta</button>
+        </div>
+
+        <div id="loginBox">
+          <input id="loginEmailInput" class="input-field arcade-xs" type="email" placeholder="Correo electrónico" />
+          <input id="loginPassInput" class="input-field arcade-xs" type="password" placeholder="Contraseña" />
+          <button id="doLoginBtn" class="primary-btn arcade-xs">Entrar a ClimaRuta Sur</button>
+        </div>
+
+        <div id="registerBox" style="display:none;">
+          <input id="regNameInput" class="input-field arcade-xs" type="text" placeholder="Nombre completo real" />
+          <input id="regPhoneInput" class="input-field arcade-xs" type="tel" placeholder="Teléfono celular (10 dígitos)" />
+          <input id="regEmailInput" class="input-field arcade-xs" type="email" placeholder="Correo electrónico" />
+          <input id="regPassInput" class="input-field arcade-xs" type="password" placeholder="Crea una contraseña (mín. 6 caracteres)" />
+          <select id="regRoleSelect" class="input-field arcade-xs">
+            <option value="ciudadano">🚗 Ciudadano (Reportar y pedir auxilio)</option>
+            <option value="voluntario">🤝 Ciudadano + Voluntario Vial (Acudir a ayudar)</option>
+          </select>
+          <button id="doRegisterBtn" class="primary-btn arcade-xs">Registrarme</button>
+        </div>
       </div>
-      <input id="alertZoneInput" class="input-field arcade-xs" type="text" value="Toda la Zona Conurbada (Tampico, Madero y Altamira)" placeholder="Sector o municipio afectado..." />
-      <button id="publishGlobalAlertBtn" class="danger-btn arcade-xs">🚨 EMITIR ALERTA A TODOS LOS CELULARES</button>
-      <button id="clearGlobalAlertBtn" class="chip-btn arcade-xs" style="width:100%;justify-content:center;margin-top:8px;">✓ Desactivar Alerta Activa</button>
+
+      <!-- Vista Autenticado: Ficha de Usuario, Verificación en Vivo, Recompensas y Admin (si rol === 'admin') -->
+      <div id="loggedProfileView" style="display:none;">
+        <div class="list-item">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div id="profAvatarBox" class="avatar-circle">👤</div>
+            <div>
+              <strong id="profNameLabel" style="font-size:12.5px;" class="arcade-xs">Usuario</strong>
+              <div id="profRoleBadge" style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Rol • Estado</div>
+              <div id="profStatsLabel" style="font-size:10.5px;font-weight:700;" class="arcade-xs">⭐ 5.0 • 0 auxilios • 0 reportes</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verificación de Identidad con Cámara en Vivo (Sin galería) -->
+        <div id="verificationSectionBox" class="list-item" style="flex-direction:column;align-items:stretch;">
+          <strong style="font-size:11.5px;margin-bottom:4px;" class="arcade-xs">🪪 Verificación de Identidad en Vivo</strong>
+          <p style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Para proteger a quienes piden ayuda y a los voluntarios, las fotos se toman directo con la cámara (sin archivos de galería).</p>
+
+          <input id="profVehiculoInput" class="input-field arcade-xs" type="text" placeholder="Vehículo y color (ej. Nissan March Rojo)" />
+          <input id="profPlacasInput" class="input-field arcade-xs" type="text" placeholder="Placas (ej. XTM-123)" />
+          <input id="profTipLinkInput" class="input-field arcade-xs" type="text" placeholder="Enlace o CLABE opcional para propinas/apoyo" />
+
+          <label style="font-size:10.5px;font-weight:700;margin-bottom:4px;" class="arcade-xs">1. Foto Selfie en Vivo (Cámara frontal):</label>
+          <input id="liveSelfieInput" type="file" accept="image/*" capture="user" class="input-field arcade-xs" />
+
+          <label style="font-size:10.5px;font-weight:700;margin-bottom:4px;" class="arcade-xs">2. Foto INE Frente en Vivo (Obligatorio Voluntarios):</label>
+          <input id="liveIneInput" type="file" accept="image/*" capture="environment" class="input-field arcade-xs" />
+
+          <button id="submitVerificationBtn" class="primary-btn arcade-xs">Enviar Verificación en Vivo</button>
+        </div>
+
+        <!-- Recompensas y Apariencias Desbloqueables -->
+        <div class="list-item" style="flex-direction:column;align-items:stretch;">
+          <strong style="font-size:11.5px;margin-bottom:4px;" class="arcade-xs">🏆 Recompensas y Apariencias Especiales</strong>
+          <p id="rewardStatusText" style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Completa 3 auxilios viales o 15 reportes confirmados para desbloquear la apariencia Edición Dorada por 7 días.</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="chip-btn arcade-xs" onclick="setTheme('minimal')">◻ Minimalista</button>
+            <button class="chip-btn arcade-xs" onclick="setTheme('arcade')">👾 Arcade</button>
+            <button class="chip-btn arcade-xs" onclick="setTheme('pastel')">🌸 Pastel</button>
+            <button id="goldThemeBtn" class="chip-btn arcade-xs" onclick="tryGoldTheme()">👑 Dorada (Recompensa)</button>
+          </div>
+        </div>
+
+        <!-- Modo Voluntario Activo -->
+        <div id="volunteerToggleBox" class="list-item" style="display:none;">
+          <div>
+            <strong style="font-size:11.5px;" class="arcade-xs">🟢 Disponible para Auxilio Vial</strong>
+            <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Recibir alertas tipo DiDi cuando alguien cercano pida ayuda</div>
+          </div>
+          <input type="checkbox" id="volDisponibleCheck" style="width:20px;height:20px;" />
+        </div>
+
+        <!-- Acerca de EIDOS LABs -->
+        <div style="font-size:10px;color:var(--text-secondary);text-align:center;margin:8px 0;" class="arcade-xs">
+          Desarrollado por <strong>EIDOS LABs</strong> • ClimaRuta Sur v4.0<br>Red Comunitaria Tampico • Ciudad Madero • Altamira
+        </div>
+
+        <button id="doLogoutBtn" class="danger-btn arcade-xs">Cerrar Sesión</button>
+      </div>
     </div>
   </div>
+
+  <!-- MODAL EXCLUSIVO ADMIN (SOLO SE INYECTA SI ROL === 'admin') -->
+  <div id="adminHostContainer"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
+    // =========================================================
+    // 1. INICIALIZACIÓN SUPABASE & ESTADO
+    // =========================================================
     const SUPABASE_URL = 'https://uxwumwwevynsuocnfkby.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4d3Vtd3dldnluc3VvY25ma2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwOTk3OTIsImV4cCI6MjExMDY3NTc5Mn0.wRuOH1QBTx5VlkaiEiMSJK6APTcsqjjMd2wnrEQB3FI';
-    const sb = window.supabase ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let deviceId = localStorage.getItem('crs_device_id');
     if (!deviceId) {
@@ -470,47 +744,72 @@
       localStorage.setItem('crs_device_id', deviceId);
     }
 
-    const THEMES = ['minimal', 'arcade', 'pastel'];
-    let currentThemeIdx = 0;
-    let isAdmin = sessionStorage.getItem('crs_admin_active') === '1';
-    let followHeading = false;
+    let currentUser = null;
+    let currentProfile = null;
     let userCoords = [22.2553, -97.8686];
     let userHeading = 0;
     let userSpeedKmh = 0;
+    let followHeading = false;
+
     let activeReports = [];
     let selectedReportId = null;
     let pickedReportType = { tipo: 'clima', subtipo: 'Lluvia fuerte / Chubasco' };
-    let pickedAlertKey = 'norte';
+    let reportCustomCoords = null;
+    let isPickingMapPoint = false;
+
+    let savedRoutes = [];
+    let activeRouteId = null;
     let routeLayer = null;
+    let currentRouteCoords = [];
     let simInterval = null;
 
-    function syncAdminUI() {
-      const toggleBtn = document.getElementById('adminToggleBtn');
-      const alertFab = document.getElementById('adminPanelFab');
-      if (isAdmin) {
-        toggleBtn.classList.add('active');
-        toggleBtn.textContent = '🛡️ Admin ON';
-        alertFab.classList.add('visible');
-      } else {
-        toggleBtn.classList.remove('active');
-        toggleBtn.textContent = '● Admin';
-        alertFab.classList.remove('visible');
+    let pendingDispatchAuxilio = null;
+    let myActiveAuxilio = null;
+
+    // =========================================================
+    // 2. SISTEMA DE SONIDO SUTIL (WEB AUDIO API) Y VIBRACIÓN
+    // =========================================================
+    function playSubtleNotification() {
+      const soundPref = localStorage.getItem('crs_sound') || 'chime';
+      const vibPref = localStorage.getItem('crs_vibrate') !== '0';
+
+      if (vibPref && 'vibrate' in navigator) {
+        navigator.vibrate([90, 50, 110]);
       }
+      if (soundPref === 'mute') return;
+
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ac = new AudioCtx();
+        const osc = ac.createOscillator();
+        const gain = ac.createGain();
+        osc.connect(gain);
+        gain.connect(ac.destination);
+
+        const now = ac.currentTime;
+        if (soundPref === 'crystal') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, now);
+          osc.frequency.exponentialRampToValueAtTime(1318.5, now + 0.14);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.start(now);
+          osc.stop(now + 0.23);
+        } else {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(587.33, now);
+          osc.frequency.setValueAtTime(783.99, now + 0.11);
+          gain.gain.setValueAtTime(0.09, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+          osc.start(now);
+          osc.stop(now + 0.27);
+        }
+      } catch (e) {}
     }
 
-    const GLOBAL_ALERTS_CATALOG = {
-      huracan: { titulo: 'HURACÁN / TORMENTA TROPICAL', fx: 'rain_storm', tips: ['Resguárdate en un lugar seguro lejos de ventanas.', 'Evita cruzar calles inundadas o pasos a desnivel.', 'Ten a la mano lámpara, batería portátil y documentos.'] },
-      norte: { titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES', fx: 'wind', tips: ['Extrema precaución al conducir en Bulevar Costero y puentes.', 'Aléjate de espectaculares, árboles viejos y cables sueltos.', 'Asegura láminas y objetos sueltos en azoteas.'] },
-      inundacion: { titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL', fx: 'rain_storm', tips: ['No intentes cruzar corrientes de agua en vehículo.', 'Usa vías altas y respeta cierres de Tránsito.', 'Si el agua sube dentro del auto, abandónalo hacia zona alta.'] },
-      granizo: { titulo: 'GRANIZO / TORMENTA ELÉCTRICA', fx: 'rain_storm', tips: ['Oríllate bajo techo seguro si cae granizo intenso.', 'No te resguardes debajo de árboles ni estructuras metálicas.', 'Enciende luces intermitentes si baja la visibilidad.'] },
-      calor: { titulo: 'ONDA DE CALOR EXTREMA', fx: 'heat', tips: ['Hidrátate constantemente aunque no tengas sed.', 'Nunca dejes niños ni mascotas dentro de vehículos estacionados.', 'Evita exposición directa al sol entre 11:00 y 16:00 hrs.'] },
-      frio: { titulo: 'DESCENSO BRUSCO DE TEMPERATURA', fx: 'wind', tips: ['Abrígate por capas y protege a niños y adultos mayores.', 'Ventila habitaciones si usas calefactores.', 'Precaución por neblina en carreteras hacia Altamira.'] },
-      incendio: { titulo: 'INCENDIO DE ALTO RIESGO', fx: 'fire', tips: ['Cede el paso total a Bomberos y Protección Civil.', 'Si hay humo denso, cierra ventanas y usa cubrebocas húmedo.', 'No te acerques a grabar para evitar bloquear accesos.'] },
-      gas: { titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA', fx: 'gas', tips: ['Ubica la dirección del viento y aléjate en sentido contrario.', 'Cierra puertas, ventanas y apaga aires acondicionados.', 'No enciendas flamas, cigarros ni interruptores eléctricos.'] },
-      ceniza: { titulo: 'CAÍDA DE CENIZA / PARTÍCULAS EN SUSPENSIÓN', fx: 'ash', tips: ['Usa cubrebocas y protege tus ojos al salir.', 'No uses el limpiaparabrisas en seco (raya el cristal).', 'Barre la ceniza en seco; no la arrojes al drenaje.'] },
-      sismo: { titulo: 'ACTIVIDAD SÍSMICA DETECTADA', fx: 'quake', tips: ['Mantén la calma y ubícate en zonas de menor riesgo.', 'Aléjate de ventanas, vidrios y objetos que puedan caer.', 'Después del movimiento, revisa instalaciones de gas y luz.'] }
-    };
-
+    // =========================================================
+    // 3. MAPA ESRI ARCGIS & AVATARES
+    // =========================================================
     const map = L.map('map', { zoomControl: false }).setView(userCoords, 13);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19,
@@ -519,9 +818,44 @@
     setTimeout(() => map.invalidateSize(), 250);
 
     const reportMarkersLayer = L.layerGroup().addTo(map);
+    let tempPickMarker = null;
+
+    function getCurrentTheme() {
+      return localStorage.getItem('crs_theme') || 'minimal';
+    }
+
+    function setTheme(themeName) {
+      localStorage.setItem('crs_theme', themeName);
+      const hasAlert = document.getElementById('globalAlertBanner').classList.contains('visible');
+      document.body.className = `theme-${themeName}` + (hasAlert ? ' has-alert' : '');
+      const icons = { minimal: '◻', arcade: '👾', pastel: '🌸', gold: '👑' };
+      document.getElementById('themeToggleBtn').textContent = icons[themeName] || '◻';
+      refreshUserMarker();
+      renderReportsOnMap();
+      if (routeLayer) {
+        const cMap = { minimal: '#111318', arcade: '#00ff66', pastel: '#f06292', gold: '#d4af37' };
+        routeLayer.setStyle({ color: cMap[themeName] || '#111318' });
+      }
+    }
+
+    window.setTheme = setTheme;
+    window.tryGoldTheme = () => {
+      const unlocked = currentProfile && (
+        currentProfile.rol === 'admin' ||
+        currentProfile.auxilios_completados >= 3 ||
+        currentProfile.reportes_confirmados >= 15 ||
+        (currentProfile.tema_desbloqueado_hasta && new Date(currentProfile.tema_desbloqueado_hasta) > new Date())
+      );
+      if (!unlocked) {
+        showToast('👑 Completa 3 auxilios o 15 reportes confirmados para desbloquear');
+        return;
+      }
+      setTheme('gold');
+      showToast('👑 Apariencia Edición Dorada activada');
+    };
 
     function getUserAvatarHTML() {
-      const theme = THEMES[currentThemeIdx];
+      const theme = getCurrentTheme();
       const isWalking = userSpeedKmh < 6 && !simInterval;
       if (theme === 'arcade') {
         const tilt = Math.max(-14, Math.min(14, Math.sin(userHeading * Math.PI / 180) * 14));
@@ -544,14 +878,15 @@
             <rect x="11" y="15" width="14" height="6" rx="2" fill="#ff94b8"/>
           </svg></div>`;
       }
+      const strokeC = theme === 'gold' ? '#d4af37' : '#111111';
+      const bodyC = theme === 'gold' ? '#1c1915' : '#ffffff';
       const rot = isWalking ? 0 : userHeading;
       return `<div style="width:40px;height:40px;display:grid;place-items:center;transform:rotate(${rot}deg);transition:transform 0.25s ease;">
         <svg width="34" height="34" viewBox="0 0 36 36">
-          <ellipse cx="18" cy="19" rx="10" ry="14" fill="rgba(0,0,0,0.18)"/>
-          <rect x="9" y="4" width="18" height="28" rx="7" fill="#ffffff" stroke="#111111" stroke-width="2.2"/>
-          <path d="M11 11 Q18 8 25 11 L24 15 L12 15 Z" fill="#1a1a1a"/>
-          <path d="M12 22 L24 22 L23 26 Q18 28 13 26 Z" fill="#1a1a1a"/>
-          <rect x="12" y="15" width="12" height="7" rx="1.5" fill="#f0f0f0"/>
+          <ellipse cx="18" cy="19" rx="10" ry="14" fill="rgba(0,0,0,0.22)"/>
+          <rect x="9" y="4" width="18" height="28" rx="7" fill="${bodyC}" stroke="${strokeC}" stroke-width="2.2"/>
+          <path d="M11 11 Q18 8 25 11 L24 15 L12 15 Z" fill="${strokeC}"/>
+          <path d="M12 22 L24 22 L23 26 Q18 28 13 26 Z" fill="${strokeC}"/>
         </svg></div>`;
     }
 
@@ -565,9 +900,216 @@
       userMarker.setIcon(L.divIcon({ className: '', html: getUserAvatarHTML(), iconSize: [44, 44], iconAnchor: [22, 22] }));
     }
 
+    // Marcar ubicación exacta en el mapa para reportar
+    map.on('click', (e) => {
+      if (!isPickingMapPoint) return;
+      reportCustomCoords = [e.latlng.lat, e.latlng.lng];
+      if (tempPickMarker) map.removeLayer(tempPickMarker);
+      tempPickMarker = L.marker(reportCustomCoords).addTo(map);
+      isPickingMapPoint = false;
+      document.getElementById('pickPointBanner').classList.remove('visible');
+      document.getElementById('reportCoordsLabel').textContent = `📍 Punto marcado en el mapa (${reportCustomCoords[0].toFixed(4)}, ${reportCustomCoords[1].toFixed(4)})`;
+      document.getElementById('reportModal').classList.add('open');
+    });
+
+    // =========================================================
+    // 4. BÚSQUEDA REAL DE DIRECCIONES (NOMINATIM + OSRM)
+    // =========================================================
+    async function geocodeTampicoSur(queryText) {
+      const q = encodeURIComponent(`${queryText}, Tamaulipas, Mexico`);
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${q}&limit=1&viewbox=-98.05,22.50,-97.75,22.15&bounded=0`;
+      const res = await fetch(url);
+      const list = await res.json();
+      if (list && list.length > 0) {
+        return { lat: parseFloat(list[0].lat), lng: parseFloat(list[0].lon), display: list[0].display_name.split(',')[0] };
+      }
+      return null;
+    }
+
+    async function drawRealRoute(destLatLng, labelText = '') {
+      try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${destLatLng[1]},${destLatLng[0]}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.routes && data.routes.length > 0) {
+          const r = data.routes[0];
+          currentRouteCoords = r.geometry.coordinates.map(c => [c[1], c[0]]);
+          if (routeLayer) map.removeLayer(routeLayer);
+          const cMap = { minimal: '#111318', arcade: '#00ff66', pastel: '#f06292', gold: '#d4af37' };
+          routeLayer = L.polyline(currentRouteCoords, { color: cMap[getCurrentTheme()] || '#111318', weight: 5, opacity: 0.85 }).addTo(map);
+          map.fitBounds(routeLayer.getBounds(), { padding: [60, 130] });
+          document.getElementById('routeStatsLabel').textContent = `${labelText ? labelText + ' • ' : ''}${(r.distance / 1000).toFixed(1)} km (${Math.round(r.duration / 60)} min)`;
+          document.getElementById('clearActiveRouteBtn').style.display = 'inline-flex';
+        }
+      } catch (e) {
+        showToast('No se pudo calcular la ruta');
+      }
+    }
+
+    function clearActiveRoute() {
+      if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
+      currentRouteCoords = [];
+      activeRouteId = null;
+      document.getElementById('routeStatsLabel').textContent = '';
+      document.getElementById('clearActiveRouteBtn').style.display = 'none';
+      renderSavedRoutesUI();
+    }
+
+    document.getElementById('clearActiveRouteBtn').addEventListener('click', clearActiveRoute);
+
+    document.getElementById('searchRouteBtn').addEventListener('click', async () => {
+      const txt = document.getElementById('destInput').value.trim();
+      if (!txt) return;
+      showToast('🔍 Buscando ubicación...');
+      const geo = await geocodeTampicoSur(txt);
+      if (!geo) {
+        showToast('No se encontró ese lugar en la zona conurbada');
+        return;
+      }
+      activeRouteId = 'search';
+      renderSavedRoutesUI();
+      await drawRealRoute([geo.lat, geo.lng], geo.display);
+    });
+
+    // =========================================================
+    // 5. TRAYECTOS GUARDADOS CON ALARMAS Y FRECTUENCIA
+    // =========================================================
+    async function loadUserSavedRoutes() {
+      if (!currentUser) {
+        savedRoutes = JSON.parse(localStorage.getItem('crs_local_routes') || '[]');
+        renderSavedRoutesUI();
+        return;
+      }
+      const { data } = await sb.from('trayectos_guardados').select('*').eq('user_id', currentUser.id).order('creado_en', { ascending: false });
+      savedRoutes = data || [];
+      renderSavedRoutesUI();
+    }
+
+    function renderSavedRoutesUI() {
+      const bottomRow = document.getElementById('bottomSavedRoutesRow');
+      const drawerList = document.getElementById('drawerRoutesList');
+
+      if (!savedRoutes || savedRoutes.length === 0) {
+        bottomRow.innerHTML = `<span style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Sin trayectos activos. Busca una calle arriba o programa tus alarmas en ☰.</span>`;
+        drawerList.innerHTML = `<div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Aún no has guardado trayectos con alarma.</div>`;
+        return;
+      }
+
+      bottomRow.innerHTML = savedRoutes.map(rt => {
+        const isSel = activeRouteId === rt.id;
+        return `<button class="route-chip ${isSel ? 'selected' : ''} arcade-xs" onclick="toggleSavedRoute(${rt.id})">
+          🧭 ${rt.nombre} (${rt.hora_salida.slice(0,5)})
+        </button>`;
+      }).join('');
+
+      drawerList.innerHTML = savedRoutes.map(rt => {
+        const freqText = rt.tipo_frecuencia === 'fecha_unica'
+          ? `📅 ${rt.fecha_especifica}`
+          : `🔁 ${(rt.dias_semana || []).join(', ')}`;
+        return `<div class="list-item" style="padding:8px 10px;">
+          <div style="min-width:0;">
+            <strong style="font-size:11px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" class="arcade-xs">${rt.nombre}</strong>
+            <div style="font-size:9.5px;color:var(--text-secondary);" class="arcade-xs">⏰ ${rt.hora_salida.slice(0,5)} (-${rt.minutos_anticipacion}m) • ${freqText}</div>
+          </div>
+          <div style="display:flex;gap:4px;">
+            <button class="chip-btn arcade-xs" style="padding:4px 7px;" onclick="toggleSavedRoute(${rt.id})">Ver</button>
+            <button class="chip-btn arcade-xs" style="padding:4px 7px;color:var(--danger-bg);" onclick="deleteSavedRoute(${rt.id})">✕</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    window.toggleSavedRoute = async (id) => {
+      if (activeRouteId === id) {
+        clearActiveRoute();
+        return;
+      }
+      const rt = savedRoutes.find(r => r.id === id);
+      if (!rt) return;
+      activeRouteId = id;
+      renderSavedRoutesUI();
+      closeSideDrawer();
+      await drawRealRoute([rt.destino_lat, rt.destino_lng], rt.nombre);
+    };
+
+    window.deleteSavedRoute = async (id) => {
+      if (activeRouteId === id) clearActiveRoute();
+      if (currentUser) {
+        await sb.from('trayectos_guardados').delete().eq('id', id);
+      } else {
+        savedRoutes = savedRoutes.filter(r => r.id !== id);
+        localStorage.setItem('crs_local_routes', JSON.stringify(savedRoutes));
+      }
+      await loadUserSavedRoutes();
+      showToast('Trayecto eliminado');
+    };
+
+    // Guardado de trayecto programado
+    let selectedFreqType = 'dias_semana';
+    document.getElementById('freqDaysBtn').addEventListener('click', () => {
+      selectedFreqType = 'dias_semana';
+      document.getElementById('freqDaysBtn').classList.add('active');
+      document.getElementById('freqDateBtn').classList.remove('active');
+      document.getElementById('daysSelectorBox').style.display = 'flex';
+      document.getElementById('routeSpecificDateInput').style.display = 'none';
+    });
+    document.getElementById('freqDateBtn').addEventListener('click', () => {
+      selectedFreqType = 'fecha_unica';
+      document.getElementById('freqDateBtn').classList.add('active');
+      document.getElementById('freqDaysBtn').classList.remove('active');
+      document.getElementById('daysSelectorBox').style.display = 'none';
+      document.getElementById('routeSpecificDateInput').style.display = 'block';
+    });
+    document.querySelectorAll('.day-pill').forEach(el => el.addEventListener('click', () => el.classList.toggle('on')));
+
+    document.getElementById('saveScheduledRouteBtn').addEventListener('click', async () => {
+      const nombre = document.getElementById('routeNameInput').value.trim() || 'Trayecto Habitual';
+      const destTxt = document.getElementById('routeDestTextInput').value.trim();
+      const hora = document.getElementById('routeTimeInput').value || '07:00';
+      const anticipacion = parseInt(document.getElementById('routeAdvanceSelect').value, 10);
+      if (!destTxt) { showToast('Escribe un destino'); return; }
+
+      const geo = await geocodeTampicoSur(destTxt);
+      if (!geo) { showToast('No se encontró ese destino en la zona'); return; }
+
+      const dias = Array.from(document.querySelectorAll('.day-pill.on')).map(d => d.dataset.day);
+      const fechaEsp = document.getElementById('routeSpecificDateInput').value || null;
+
+      const payload = {
+        nombre,
+        origen_lat: userCoords[0],
+        origen_lng: userCoords[1],
+        destino_texto: geo.display,
+        destino_lat: geo.lat,
+        destino_lng: geo.lng,
+        hora_salida: hora,
+        tipo_frecuencia: selectedFreqType,
+        dias_semana: dias,
+        fecha_especifica: selectedFreqType === 'fecha_unica' ? fechaEsp : null,
+        minutos_anticipacion: anticipacion
+      };
+
+      if (currentUser) {
+        payload.user_id = currentUser.id;
+        await sb.from('trayectos_guardados').insert([payload]);
+      } else {
+        payload.id = Date.now();
+        savedRoutes.unshift(payload);
+        localStorage.setItem('crs_local_routes', JSON.stringify(savedRoutes));
+      }
+
+      document.getElementById('routePlannerModal').classList.remove('open');
+      await loadUserSavedRoutes();
+      playSubtleNotification();
+      showToast('⏰ Trayecto programado con aviso automático');
+    });
+
+    // =========================================================
+    // 6. REPORTES CIUDADANOS (GPS O PUNTO MARCADO EN MAPA)
+    // =========================================================
     function getPinHTML(rep) {
-      const theme = THEMES[currentThemeIdx];
-      const symbolMap = {
+      const theme = getCurrentTheme();
+      const icons = {
         'Lluvia fuerte / Chubasco': '🌧',
         'Viento / Rachas de Norte': '💨',
         'Calle inundada / Encharcamiento': '🌊',
@@ -575,14 +1117,10 @@
         'Choque / Accidente vial': '💥',
         'Calle cerrada / Obra / Cable caído': '🚧'
       };
-      const iconChar = symbolMap[rep.subtipo] || '⚠️';
-      if (theme === 'arcade') {
-        return `<div style="background:#0b0e17;border:2px solid #00ff66;color:#00ff66;width:34px;height:34px;display:grid;place-items:center;font-size:14px;box-shadow:0 3px 0 #005522;position:relative;">${iconChar}<span style="position:absolute;bottom:-6px;right:-6px;background:#00ff66;color:#0b0e17;font-size:8px;padding:1px 3px;font-weight:800;">${rep.confirmaciones}</span></div>`;
-      }
-      if (theme === 'pastel') {
-        return `<div style="background:#fff9fb;border:2.5px solid #f06292;color:#4a3541;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 4px 10px rgba(240,98,146,0.28);position:relative;">${iconChar}<span style="position:absolute;bottom:-3px;right:-3px;background:#f06292;color:#fff;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span></div>`;
-      }
-      return `<div style="background:#000000;border:2px solid #ffffff;color:#ffffff;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 4px 12px rgba(0,0,0,0.28);position:relative;">${iconChar}<span style="position:absolute;bottom:-3px;right:-3px;background:#ffffff;color:#000000;border:1.5px solid #000;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span></div>`;
+      const ch = icons[rep.subtipo] || '⚠️';
+      const bg = theme === 'arcade' ? '#0b0e17' : (theme === 'pastel' ? '#fff9fb' : (theme === 'gold' ? '#141210' : '#111318'));
+      const bd = theme === 'arcade' ? '#00ff66' : (theme === 'pastel' ? '#f06292' : (theme === 'gold' ? '#d4af37' : '#ffffff'));
+      return `<div style="background:${bg};border:2px solid ${bd};width:36px;height:36px;border-radius:${theme === 'arcade' ? '4px' : '50%'};display:grid;place-items:center;font-size:15px;box-shadow:0 4px 12px rgba(0,0,0,0.28);position:relative;">${ch}<span style="position:absolute;bottom:-3px;right:-3px;background:${bd};color:${bg};font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span></div>`;
     }
 
     function renderReportsOnMap() {
@@ -597,229 +1135,81 @@
       });
     }
 
-    const fxCanvas = document.getElementById('fxCanvas');
-    const ctx = fxCanvas.getContext('2d');
-    let fxAnimId = null;
-    let fxTimeout = null;
-    let fxParticles = [];
-
-    function resizeCanvas() {
-      fxCanvas.width = window.innerWidth;
-      fxCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    function triggerAlertBurst(fxType) {
-      if (fxAnimId) cancelAnimationFrame(fxAnimId);
-      if (fxTimeout) clearTimeout(fxTimeout);
-      const theme = THEMES[currentThemeIdx];
-      fxParticles = [];
-      const count = fxType === 'wind' ? 45 : 75;
-      for (let i = 0; i < count; i++) {
-        fxParticles.push({
-          x: Math.random() * fxCanvas.width,
-          y: Math.random() * fxCanvas.height,
-          vx: fxType === 'wind' ? (7 + Math.random() * 8) : (fxType === 'rain_storm' ? -2.5 : (Math.random() - 0.5) * 1.6),
-          vy: fxType === 'rain_storm' ? (11 + Math.random() * 7) : (fxType === 'fire' || fxType === 'heat' ? -(1.5 + Math.random() * 2.5) : (0.6 + Math.random() * 1.4)),
-          size: 2 + Math.random() * 4
-        });
-      }
-      fxCanvas.classList.add('active');
-      document.getElementById('alertEdgeFlash').classList.add('active');
-      let tick = 0;
-      function drawFx() {
-        tick++;
-        ctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
-        const palette = {
-          minimal: { rain: 'rgba(30,60,110,0.45)', wind: 'rgba(20,20,20,0.32)', fire: 'rgba(225,25,0,0.5)', gas: 'rgba(130,80,200,0.28)', ash: 'rgba(70,70,70,0.4)', heat: 'rgba(235,110,0,0.32)', quake: '#111111' },
-          arcade: { rain: '#00e5ff', wind: '#00ff66', fire: '#ff2a55', gas: '#d500f9', ash: '#b0bec5', heat: '#ff9100', quake: '#00ff66' },
-          pastel: { rain: 'rgba(100,181,246,0.55)', wind: 'rgba(240,98,146,0.4)', fire: 'rgba(255,112,67,0.5)', gas: 'rgba(186,104,200,0.38)', ash: 'rgba(144,164,174,0.45)', heat: 'rgba(255,167,38,0.42)', quake: '#f06292' }
-        }[theme];
-        const colorKey = fxType === 'rain_storm' ? 'rain' : fxType;
-        ctx.strokeStyle = palette[colorKey] || palette.wind;
-        ctx.fillStyle = palette[colorKey] || palette.wind;
-        if (fxType === 'quake') {
-          ctx.lineWidth = theme === 'arcade' ? 3 : 2;
-          ctx.beginPath();
-          const baseY = fxCanvas.height * 0.5;
-          for (let x = 0; x < fxCanvas.width; x += 8) {
-            const amp = Math.sin((x + tick * 14) * 0.04) * 28 * Math.sin(tick * 0.15);
-            if (x === 0) ctx.moveTo(x, baseY + amp); else ctx.lineTo(x, baseY + amp);
-          }
-          ctx.stroke();
-        } else {
-          fxParticles.forEach(p => {
-            p.x += p.vx; p.y += p.vy;
-            if (p.x > fxCanvas.width) p.x = 0; if (p.x < 0) p.x = fxCanvas.width;
-            if (p.y > fxCanvas.height) p.y = 0; if (p.y < 0) p.y = fxCanvas.height;
-            if (theme === 'arcade') {
-              const s = Math.round(p.size * 1.5);
-              ctx.fillRect(Math.round(p.x), Math.round(p.y), fxType === 'wind' ? s * 4 : s, fxType === 'rain_storm' ? s * 3 : s);
-            } else if (fxType === 'wind') {
-              ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 36, p.y); ctx.stroke();
-            } else if (fxType === 'rain_storm') {
-              ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 4, p.y + 16); ctx.stroke();
-            } else {
-              ctx.beginPath(); ctx.arc(p.x, p.y, fxType === 'gas' ? p.size * 5 : p.size, 0, Math.PI * 2); ctx.fill();
-            }
-          });
-        }
-        fxAnimId = requestAnimationFrame(drawFx);
-      }
-      drawFx();
-      fxTimeout = setTimeout(() => {
-        fxCanvas.classList.remove('active');
-        document.getElementById('alertEdgeFlash').classList.remove('active');
-        setTimeout(() => { if (fxAnimId) cancelAnimationFrame(fxAnimId); }, 650);
-      }, 4000);
-    }
-
-    async function fetchRealWeather() {
-      try {
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${userCoords[0]}&longitude=${userCoords[1]}&current=temperature_2m,apparent_temperature,precipitation,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability,cape&forecast_days=1&timezone=auto`;
-        const res = await fetch(url);
-        const data = await res.json();
-        const c = data.current;
-        const prob = data.hourly?.precipitation_probability?.[0] ?? 0;
-        const cape = data.hourly?.cape?.[0] ?? 0;
-        const stormText = cape > 1000 ? '⚡ Inestabilidad eléctrica' : '✓ Sin tormenta severa';
-        document.getElementById('topWeatherLine').textContent = `${Math.round(c.temperature_2m)}°C • Viento ${Math.round(c.wind_speed_10m)} km/h (rachas ${Math.round(c.wind_gusts_10m)}) • Lluvia ${prob}%`;
-        document.getElementById('weatherDetailBox').innerHTML = `Temp: <strong>${Math.round(c.temperature_2m)}°C</strong> (ST ${Math.round(c.apparent_temperature)}°C)<br>Viento: <strong>${Math.round(c.wind_speed_10m)} km/h</strong> • Rachas <strong>${Math.round(c.wind_gusts_10m)} km/h</strong><br>Prob. lluvia: <strong>${prob}%</strong> • ${stormText}`;
-      } catch (e) {
-        document.getElementById('topWeatherLine').textContent = 'EIDOS LABs • Clima local activo';
-      }
-    }
-
-    const PRESET_DESTS = { altamira: [22.4167, -97.9150], centro: [22.2160, -97.8575], miramar: [22.2755, -97.8012] };
-    let currentRouteCoords = [];
-
-    async function drawRealRoute(destLatLng) {
-      try {
-        const url = `https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${destLatLng[1]},${destLatLng[0]}?overview=full&geometries=geojson`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if (data.routes && data.routes.length > 0) {
-          const r = data.routes[0];
-          currentRouteCoords = r.geometry.coordinates.map(c => [c[1], c[0]]);
-          if (routeLayer) map.removeLayer(routeLayer);
-          const color = THEMES[currentThemeIdx] === 'arcade' ? '#00ff66' : (THEMES[currentThemeIdx] === 'pastel' ? '#f06292' : '#000000');
-          routeLayer = L.polyline(currentRouteCoords, { color, weight: 5, opacity: 0.85 }).addTo(map);
-          map.fitBounds(routeLayer.getBounds(), { padding: [70, 140] });
-          document.getElementById('routeStatsLabel').textContent = `${(r.distance / 1000).toFixed(1)} km • ${Math.round(r.duration / 60)} min reales`;
-        }
-      } catch (e) {}
-    }
-
-    async function loadInitialData() {
-      const pill = document.getElementById('dbStatusPill');
-      if (!sb) {
-        pill.textContent = 'LOCAL';
-        pill.classList.add('offline');
-        return;
-      }
-      try {
-        const { data: reps, error: errRep } = await sb.from('reportes').select('*').eq('oculto', false).lt('votos_despejado', 3).order('creado_en', { ascending: false });
-        if (errRep) throw errRep;
-        activeReports = reps || [];
-        renderReportsOnMap();
-
-        const { data: alerts } = await sb.from('alertas_globales').select('*').eq('activa', true).order('creado_en', { ascending: false }).limit(1);
-        if (alerts && alerts.length > 0) applyGlobalAlertUI(alerts[0], false);
-
-        await loadAuxilioList();
-        pill.textContent = 'EN VIVO';
-        pill.classList.remove('offline');
-      } catch (e) {
-        pill.textContent = 'LOCAL';
-        pill.classList.add('offline');
-      }
-    }
-
-    function subscribeRealtime() {
-      if (!sb) return;
-      sb.channel('climaruta-live')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'reportes' }, payload => {
-          if (payload.eventType === 'INSERT' && !payload.new.oculto && payload.new.votos_despejado < 3) {
-            if (!activeReports.some(r => r.id === payload.new.id)) {
-              activeReports.unshift(payload.new);
-              renderReportsOnMap();
-              showToast(`📍 Nuevo reporte: ${payload.new.subtipo}`);
-            }
-          } else if (payload.eventType === 'UPDATE') {
-            const idx = activeReports.findIndex(r => r.id === payload.new.id);
-            if (payload.new.oculto || payload.new.votos_despejado >= 3) {
-              if (idx !== -1) activeReports.splice(idx, 1);
-              showToast('✓ Reporte despejado (3/3)');
-            } else if (idx !== -1) {
-              activeReports[idx] = payload.new;
-            }
-            renderReportsOnMap();
-          }
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas_globales' }, payload => {
-          if (payload.new && payload.new.activa) applyGlobalAlertUI(payload.new, true);
-          else hideGlobalAlertUI();
-        })
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'auxilio_vial' }, () => loadAuxilioList())
-        .subscribe();
-    }
-
-    function applyGlobalAlertUI(alertRow, playEffect) {
-      const banner = document.getElementById('globalAlertBanner');
-      const cfg = GLOBAL_ALERTS_CATALOG[alertRow.tipo] || { titulo: alertRow.titulo, fx: 'wind', tips: alertRow.precauciones || [] };
-      document.getElementById('alertBannerTitle').textContent = `🚨 ${alertRow.titulo} • ${alertRow.zona}`;
-      document.getElementById('alertZoneText').textContent = `Zona afectada: ${alertRow.zona}`;
-      const ul = document.getElementById('alertTipsList');
-      ul.innerHTML = '';
-      (alertRow.precauciones || cfg.tips).forEach(t => {
-        const li = document.createElement('li'); li.textContent = t; ul.appendChild(li);
-      });
-      banner.classList.add('visible');
-      document.body.classList.add('has-alert');
-      banner.dataset.fx = cfg.fx;
-      if (playEffect) triggerAlertBurst(cfg.fx);
-    }
-
-    function hideGlobalAlertUI() {
-      document.getElementById('globalAlertBanner').classList.remove('visible');
-      document.body.classList.remove('has-alert');
-    }
-
     function openPinDetail(rep) {
       selectedReportId = rep.id;
       document.getElementById('pinModalTitle').textContent = rep.subtipo;
       document.getElementById('pinModalMeta').textContent = `Ubicación: ${rep.colonia || 'Zona Conurbada'}`;
       document.getElementById('pinConfirmCount').textContent = rep.confirmaciones;
       document.getElementById('pinClearCount').textContent = rep.votos_despejado;
-      document.getElementById('adminDeletePinBtn').style.display = isAdmin ? 'block' : 'none';
+
+      // Solo si el usuario autenticado tiene rol === 'admin' en la base de datos se inyecta el botón de sanción
+      const adminBox = document.getElementById('adminPinActionsContainer');
+      adminBox.innerHTML = '';
+      if (currentProfile && currentProfile.rol === 'admin') {
+        const delBtn = document.createElement('button');
+        delBtn.className = 'danger-btn arcade-xs';
+        delBtn.textContent = '🛡️ [Admin] Eliminar reporte y sancionar dispositivo';
+        delBtn.onclick = async () => {
+          await sb.from('reportes').update({ oculto: true }).eq('id', rep.id);
+          await sb.from('dispositivos_moderacion').upsert({ device_id: rep.device_id, shadowban: true, reportes_falsos: 1 });
+          document.getElementById('pinModal').classList.remove('open');
+          showToast('🛡️ Reporte eliminado por Admin');
+        };
+        adminBox.appendChild(delBtn);
+      }
       document.getElementById('pinModal').classList.add('open');
     }
 
+    document.getElementById('useCurrentGpsBtn').addEventListener('click', () => {
+      reportCustomCoords = null;
+      if (tempPickMarker) { map.removeLayer(tempPickMarker); tempPickMarker = null; }
+      document.getElementById('useCurrentGpsBtn').classList.add('active');
+      document.getElementById('pickOnMapBtn').classList.remove('active');
+      document.getElementById('reportCoordsLabel').textContent = 'Usando tu ubicación GPS actual';
+    });
+
+    document.getElementById('pickOnMapBtn').addEventListener('click', () => {
+      document.getElementById('reportModal').classList.remove('open');
+      isPickingMapPoint = true;
+      document.getElementById('pickPointBanner').classList.add('visible');
+    });
+
+    document.getElementById('cancelPickPointBtn').addEventListener('click', () => {
+      isPickingMapPoint = false;
+      document.getElementById('pickPointBanner').classList.remove('visible');
+      document.getElementById('reportModal').classList.add('open');
+    });
+
     document.getElementById('submitReportBtn').addEventListener('click', async () => {
-      const btn = document.getElementById('submitReportBtn');
-      btn.disabled = true; btn.textContent = 'Publicando...';
-      try {
-        const { data: mod } = await sb.from('dispositivos_moderacion').select('shadowban').eq('device_id', deviceId).maybeSingle();
-        const isShadowbanned = mod?.shadowban === true;
-        const colonia = document.getElementById('reportColoniaInput').value.trim() || 'Zona Conurbada';
-        const { data, error } = await sb.from('reportes').insert([{
-          tipo: pickedReportType.tipo, subtipo: pickedReportType.subtipo,
-          lat: userCoords[0] + (Math.random() - 0.5) * 0.002,
-          lng: userCoords[1] + (Math.random() - 0.5) * 0.002,
-          colonia, device_id: deviceId, oculto: isShadowbanned
-        }]).select().single();
-        if (error) throw error;
-        if (data && !isShadowbanned && !activeReports.some(r => r.id === data.id)) {
-          activeReports.unshift(data); renderReportsOnMap();
+      const { data: mod } = await sb.from('dispositivos_moderacion').select('shadowban').eq('device_id', deviceId).maybeSingle();
+      const isShadowbanned = mod?.shadowban === true;
+      const targetCoords = reportCustomCoords || [userCoords[0] + (Math.random() - 0.5) * 0.0015, userCoords[1] + (Math.random() - 0.5) * 0.0015];
+      const colonia = document.getElementById('reportColoniaInput').value.trim() || 'Zona Conurbada';
+
+      const { data, error } = await sb.from('reportes').insert([{
+        tipo: pickedReportType.tipo,
+        subtipo: pickedReportType.subtipo,
+        lat: targetCoords[0],
+        lng: targetCoords[1],
+        colonia,
+        device_id: deviceId,
+        oculto: isShadowbanned
+      }]).select().single();
+
+      if (tempPickMarker) { map.removeLayer(tempPickMarker); tempPickMarker = null; }
+      reportCustomCoords = null;
+      document.getElementById('reportModal').classList.remove('open');
+      document.getElementById('reportColoniaInput').value = '';
+
+      if (!error && data && !isShadowbanned) {
+        if (!activeReports.some(r => r.id === data.id)) { activeReports.unshift(data); renderReportsOnMap(); }
+        if (currentProfile) {
+          await sb.from('perfiles_usuarios').update({ reportes_confirmados: (currentProfile.reportes_confirmados || 0) + 1 }).eq('id', currentProfile.id);
         }
-        document.getElementById('reportModal').classList.remove('open');
-        document.getElementById('reportColoniaInput').value = '';
+        playSubtleNotification();
         showToast('✓ Reporte publicado en tiempo real');
-      } catch (err) {
-        showToast(`Error: ${err.message || 'Revisa conexión'}`);
-      } finally {
-        btn.disabled = false; btn.textContent = 'Publicar Reporte Ahora';
+      } else if (error) {
+        showToast(`Error: ${error.message}`);
       }
     });
 
@@ -840,183 +1230,115 @@
       showToast(nextVotes >= 3 ? '✓ Despejado (3/3)' : `✓ Voto registrado (${nextVotes}/3)`);
     });
 
-    document.getElementById('adminDeletePinBtn').addEventListener('click', async () => {
-      const rep = activeReports.find(r => r.id === selectedReportId);
-      if (!rep) return;
-      await sb.from('reportes').update({ oculto: true }).eq('id', rep.id);
-      await sb.from('dispositivos_moderacion').upsert({ device_id: rep.device_id, shadowban: true, reportes_falsos: 1 });
-      document.getElementById('pinModal').classList.remove('open');
-      showToast('🛡️ Reporte eliminado');
+    // =========================================================
+    // 7. AUXILIO VIAL BIDIRECCIONAL TIPO DIDI + CANCELACIÓN REAL
+    // =========================================================
+    async function loadAuxilioData() {
+      const { data } = await sb.from('auxilio_vial').select('*').in('estado', ['pendiente', 'aceptado']).order('creado_en', { ascending: false }).limit(10);
+      const list = data || [];
+
+      // 1. Verificar si el usuario actual tiene una solicitud activa (como solicitante o voluntario)
+      myActiveAuxilio = currentUser
+        ? list.find(a => a.solicitante_id === currentUser.id || a.voluntario_id === currentUser.id)
+        : list.find(a => a.solicitante_device === deviceId);
+
+      const myBox = document.getElementById('myActiveAuxilioBox');
+      const formBox = document.getElementById('requestAuxilioFormBox');
+
+      if (myActiveAuxilio) {
+        formBox.style.display = 'none';
+        myBox.style.display = 'block';
+        const isVol = currentUser && myActiveAuxilio.voluntario_id === currentUser.id;
+
+        if (myActiveAuxilio.estado === 'pendiente') {
+          myBox.innerHTML = `<div class="list-item" style="flex-direction:column;align-items:stretch;border-color:var(--gold-bg);">
+            <strong style="font-size:12px;" class="arcade-xs">⏳ Buscando voluntario certificado cercano...</strong>
+            <div style="font-size:11px;color:var(--text-secondary);margin:4px 0 8px;" class="arcade-xs">Falla: ${myActiveAuxilio.falla}</div>
+            <button class="danger-btn arcade-xs" onclick="cancelAuxilio(${myActiveAuxilio.id})">✕ Cancelar Solicitud de Ayuda</button>
+          </div>`;
+        } else if (myActiveAuxilio.estado === 'aceptado') {
+          const counterpartName = isVol ? myActiveAuxilio.solicitante_nombre : myActiveAuxilio.voluntario_nombre;
+          const counterpartCar = isVol ? `${myActiveAuxilio.solicitante_vehiculo} (${myActiveAuxilio.solicitante_placas})` : `${myActiveAuxilio.voluntario_vehiculo} (${myActiveAuxilio.voluntario_placas})`;
+          const counterpartStars = isVol ? myActiveAuxilio.solicitante_estrellas : myActiveAuxilio.voluntario_estrellas;
+          myBox.innerHTML = `<div class="list-item" style="flex-direction:column;align-items:stretch;border-color:var(--success-bg);">
+            <strong style="font-size:12px;color:var(--success-bg);" class="arcade-xs">✅ Auxilio en Curso (Identidad Verificada)</strong>
+            <div style="font-size:11px;margin:4px 0;" class="arcade-xs">
+              <strong>${isVol ? 'Conductor:' : 'Voluntario:'}</strong> ${counterpartName} (⭐ ${counterpartStars || '5.0'})<br>
+              <strong>Vehículo:</strong> ${counterpartCar}
+            </div>
+            <div style="display:flex;gap:6px;margin-top:6px;">
+              <button class="primary-btn arcade-xs" style="flex:1;background:var(--success-bg);color:#fff;" onclick="completeAndRateAuxilio(${myActiveAuxilio.id}, ${isVol})">✓ Finalizar y Calificar</button>
+              <button class="chip-btn arcade-xs" style="color:var(--danger-bg);" onclick="cancelAuxilio(${myActiveAuxilio.id})">Cancelar</button>
+            </div>
+          </div>`;
+        }
+      } else {
+        myBox.style.display = 'none';
+        formBox.style.display = 'block';
+      }
+
+      // 2. Si el usuario es Voluntario Certificado disponible, mostrar tarjeta tipo DiDi si hay solicitud pendiente
+      if (currentProfile && currentProfile.voluntario_disponible && currentProfile.estado_verificacion === 'aprobado' && !myActiveAuxilio) {
+        const pending = list.find(a => a.estado === 'pendiente' && a.solicitante_id !== currentUser?.id);
+        if (pending && (!pendingDispatchAuxilio || pendingDispatchAuxilio.id !== pending.id)) {
+          showDidiDispatchCard(pending);
+        } else if (!pending) {
+          hideDidiDispatchCard();
+        }
+      }
+    }
+
+    function showDidiDispatchCard(aux) {
+      pendingDispatchAuxilio = aux;
+      const card = document.getElementById('didiDispatchCard');
+      document.getElementById('didiUserName').textContent = `${aux.solicitante_nombre || 'Ciudadano Verificado'} • ⭐ ${aux.solicitante_estrellas || '5.0'}`;
+      document.getElementById('didiFallaText').textContent = `Falla: ${aux.falla}`;
+      document.getElementById('didiVehiculoText').textContent = `${aux.solicitante_vehiculo || 'Vehículo'} • Placas: ${aux.solicitante_placas || 'Verificadas'}`;
+      card.style.transform = 'translateX(0)';
+      card.style.opacity = '1';
+      card.classList.add('visible');
+      playSubtleNotification();
+    }
+
+    function hideDidiDispatchCard() {
+      pendingDispatchAuxilio = null;
+      document.getElementById('didiDispatchCard').classList.remove('visible');
+    }
+
+    // Gesto deslizable en tarjeta tipo DiDi
+    let touchStartX = 0;
+    const didiCard = document.getElementById('didiDispatchCard');
+    didiCard.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+    didiCard.addEventListener('touchmove', e => {
+      const dx = e.touches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 15) didiCard.style.transform = `translateX(${dx}px)`;
+    });
+    didiCard.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 90) {
+        didiCard.style.transform = `translateX(${dx > 0 ? 400 : -400}px)`;
+        didiCard.style.opacity = '0';
+        setTimeout(hideDidiDispatchCard, 220);
+      } else {
+        didiCard.style.transform = 'translateX(0)';
+      }
     });
 
-    async function loadAuxilioList() {
-      if (!sb) return;
-      const { data } = await sb.from('auxilio_vial').select('*').neq('estado', 'completado').order('creado_en', { ascending: false }).limit(5);
-      const box = document.getElementById('auxilioListContainer');
-      if (!data || data.length === 0) {
-        box.innerHTML = '<div style="font-size:11px;color:var(--text-secondary);" class="arcade-xs">No hay solicitudes activas en este momento.</div>';
-        return;
-      }
-      box.innerHTML = data.map(item => `
-        <div class="list-item">
-          <div>
-            <strong style="font-size:11.5px;" class="arcade-xs">${item.falla}</strong>
-            <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">
-              ${item.estado === 'aceptado' ? `✅ En camino: ${item.voluntario_nombre} • ${item.voluntario_vehiculo} (${item.voluntario_placas})` : '⏳ Esperando voluntario cercano...'}
-            </div>
-          </div>
-          ${item.estado === 'pendiente' ? `<button class="chip-btn active arcade-xs" onclick="acceptAuxilio(${item.id})">Acudir</button>` : `<button class="chip-btn arcade-xs" onclick="finishAuxilio(${item.id})">Cerrar</button>`}
-        </div>`).join('');
-    }
+    document.getElementById('didiDismissBtn').addEventListener('click', hideDidiDispatchCard);
+    document.getElementById('didiAcceptBtn').addEventListener('click', async () => {
+      if (!pendingDispatchAuxilio || !currentProfile) return;
+      const auxId = pendingDispatchAuxilio.id;
+      hideDidiDispatchCard();
+      await sb.from('auxilio_vial').update({
+        estado: 'aceptado',
+        voluntario_id: currentUser.id,
+        voluntario_nombre: currentProfile.nombre_completo,
+        voluntario_vehiculo: currentProfile.vehiculo_modelo || 'Vehículo Verificado',
+        voluntario_placas: currentProfile.vehiculo_placas || 'Verificadas',
+        voluntario_estrellas: currentProfile.estrellas_promedio || 5.0
+      }).eq('id', auxId);
+      showToast('✅ Auxilio aceptado. Ficha compartida.');
+      loadAuxilioData();
+    });
 
     document.getElementById('requestAuxilioBtn').addEventListener('click', async () => {
-      const falla = document.getElementById('sosFallaSelect').value;
-      const { error } = await sb.from('auxilio_vial').insert([{ falla, lat: userCoords[0], lng: userCoords[1], solicitante_device: deviceId }]);
-      if (!error) { showToast('🆘 Solicitud enviada'); loadAuxilioList(); }
-    });
-
-    window.acceptAuxilio = async (id) => {
-      const nombre = prompt('Tu nombre:', 'Voluntario EIDOS LABs') || 'Voluntario';
-      const vehiculo = prompt('Tu vehículo y color:', 'Sedán Blanco') || 'Vehículo';
-      const placas = prompt('Placas:', 'VER-101') || 'Verificado';
-      await sb.from('auxilio_vial').update({ estado: 'aceptado', voluntario_nombre: nombre, voluntario_vehiculo: vehiculo, voluntario_placas: placas }).eq('id', id);
-      showToast('✅ Datos enviados al conductor');
-    };
-
-    window.finishAuxilio = async (id) => {
-      await sb.from('auxilio_vial').update({ estado: 'completado' }).eq('id', id);
-      showToast('✓ Auxilio finalizado');
-    };
-
-    document.getElementById('publishGlobalAlertBtn').addEventListener('click', async () => {
-      const cfg = GLOBAL_ALERTS_CATALOG[pickedAlertKey];
-      const zona = document.getElementById('alertZoneInput').value.trim() || 'Toda la Zona Conurbada';
-      await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
-      const { data, error } = await sb.from('alertas_globales').insert([{ tipo: pickedAlertKey, titulo: cfg.titulo, zona, precauciones: cfg.tips, activa: true }]).select().single();
-      if (!error && data) {
-        applyGlobalAlertUI(data, true);
-        document.getElementById('adminModal').classList.remove('open');
-        showToast('🚨 Alerta global emitida');
-      } else {
-        showToast('Error al emitir alerta');
-      }
-    });
-
-    document.getElementById('clearGlobalAlertBtn').addEventListener('click', async () => {
-      await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
-      hideGlobalAlertUI();
-      document.getElementById('adminModal').classList.remove('open');
-      showToast('✓ Alerta desactivada');
-    });
-
-    document.getElementById('themeToggleBtn').addEventListener('click', () => {
-      currentThemeIdx = (currentThemeIdx + 1) % THEMES.length;
-      const t = THEMES[currentThemeIdx];
-      document.body.className = `theme-${t}` + (document.getElementById('globalAlertBanner').classList.contains('visible') ? ' has-alert' : '');
-      const labels = { minimal: '◻ Minimalista', arcade: '👾 Arcade', pastel: '🌸 Pastel' };
-      document.getElementById('themeToggleBtn').textContent = labels[t];
-      refreshUserMarker(); renderReportsOnMap();
-      if (routeLayer) routeLayer.setStyle({ color: t === 'arcade' ? '#00ff66' : (t === 'pastel' ? '#f06292' : '#000000') });
-    });
-
-    document.getElementById('adminToggleBtn').addEventListener('click', () => {
-      if (!isAdmin) {
-        const pin = prompt('Ingresa el PIN de Administrador:');
-        if (pin !== '2026') { showToast('PIN incorrecto'); return; }
-        isAdmin = true; sessionStorage.setItem('crs_admin_active', '1'); syncAdminUI();
-        showToast('🛡️ Modo Administrador activo');
-      } else {
-        isAdmin = false; sessionStorage.removeItem('crs_admin_active'); syncAdminUI();
-        showToast('Modo Administrador desactivado');
-      }
-    });
-
-    document.getElementById('alertExpandBtn').addEventListener('click', () => {
-      const det = document.getElementById('alertBannerDetails');
-      const isOpen = det.classList.toggle('open');
-      document.getElementById('alertExpandBtn').textContent = isOpen ? 'Ocultar ▲' : 'Precauciones ▼';
-      if (isOpen) triggerAlertBurst(document.getElementById('globalAlertBanner').dataset.fx || 'wind');
-    });
-
-    document.getElementById('compassBtn').addEventListener('click', () => {
-      followHeading = !followHeading;
-      document.getElementById('compassBtn').classList.toggle('active', followHeading);
-      showToast(followHeading ? '🧭 Mapa siguiendo tu ruta' : '🧭 Mapa fijo Norte arriba');
-    });
-
-    document.getElementById('simRouteBtn').addEventListener('click', () => {
-      const btn = document.getElementById('simRouteBtn');
-      if (simInterval) {
-        clearInterval(simInterval); simInterval = null;
-        btn.textContent = '▶ Simular ruta'; btn.classList.remove('running'); refreshUserMarker(); return;
-      }
-      if (currentRouteCoords.length < 2) return;
-      let idx = 0; btn.textContent = '⏹ Detener'; btn.classList.add('running');
-      simInterval = setInterval(() => {
-        if (idx >= currentRouteCoords.length - 1) idx = 0;
-        const p1 = currentRouteCoords[idx], p2 = currentRouteCoords[idx + 1];
-        userCoords = p2;
-        userHeading = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180 / Math.PI;
-        refreshUserMarker();
-        if (followHeading) map.panTo(userCoords);
-        idx++;
-      }, 350);
-    });
-
-    document.querySelectorAll('#reportTypeGrid .opt-card').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#reportTypeGrid .opt-card').forEach(b => b.classList.remove('picked'));
-        btn.classList.add('picked');
-        pickedReportType = { tipo: btn.dataset.tipo, subtipo: btn.dataset.subtipo };
-      });
-    });
-
-    document.querySelectorAll('#globalAlertGrid .opt-card').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('#globalAlertGrid .opt-card').forEach(b => b.classList.remove('picked'));
-        btn.classList.add('picked');
-        pickedAlertKey = btn.dataset.alert;
-      });
-    });
-
-    document.querySelectorAll('.route-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.route-chip').forEach(c => c.classList.remove('selected'));
-        chip.classList.add('selected');
-        drawRealRoute(PRESET_DESTS[chip.dataset.route]);
-      });
-    });
-
-    document.getElementById('openReportBtn').addEventListener('click', () => document.getElementById('reportModal').classList.add('open'));
-    document.getElementById('openSosBtn').addEventListener('click', () => { loadAuxilioList(); document.getElementById('sosModal').classList.add('open'); });
-    document.getElementById('adminPanelFab').addEventListener('click', () => document.getElementById('adminModal').classList.add('open'));
-    document.getElementById('refreshWeatherBtn').addEventListener('click', fetchRealWeather);
-    document.getElementById('locateBtn').addEventListener('click', () => map.setView(userCoords, 15));
-    document.querySelectorAll('.close-btn').forEach(btn => btn.addEventListener('click', () => document.getElementById(btn.dataset.close).classList.remove('open')));
-
-    if ('geolocation' in navigator) {
-      navigator.geolocation.watchPosition(pos => {
-        if (!simInterval) {
-          userCoords = [pos.coords.latitude, pos.coords.longitude];
-          if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
-          userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
-          refreshUserMarker();
-          if (followHeading) map.panTo(userCoords);
-        }
-      }, () => {}, { enableHighAccuracy: true });
-    }
-
-    function showToast(msg) {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 2800);
-    }
-
-    syncAdminUI();
-    fetchRealWeather();
-    drawRealRoute(PRESET_DESTS.altamira);
-    loadInitialData();
-    subscribeRealtime();
-  </script>
-</body>
-</html>
