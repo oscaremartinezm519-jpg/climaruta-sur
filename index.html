@@ -1342,3 +1342,538 @@
     });
 
     document.getElementById('requestAuxilioBtn').addEventListener('click', async () => {
+      if (!currentUser || !currentProfile) {
+        document.getElementById('sosModal').classList.remove('open');
+        document.getElementById('profileModal').classList.add('open');
+        showToast('Inicia sesión y verifica tu identidad para pedir auxilio');
+        return;
+      }
+      if (currentProfile.estado_verificacion !== 'aprobado' && currentProfile.rol !== 'admin') {
+        document.getElementById('sosModal').classList.remove('open');
+        document.getElementById('profileModal').classList.add('open');
+        showToast('Completa tu verificación en vivo en Perfil para pedir auxilio');
+        return;
+      }
+
+      const falla = document.getElementById('sosFallaSelect').value;
+      const { error } = await sb.from('auxilio_vial').insert([{
+        falla,
+        lat: userCoords[0],
+        lng: userCoords[1],
+        solicitante_device: deviceId,
+        solicitante_id: currentUser.id,
+        solicitante_nombre: currentProfile.nombre_completo,
+        solicitante_vehiculo: currentProfile.vehiculo_modelo || 'Vehículo registrado',
+        solicitante_placas: currentProfile.vehiculo_placas || 'Verificadas',
+        solicitante_estrellas: currentProfile.estrellas_promedio || 5.0,
+        estado: 'pendiente'
+      }]);
+
+      if (!error) {
+        showToast('🆘 Solicitud enviada a voluntarios cercanos');
+        loadAuxilioData();
+      }
+    });
+
+    window.cancelAuxilio = async (id) => {
+      await sb.from('auxilio_vial').update({ estado: 'cancelado' }).eq('id', id);
+      myActiveAuxilio = null;
+      showToast('✕ Solicitud cancelada correctamente');
+      loadAuxilioData();
+    };
+
+    window.completeAndRateAuxilio = async (id, isVol) => {
+      const starsStr = prompt('Califica la atención recibida (1 a 5 estrellas):', '5');
+      const stars = Math.max(1, Math.min(5, parseInt(starsStr || '5', 10)));
+      const updateField = isVol ? { calificacion_al_solicitante: stars, estado: 'completado' } : { calificacion_al_voluntario: stars, estado: 'completado' };
+      await sb.from('auxilio_vial').update(updateField).eq('id', id);
+      if (isVol && currentProfile) {
+        await sb.from('perfiles_usuarios').update({ auxilios_completados: (currentProfile.auxilios_completados || 0) + 1 }).eq('id', currentProfile.id);
+      }
+      showToast('⭐ ¡Gracias! Auxilio finalizado y calificado');
+      loadAuxilioData();
+    };
+
+    // =========================================================
+    // 8. AUTENTICACIÓN, PERFIL, VERIFICACIÓN EN VIVO Y HERRAMIENTAS ADMIN
+    // =========================================================
+    async function refreshAuthSession() {
+      const { data: { session } } = await sb.auth.getSession();
+      currentUser = session?.user || null;
+
+      if (currentUser) {
+        const { data: prof } = await sb.from('perfiles_usuarios').select('*').eq('id', currentUser.id).maybeSingle();
+        currentProfile = prof;
+        document.getElementById('topUserLabel').textContent = prof ? prof.nombre_completo.split(' ')[0] : 'Mi Perfil';
+        document.getElementById('authFormsView').style.display = 'none';
+        document.getElementById('loggedProfileView').style.display = 'block';
+        renderProfileData();
+
+        // Si y SOLO SI el rol en Supabase es 'admin', se inyectan las herramientas exclusivas de Administrador
+        if (prof && prof.rol === 'admin') {
+          mountExclusiveAdminTools();
+        } else {
+          unmountExclusiveAdminTools();
+        }
+      } else {
+        currentProfile = null;
+        document.getElementById('topUserLabel').textContent = 'Entrar';
+        document.getElementById('authFormsView').style.display = 'block';
+        document.getElementById('loggedProfileView').style.display = 'none';
+        unmountExclusiveAdminTools();
+      }
+      await loadUserSavedRoutes();
+    }
+
+    function renderProfileData() {
+      if (!currentProfile) return;
+      document.getElementById('profNameLabel').textContent = currentProfile.nombre_completo;
+      const statusLabels = { sin_verificar: 'Sin verificar', pendiente: '⏳ En revisión', aprobado: '✅ Verificado', rechazado: '❌ Rechazado' };
+      document.getElementById('profRoleBadge').textContent = `${currentProfile.rol.toUpperCase()} • ${statusLabels[currentProfile.estado_verificacion] || ''}`;
+      document.getElementById('profStatsLabel').textContent = `⭐ ${currentProfile.estrellas_promedio || '5.0'} • ${currentProfile.auxilios_completados || 0} auxilios • ${currentProfile.reportes_confirmados || 0} reportes`;
+      document.getElementById('profVehiculoInput').value = currentProfile.vehiculo_modelo || '';
+      document.getElementById('profPlacasInput').value = currentProfile.vehiculo_placas || '';
+      document.getElementById('profTipLinkInput').value = currentProfile.enlace_apoyo || '';
+
+      const volBox = document.getElementById('volunteerToggleBox');
+      if (currentProfile.rol === 'voluntario' || currentProfile.rol === 'admin') {
+        volBox.style.display = 'flex';
+        document.getElementById('volDisponibleCheck').checked = !!currentProfile.voluntario_disponible;
+      } else {
+        volBox.style.display = 'none';
+      }
+    }
+
+    // Herramientas exclusivas de Admin (Inyectadas dinámicamente solo tras validación de rol === 'admin')
+    function mountExclusiveAdminTools() {
+      if (document.getElementById('adminAlertTriggerBtn')) return;
+      const controls = document.getElementById('mapControlsContainer');
+
+      const alertBtn = document.createElement('button');
+      alertBtn.id = 'adminAlertTriggerBtn';
+      alertBtn.className = 'ctrl-pill danger arcade-xs';
+      alertBtn.textContent = '🚨 Emitir Alerta';
+      alertBtn.onclick = () => document.getElementById('adminModal').classList.add('open');
+
+      const simBtn = document.createElement('button');
+      simBtn.id = 'adminSimRouteBtn';
+      simBtn.className = 'ctrl-pill arcade-xs';
+      simBtn.textContent = '▶ Simular ruta';
+      simBtn.onclick = toggleAdminRouteSim;
+
+      controls.prepend(simBtn);
+      controls.prepend(alertBtn);
+
+      document.getElementById('adminHostContainer').innerHTML = `
+        <div id="adminModal" class="modal-backdrop">
+          <div class="modal-card">
+            <div class="modal-head">
+              <h2 class="arcade-sm">🛡️ Consola Admin EIDOS LABs</h2>
+              <button class="close-btn" onclick="document.getElementById('adminModal').classList.remove('open')">✕</button>
+            </div>
+            <div class="tabs-row">
+              <button class="tab-btn active arcade-xs" id="admTabAlertBtn">🚨 Alerta Global</button>
+              <button class="tab-btn arcade-xs" id="admTabVerifBtn">🪪 Verificar Usuarios</button>
+            </div>
+            <div id="admAlertsPane">
+              <div class="grid-options" id="globalAlertGrid">
+                <button class="opt-card arcade-xs" data-alert="huracan">🌀 Huracán</button>
+                <button class="opt-card picked arcade-xs" data-alert="norte">💨 Norte Severo</button>
+                <button class="opt-card arcade-xs" data-alert="inundacion">🌊 Inundación</button>
+                <button class="opt-card arcade-xs" data-alert="granizo">⛈️ Granizo</button>
+                <button class="opt-card arcade-xs" data-alert="calor">☀️ Onda Calor</button>
+                <button class="opt-card arcade-xs" data-alert="incendio">🔥 Incendio</button>
+                <button class="opt-card arcade-xs" data-alert="gas">☣️ Fuga Gas</button>
+                <button class="opt-card arcade-xs" data-alert="sismo">📳 Sismo</button>
+              </div>
+              <input id="alertZoneInput" class="input-field arcade-xs" type="text" value="Toda la Zona Conurbada (Tampico, Madero y Altamira)" />
+              <button id="publishGlobalAlertBtn" class="danger-btn arcade-xs">🚨 EMITIR ALERTA GLOBAL</button>
+              <button id="clearGlobalAlertBtn" class="chip-btn arcade-xs" style="width:100%;justify-content:center;margin-top:8px;">✓ Desactivar Alerta Activa</button>
+            </div>
+            <div id="admVerifPane" style="display:none;">
+              <div id="pendingVerifList">Cargando solicitudes...</div>
+            </div>
+          </div>
+        </div>`;
+
+      bindAdminModalEvents();
+    }
+
+    function unmountExclusiveAdminTools() {
+      const b1 = document.getElementById('adminAlertTriggerBtn');
+      const b2 = document.getElementById('adminSimRouteBtn');
+      if (b1) b1.remove();
+      if (b2) b2.remove();
+      document.getElementById('adminHostContainer').innerHTML = '';
+    }
+
+    function toggleAdminRouteSim() {
+      const btn = document.getElementById('adminSimRouteBtn');
+      if (simInterval) {
+        clearInterval(simInterval); simInterval = null;
+        btn.textContent = '▶ Simular ruta'; btn.classList.remove('running'); refreshUserMarker(); return;
+      }
+      if (currentRouteCoords.length < 2) { showToast('Primero traza una ruta en el mapa'); return; }
+      let idx = 0; btn.textContent = '⏹ Detener'; btn.classList.add('running');
+      simInterval = setInterval(() => {
+        if (idx >= currentRouteCoords.length - 1) idx = 0;
+        const p1 = currentRouteCoords[idx], p2 = currentRouteCoords[idx + 1];
+        userCoords = p2;
+        userHeading = Math.atan2(p2[1] - p1[1], p2[0] - p1[0]) * 180 / Math.PI;
+        refreshUserMarker();
+        if (followHeading) map.panTo(userCoords);
+        idx++;
+      }, 350);
+    }
+
+    function bindAdminModalEvents() {
+      let pickedAlert = 'norte';
+      const ALERTS_DEF = {
+        huracan: { titulo: 'HURACÁN / TORMENTA TROPICAL', tips: ['Resguárdate lejos de ventanas.', 'Evita pasos a desnivel inundados.'] },
+        norte: { titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES', tips: ['Precaución en Bulevar Costero y puentes.', 'Aléjate de cables sueltos y espectaculares.'] },
+        inundacion: { titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL', tips: ['No cruces corrientes de agua.', 'Usa vías altas alternas.'] },
+        granizo: { titulo: 'GRANIZO / TORMENTA ELÉCTRICA', tips: ['Oríllate bajo techo seguro.', 'Enciende luces intermitentes.'] },
+        calor: { titulo: 'ONDA DE CALOR EXTREMA', tips: ['Hidrátate constantemente.', 'Evita sol directo de 11:00 a 16:00 hrs.'] },
+        incendio: { titulo: 'INCENDIO DE ALTO RIESGO', tips: ['Cede el paso a Bomberos y Protección Civil.', 'Cierra ventanas ante humo denso.'] },
+        gas: { titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA', tips: ['Aléjate en sentido contrario al viento.', 'No enciendas flamas ni interruptores.'] },
+        sismo: { titulo: 'ACTIVIDAD SÍSMICA DETECTADA', tips: ['Mantén la calma y aléjate de vidrios.', 'Revisa instalaciones de gas tras el sismo.'] }
+      };
+
+      document.querySelectorAll('#globalAlertGrid .opt-card').forEach(b => {
+        b.onclick = () => {
+          document.querySelectorAll('#globalAlertGrid .opt-card').forEach(x => x.classList.remove('picked'));
+          b.classList.add('picked');
+          pickedAlert = b.dataset.alert;
+        };
+      });
+
+      document.getElementById('publishGlobalAlertBtn').onclick = async () => {
+        const cfg = ALERTS_DEF[pickedAlert];
+        const zona = document.getElementById('alertZoneInput').value.trim();
+        await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
+        const { data, error } = await sb.from('alertas_globales').insert([{ tipo: pickedAlert, titulo: cfg.titulo, zona, precauciones: cfg.tips, activa: true }]).select().single();
+        if (!error && data) {
+          applyGlobalAlertUI(data);
+          document.getElementById('adminModal').classList.remove('open');
+          showToast('🚨 Alerta global emitida');
+        }
+      };
+
+      document.getElementById('clearGlobalAlertBtn').onclick = async () => {
+        await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
+        hideGlobalAlertUI();
+        document.getElementById('adminModal').classList.remove('open');
+        showToast('✓ Alerta global desactivada');
+      };
+
+      document.getElementById('admTabAlertBtn').onclick = () => {
+        document.getElementById('admTabAlertBtn').classList.add('active');
+        document.getElementById('admTabVerifBtn').classList.remove('active');
+        document.getElementById('admAlertsPane').style.display = 'block';
+        document.getElementById('admVerifPane').style.display = 'none';
+      };
+
+      document.getElementById('admTabVerifBtn').onclick = async () => {
+        document.getElementById('admTabVerifBtn').classList.add('active');
+        document.getElementById('admTabAlertBtn').classList.remove('active');
+        document.getElementById('admAlertsPane').style.display = 'none';
+        document.getElementById('admVerifPane').style.display = 'block';
+
+        const { data: pend } = await sb.from('perfiles_usuarios').select('*').eq('estado_verificacion', 'pendiente');
+        const box = document.getElementById('pendingVerifList');
+        if (!pend || pend.length === 0) {
+          box.innerHTML = '<div style="font-size:11px;color:var(--text-secondary);" class="arcade-xs">No hay verificaciones pendientes.</div>';
+          return;
+        }
+        box.innerHTML = pend.map(u => `
+          <div class="list-item" style="flex-direction:column;align-items:stretch;">
+            <strong style="font-size:11.5px;" class="arcade-xs">${u.nombre_completo} (${u.rol})</strong>
+            <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Vehículo: ${u.vehiculo_modelo || '-'} • Placas: ${u.vehiculo_placas || '-'}</div>
+            <div style="display:flex;gap:6px;margin-top:6px;">
+              <button class="primary-btn arcade-xs" style="background:var(--success-bg);color:#fff;" onclick="approveUserVerif('${u.id}', 'aprobado')">✓ Aprobar</button>
+              <button class="chip-btn arcade-xs" style="color:var(--danger-bg);" onclick="approveUserVerif('${u.id}', 'rechazado')">✕ Rechazar</button>
+            </div>
+          </div>`).join('');
+      };
+    }
+
+    window.approveUserVerif = async (uid, status) => {
+      await sb.from('perfiles_usuarios').update({ estado_verificacion: status }).eq('id', uid);
+      showToast(`Usuario marcado como ${status}`);
+      document.getElementById('admTabVerifBtn').click();
+    };
+
+    // Registro e Inicio de Sesión
+    document.getElementById('tabLoginBtn').addEventListener('click', () => {
+      document.getElementById('tabLoginBtn').classList.add('active');
+      document.getElementById('tabRegisterBtn').classList.remove('active');
+      document.getElementById('loginBox').style.display = 'block';
+      document.getElementById('registerBox').style.display = 'none';
+    });
+    document.getElementById('tabRegisterBtn').addEventListener('click', () => {
+      document.getElementById('tabRegisterBtn').classList.add('active');
+      document.getElementById('tabLoginBtn').classList.remove('active');
+      document.getElementById('registerBox').style.display = 'block';
+      document.getElementById('loginBox').style.display = 'none';
+    });
+
+    document.getElementById('doLoginBtn').addEventListener('click', async () => {
+      const email = document.getElementById('loginEmailInput').value.trim();
+      const password = document.getElementById('loginPassInput').value;
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+      if (error) { showToast(`Error: ${error.message}`); return; }
+      await refreshAuthSession();
+      showToast('✓ Sesión iniciada');
+    });
+
+    document.getElementById('doRegisterBtn').addEventListener('click', async () => {
+      const nombre_completo = document.getElementById('regNameInput').value.trim();
+      const telefono = document.getElementById('regPhoneInput').value.trim();
+      const email = document.getElementById('regEmailInput').value.trim();
+      const password = document.getElementById('regPassInput').value;
+      const rol = document.getElementById('regRoleSelect').value;
+
+      if (!nombre_completo || !email || password.length < 6) {
+        showToast('Completa nombre, correo y contraseña (mín. 6 caracteres)');
+        return;
+      }
+
+      const { data, error } = await sb.auth.signUp({ email, password });
+      if (error) { showToast(`Error: ${error.message}`); return; }
+      if (data.user) {
+        await sb.from('perfiles_usuarios').insert([{ id: data.user.id, email, nombre_completo, telefono, rol }]);
+        await refreshAuthSession();
+        showToast('✓ Cuenta creada. Completa tu verificación en vivo.');
+      }
+    });
+
+    document.getElementById('submitVerificationBtn').addEventListener('click', async () => {
+      if (!currentUser) return;
+      const vehiculo_modelo = document.getElementById('profVehiculoInput').value.trim();
+      const vehiculo_placas = document.getElementById('profPlacasInput').value.trim();
+      const enlace_apoyo = document.getElementById('profTipLinkInput').value.trim();
+      const selfieFile = document.getElementById('liveSelfieInput').files[0];
+      const ineFile = document.getElementById('liveIneInput').files[0];
+
+      let selfie_url = currentProfile?.selfie_url || null;
+      let ine_url = currentProfile?.ine_url || null;
+
+      if (selfieFile) {
+        const path = `${currentUser.id}/selfie_${Date.now()}.jpg`;
+        const { error: upErr } = await sb.storage.from('verificaciones_id').upload(path, selfieFile);
+        if (!upErr) selfie_url = path;
+      }
+      if (ineFile) {
+        const path = `${currentUser.id}/ine_${Date.now()}.jpg`;
+        const { error: upErr } = await sb.storage.from('verificaciones_id').upload(path, ineFile);
+        if (!upErr) ine_url = path;
+      }
+
+      const nextStatus = (selfie_url && (currentProfile.rol === 'ciudadano' || ine_url)) ? 'pendiente' : (currentProfile.estado_verificacion);
+      await sb.from('perfiles_usuarios').update({
+        vehiculo_modelo,
+        vehiculo_placas,
+        enlace_apoyo,
+        selfie_url,
+        ine_url,
+        estado_verificacion: currentProfile.rol === 'admin' ? 'aprobado' : nextStatus
+      }).eq('id', currentUser.id);
+
+      await refreshAuthSession();
+      showToast('✓ Datos y fotos en vivo enviados');
+    });
+
+    document.getElementById('volDisponibleCheck').addEventListener('change', async (e) => {
+      if (!currentUser) return;
+      await sb.from('perfiles_usuarios').update({
+        voluntario_disponible: e.target.checked,
+        lat_actual: userCoords[0],
+        lng_actual: userCoords[1]
+      }).eq('id', currentUser.id);
+      showToast(e.target.checked ? '🟢 Activo para recibir solicitudes de auxilio' : '⚪ Modo voluntario pausado');
+    });
+
+    document.getElementById('doLogoutBtn').addEventListener('click', async () => {
+      await sb.auth.signOut();
+      await refreshAuthSession();
+      document.getElementById('profileModal').classList.remove('open');
+      showToast('Sesión cerrada');
+    });
+
+    // =========================================================
+    // 9. CLIMA, ALERTAS GLOBALES, DRAWER Y EVENTOS UI
+    // =========================================================
+    async function fetchRealWeather() {
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${userCoords[0]}&longitude=${userCoords[1]}&current=temperature_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability,cape&forecast_days=1&timezone=auto`;
+        const res = await fetch(url);
+        const data = await res.json();
+        const c = data.current;
+        const prob = data.hourly?.precipitation_probability?.[0] ?? 0;
+        const cape = data.hourly?.cape?.[0] ?? 0;
+        document.getElementById('topWeatherLine').textContent = `${Math.round(c.temperature_2m)}°C • Viento ${Math.round(c.wind_speed_10m)} km/h • Lluvia ${prob}%`;
+        document.getElementById('weatherDetailBox').innerHTML = `Temp: <strong>${Math.round(c.temperature_2m)}°C</strong> (ST ${Math.round(c.apparent_temperature)}°C)<br>Viento: <strong>${Math.round(c.wind_speed_10m)} km/h</strong> • Rachas <strong>${Math.round(c.wind_gusts_10m)} km/h</strong><br>Prob. lluvia: <strong>${prob}%</strong> • ${cape > 1000 ? '⚡ Tormenta probable' : '✓ Estable'}`;
+      } catch (e) {}
+    }
+
+    function applyGlobalAlertUI(alertRow) {
+      const banner = document.getElementById('globalAlertBanner');
+      document.getElementById('alertBannerTitle').textContent = `🚨 ${alertRow.titulo} • ${alertRow.zona}`;
+      document.getElementById('alertZoneText').textContent = `Zona: ${alertRow.zona}`;
+      const ul = document.getElementById('alertTipsList');
+      ul.innerHTML = '';
+      (alertRow.precauciones || []).forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+      banner.classList.add('visible');
+      document.body.classList.add('has-alert');
+      playSubtleNotification();
+    }
+
+    function hideGlobalAlertUI() {
+      document.getElementById('globalAlertBanner').classList.remove('visible');
+      document.body.classList.remove('has-alert');
+    }
+
+    function openSideDrawer() {
+      document.getElementById('drawerBackdrop').classList.add('open');
+      document.getElementById('sideDrawer').classList.add('open');
+    }
+    function closeSideDrawer() {
+      document.getElementById('drawerBackdrop').classList.remove('open');
+      document.getElementById('sideDrawer').classList.remove('open');
+    }
+
+    document.getElementById('openDrawerBtn').addEventListener('click', openSideDrawer);
+    document.getElementById('closeDrawerBtn').addEventListener('click', closeSideDrawer);
+    document.getElementById('drawerBackdrop').addEventListener('click', closeSideDrawer);
+
+    document.getElementById('toggleSheetBtn').addEventListener('click', (e) => {
+      if (e.target.id === 'clearActiveRouteBtn') return;
+      const body = document.getElementById('bottomSheetBody');
+      const isCol = body.classList.toggle('collapsed');
+      document.getElementById('sheetChevron').textContent = isCol ? '▲' : '▼';
+    });
+
+    document.getElementById('themeToggleBtn').addEventListener('click', () => {
+      const order = ['minimal', 'arcade', 'pastel'];
+      const next = order[(order.indexOf(getCurrentTheme()) + 1) % order.length];
+      setTheme(next);
+    });
+
+    document.getElementById('compassBtn').addEventListener('click', () => {
+      followHeading = !followHeading;
+      document.getElementById('compassBtn').classList.toggle('active', followHeading);
+      showToast(followHeading ? '🧭 Mapa siguiendo tu ruta' : '🧭 Mapa fijo Norte arriba');
+    });
+
+    document.getElementById('locateBtn').addEventListener('click', () => map.setView(userCoords, 15));
+    document.getElementById('refreshWeatherBtn').addEventListener('click', fetchRealWeather);
+    document.getElementById('openReportBtn').addEventListener('click', () => document.getElementById('reportModal').classList.add('open'));
+    document.getElementById('openSosBtn').addEventListener('click', () => { loadAuxilioData(); document.getElementById('sosModal').classList.add('open'); });
+    document.getElementById('openProfileBtn').addEventListener('click', () => document.getElementById('profileModal').classList.add('open'));
+    document.getElementById('openNewRouteBtn').addEventListener('click', () => { closeSideDrawer(); document.getElementById('routePlannerModal').classList.add('open'); });
+
+    document.getElementById('alertExpandBtn').addEventListener('click', () => {
+      const d = document.getElementById('alertBannerDetails');
+      const open = d.classList.toggle('open');
+      document.getElementById('alertExpandBtn').textContent = open ? 'Ocultar ▲' : 'Precauciones ▼';
+    });
+
+    document.getElementById('notifSoundSelect').addEventListener('change', e => localStorage.setItem('crs_sound', e.target.value));
+    document.getElementById('notifVibrateCheck').addEventListener('change', e => localStorage.setItem('crs_vibrate', e.target.checked ? '1' : '0'));
+    document.getElementById('testSoundBtn').addEventListener('click', playSubtleNotification);
+    document.getElementById('enablePushPermBtn').addEventListener('click', async () => {
+      if ('Notification' in window) {
+        const perm = await Notification.requestPermission();
+        showToast(perm === 'granted' ? '✓ Notificaciones activadas' : 'Permiso no concedido');
+      }
+    });
+
+    document.querySelectorAll('#reportTypeGrid .opt-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#reportTypeGrid .opt-card').forEach(b => b.classList.remove('picked'));
+        btn.classList.add('picked');
+        pickedReportType = { tipo: btn.dataset.tipo, subtipo: btn.dataset.subtipo };
+      });
+    });
+
+    document.querySelectorAll('.close-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = btn.dataset.close;
+        if (target) document.getElementById(target).classList.remove('open');
+      });
+    });
+
+    // =========================================================
+    // 10. REALTIME SUPABASE & ARRANQUE
+    // =========================================================
+    async function initRealtimeAndData() {
+      const pill = document.getElementById('dbStatusPill');
+      try {
+        const { data: reps, error } = await sb.from('reportes').select('*').eq('oculto', false).lt('votos_despejado', 3).order('creado_en', { ascending: false });
+        if (error) throw error;
+        activeReports = reps || [];
+        renderReportsOnMap();
+
+        const { data: alerts } = await sb.from('alertas_globales').select('*').eq('activa', true).order('creado_en', { ascending: false }).limit(1);
+        if (alerts && alerts.length > 0) applyGlobalAlertUI(alerts[0]);
+
+        await loadAuxilioData();
+        pill.textContent = 'EN VIVO';
+        pill.classList.remove('offline');
+      } catch (e) {
+        pill.textContent = 'LOCAL';
+        pill.classList.add('offline');
+      }
+
+      sb.channel('climaruta-v4-live')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'reportes' }, payload => {
+          if (payload.eventType === 'INSERT' && !payload.new.oculto && payload.new.votos_despejado < 3) {
+            if (!activeReports.some(r => r.id === payload.new.id)) {
+              activeReports.unshift(payload.new);
+              renderReportsOnMap();
+              playSubtleNotification();
+              showToast(`📍 ${payload.new.subtipo}`);
+            }
+          } else if (payload.eventType === 'UPDATE') {
+            const idx = activeReports.findIndex(r => r.id === payload.new.id);
+            if (payload.new.oculto || payload.new.votos_despejado >= 3) {
+              if (idx !== -1) activeReports.splice(idx, 1);
+            } else if (idx !== -1) {
+              activeReports[idx] = payload.new;
+            }
+            renderReportsOnMap();
+          }
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas_globales' }, payload => {
+          if (payload.new && payload.new.activa) applyGlobalAlertUI(payload.new);
+          else hideGlobalAlertUI();
+        })
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'auxilio_vial' }, () => loadAuxilioData())
+        .subscribe();
+    }
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.watchPosition(pos => {
+        if (!simInterval) {
+          userCoords = [pos.coords.latitude, pos.coords.longitude];
+          if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
+          userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
+          refreshUserMarker();
+          if (followHeading) map.panTo(userCoords);
+        }
+      }, () => {}, { enableHighAccuracy: true });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    setTheme(getCurrentTheme());
+    fetchRealWeather();
+    refreshAuthSession();
+    initRealtimeAndData();
+  </script>
+</body>
+</html>
