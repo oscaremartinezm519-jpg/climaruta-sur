@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>EIDOS LABs — Red Vial y Meteorológica Sur</title>
+  <title>EIDOS LABs — Mapa Vial y Clima</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -13,19 +13,19 @@
   <style>
     :root {
       --bg-card: #ffffff;
-      --bg-secondary: #f5f6f8;
-      --text-primary: #0f1115;
-      --text-secondary: #5a606d;
-      --border-color: #e2e5ec;
+      --bg-secondary: #f1f3f6;
+      --text-primary: #111318;
+      --text-secondary: #58606e;
+      --border-color: #dce1e8;
       --accent-bg: #111318;
       --accent-text: #ffffff;
-      --danger-bg: #e11900;
-      --success-bg: #05944f;
+      --danger-bg: #d93025;
+      --success-bg: #188038;
       --gold-bg: #d97706;
       --radius-lg: 18px;
       --radius-md: 12px;
       --radius-pill: 999px;
-      --shadow-card: 0 8px 24px rgba(0,0,0,0.12);
+      --shadow-card: 0 4px 16px rgba(15, 23, 42, 0.12);
       --font-main: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       --border-width: 1px;
     }
@@ -91,18 +91,18 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; width: 100%; overflow: hidden; font-family: var(--font-main); background: #e5e5e5; color: var(--text-primary); }
+    html, body { height: 100%; width: 100%; overflow: hidden; font-family: var(--font-main); background: #eef1f5; color: var(--text-primary); }
 
     #map { position: absolute; inset: 0; z-index: 1; transition: filter 0.3s ease; }
-    body.theme-minimal #map .leaflet-tile-pane { filter: grayscale(0.85) contrast(1.04) brightness(1.02); }
-    body.theme-arcade #map .leaflet-tile-pane { filter: invert(0.92) hue-rotate(155deg) saturate(2.2) contrast(1.2); }
-    body.theme-pastel #map .leaflet-tile-pane { filter: sepia(0.15) hue-rotate(305deg) saturate(1.15) brightness(1.04); }
-    body.theme-gold #map .leaflet-tile-pane { filter: invert(0.88) sepia(0.35) hue-rotate(10deg) contrast(1.15); }
+    body.theme-minimal #map .leaflet-tile-pane { filter: contrast(1.05) brightness(1.01); }
+    body.theme-arcade #map .leaflet-tile-pane { filter: invert(0.92) hue-rotate(155deg) saturate(2.1) contrast(1.15); }
+    body.theme-pastel #map .leaflet-tile-pane { filter: sepia(0.12) hue-rotate(305deg) saturate(1.15) brightness(1.03); }
+    body.theme-gold #map .leaflet-tile-pane { filter: invert(0.88) sepia(0.32) hue-rotate(10deg) contrast(1.12); }
 
     #fxCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 900; opacity: 0; transition: opacity 0.5s ease; }
     #fxCanvas.active { opacity: 1; }
-    #alertEdgeFlash { position: fixed; inset: 0; pointer-events: none; z-index: 899; box-shadow: inset 0 0 0 0 rgba(225, 25, 0, 0); transition: box-shadow 0.4s ease; }
-    #alertEdgeFlash.active { box-shadow: inset 0 0 32px 8px rgba(225, 25, 0, 0.7); }
+    #alertEdgeFlash { position: fixed; inset: 0; pointer-events: none; z-index: 899; box-shadow: inset 0 0 0 0 rgba(217, 48, 37, 0); transition: box-shadow 0.4s ease; }
+    #alertEdgeFlash.active { box-shadow: inset 0 0 32px 8px rgba(217, 48, 37, 0.7); }
 
     /* Barra Superior */
     .top-bar {
@@ -141,7 +141,7 @@
       position: fixed; top: 74px; left: 12px; right: 12px; z-index: 510;
       background: var(--danger-bg); color: #ffffff;
       border-radius: var(--radius-md); padding: 10px 14px;
-      box-shadow: 0 10px 25px rgba(225, 25, 0, 0.35);
+      box-shadow: 0 10px 25px rgba(217, 48, 37, 0.35);
       display: none; flex-direction: column; gap: 8px;
     }
     .global-alert-banner.visible { display: flex; }
@@ -156,7 +156,7 @@
     .alert-details.open { display: block; }
     .alert-details ul { margin-left: 16px; margin-top: 4px; }
 
-    /* Tarjeta Deslizable de Despacho para Voluntarios */
+    /* Tarjeta Deslizable de Solicitud de Auxilio Cercana */
     .dispatch-card {
       position: fixed; top: 76px; left: 12px; right: 12px; z-index: 650;
       background: var(--bg-card); color: var(--text-primary);
@@ -171,21 +171,25 @@
     .dispatch-user-row { display: flex; align-items: center; gap: 10px; }
     .avatar-circle { width: 42px; height: 42px; border-radius: 50%; background: var(--bg-secondary); border: 1.5px solid var(--border-color); display: grid; place-items: center; font-weight: 800; font-size: 15px; overflow: hidden; flex-shrink: 0; }
 
-    /* Controles Laterales Compactos */
+    /* Controles Flotantes Derecha Estilo Navegación Moderna */
     .map-controls {
       position: fixed; top: 78px; right: 12px; z-index: 450;
       display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
       transition: top 0.25s ease;
     }
     body.has-alert .map-controls { top: 132px; }
-    .ctrl-icon {
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--bg-card); color: var(--text-primary);
-      border: var(--border-width) solid var(--border-color);
-      box-shadow: var(--shadow-card); cursor: pointer;
-      display: grid; place-items: center; font-size: 16px; font-weight: 700;
+    .ctrl-stack {
+      background: var(--bg-card); border: var(--border-width) solid var(--border-color);
+      border-radius: 14px; box-shadow: var(--shadow-card); overflow: hidden;
+      display: flex; flex-direction: column;
     }
-    .ctrl-icon.active { background: var(--accent-bg); color: var(--accent-text); }
+    .ctrl-stack-btn {
+      width: 40px; height: 40px; border: none; background: transparent;
+      color: var(--text-primary); font-size: 16px; font-weight: 700; cursor: pointer;
+      display: grid; place-items: center; border-bottom: 1px solid var(--border-color);
+    }
+    .ctrl-stack-btn:last-child { border-bottom: none; }
+    .ctrl-stack-btn.active { background: var(--accent-bg); color: var(--accent-text); }
     .ctrl-pill {
       background: var(--bg-card); color: var(--text-primary);
       border: var(--border-width) solid var(--border-color);
@@ -197,7 +201,7 @@
     .ctrl-pill.danger { background: var(--danger-bg); color: #fff; border-color: var(--danger-bg); }
     .ctrl-pill.running { background: var(--success-bg); color: #fff; border-color: var(--success-bg); }
 
-    /* Cajón Lateral Izquierdo Unificado (Perfil + Trayectos + Clima/Ajustes) */
+    /* Cajón Lateral Izquierdo Unificado */
     .side-drawer-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.42); z-index: 700; display: none; }
     .side-drawer-backdrop.open { display: block; }
     .side-drawer {
@@ -209,7 +213,6 @@
       display: flex; flex-direction: column; gap: 12px;
     }
     .side-drawer.open { transform: translateX(0); }
-
     .drawer-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
     .drawer-tab {
       padding: 8px 6px; border-radius: var(--radius-md);
@@ -229,7 +232,7 @@
     }
     .pick-point-banner.visible { display: flex; }
 
-    /* Dock Inferior Unificado y Autocompletado */
+    /* Dock Inferior Unificado */
     .bottom-dock { position: fixed; bottom: 0; left: 0; right: 0; z-index: 480; display: flex; flex-direction: column; pointer-events: none; }
     .fab-strip { display: flex; justify-content: space-between; align-items: center; padding: 0 12px 10px; pointer-events: none; }
     .fab-btn {
@@ -264,7 +267,7 @@
       position: absolute; bottom: 100%; left: 0; right: 0; margin-bottom: 6px;
       background: var(--bg-card); border: var(--border-width) solid var(--border-color);
       border-radius: var(--radius-md); box-shadow: var(--shadow-card);
-      max-height: 210px; overflow-y: auto; z-index: 600; display: none;
+      max-height: 220px; overflow-y: auto; z-index: 600; display: none;
     }
     .suggestions-dropdown.open { display: block; }
     .suggestions-dropdown.downward { bottom: auto; top: 100%; margin-bottom: 0; margin-top: 4px; }
@@ -356,7 +359,7 @@
       opacity: 0; pointer-events: none; transition: opacity 0.25s ease; white-space: nowrap;
     }
     .toast.show { opacity: 1; }
-    .leaflet-control-attribution { font-size: 9px !important; opacity: 0.7; }
+    .leaflet-control-attribution { font-size: 9px !important; opacity: 0.75; }
   </style>
 </head>
 <body class="theme-minimal">
@@ -365,13 +368,11 @@
   <div id="alertEdgeFlash"></div>
   <div id="toast" class="toast"></div>
 
-  <!-- Banner modo marcar punto en el mapa -->
   <div id="pickPointBanner" class="pick-point-banner arcade-xs">
-    <span id="pickPointMsg">📍 Toca cualquier calle en el mapa para marcar el punto</span>
+    <span>📍 Toca cualquier calle en el mapa para marcar el punto</span>
     <button id="cancelPickPointBtn" class="chip-btn arcade-xs" style="padding:3px 8px;">Cancelar</button>
   </div>
 
-  <!-- Barra Superior -->
   <header class="top-bar">
     <div class="brand">
       <button id="openDrawerBtn" class="chip-btn arcade-xs" title="Menú principal">☰</button>
@@ -387,7 +388,6 @@
     </div>
   </header>
 
-  <!-- Banner Alerta Global -->
   <section id="globalAlertBanner" class="global-alert-banner">
     <div class="alert-header-row">
       <div id="alertBannerTitle" class="alert-title arcade-xs">🚨 ALERTA GENERAL</div>
@@ -399,7 +399,6 @@
     </div>
   </section>
 
-  <!-- Tarjeta Deslizable de Solicitud de Auxilio Cercana -->
   <aside id="dispatchCard" class="dispatch-card">
     <div class="dispatch-head">
       <span class="dispatch-badge arcade-xs">🆘 SOLICITUD DE AUXILIO CERCANA</span>
@@ -419,13 +418,15 @@
     </div>
   </aside>
 
-  <!-- Controles Laterales -->
+  <!-- Controles Agrupados Estilo Mapa de Navegación -->
   <div class="map-controls" id="mapControlsContainer">
-    <button id="compassBtn" class="ctrl-icon" title="Alternar Norte arriba / Seguir rumbo">🧭</button>
-    <button id="locateBtn" class="ctrl-icon" title="Centrar en mi GPS real">◎</button>
+    <div class="ctrl-stack">
+      <button id="compassBtn" class="ctrl-stack-btn" title="Alternar Norte arriba / Seguir rumbo">🧭</button>
+      <button id="locateBtn" class="ctrl-stack-btn" title="Centrar en mi GPS real">◎</button>
+    </div>
   </div>
 
-  <!-- CAJÓN LATERAL UNIFICADO (PERFIL + TRAYECTOS + CLIMA/AJUSTES) -->
+  <!-- CAJÓN LATERAL UNIFICADO -->
   <div id="drawerBackdrop" class="side-drawer-backdrop"></div>
   <aside id="sideDrawer" class="side-drawer">
     <div class="modal-head" style="margin-bottom:2px;">
@@ -436,14 +437,12 @@
       <button id="closeDrawerBtn" class="close-btn">✕</button>
     </div>
 
-    <!-- Pestañas internas ordenadas sin saturar -->
     <div class="drawer-nav">
       <button class="drawer-tab active arcade-xs" data-dtab="paneProfile">👤 Perfil</button>
       <button class="drawer-tab arcade-xs" data-dtab="paneRoutes">⏰ Trayectos</button>
       <button class="drawer-tab arcade-xs" data-dtab="paneWeather">📡 Clima/App</button>
     </div>
 
-    <!-- PESTAÑA 1: PERFIL, REGISTRO Y VERIFICACIÓN EN VIVO -->
     <div id="paneProfile" class="drawer-pane">
       <div id="authFormsView">
         <div class="tabs-row">
@@ -516,7 +515,6 @@
       </div>
     </div>
 
-    <!-- PESTAÑA 2: TRAYECTOS GUARDADOS CON ALARMA Y AUTOCOMPLETADO -->
     <div id="paneRoutes" class="drawer-pane" style="display:none;">
       <div class="list-item" style="flex-direction:column;align-items:stretch;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
@@ -528,7 +526,6 @@
       </div>
     </div>
 
-    <!-- PESTAÑA 3: CLIMA OPEN-METEO Y CONFIGURACIÓN DE SONIDO -->
     <div id="paneWeather" class="drawer-pane" style="display:none;">
       <div class="list-item" style="flex-direction:column;align-items:stretch;">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
@@ -555,19 +552,17 @@
       </div>
 
       <div style="font-size:10px;color:var(--text-secondary);text-align:center;margin-top:6px;" class="arcade-xs">
-        Desarrollado por <strong>EIDOS LABs</strong> • v4.1<br>Tampico • Ciudad Madero • Altamira
+        Desarrollado por <strong>EIDOS LABs</strong> • v4.2<br>Tampico • Ciudad Madero • Altamira
       </div>
     </div>
   </aside>
 
-  <!-- Mapa Principal -->
   <main id="map"></main>
 
-  <!-- Dock Inferior con Autocompletado Real -->
   <div class="bottom-dock">
     <div class="fab-strip">
       <button id="openSosBtn" class="fab-btn fab-sos arcade-xs">
-        <span style="background:#e11900;color:#fff;padding:2px 5px;border-radius:4px;font-size:9px;">SOS</span> Auxilio / 911
+        <span style="background:#d93025;color:#fff;padding:2px 5px;border-radius:4px;font-size:9px;">SOS</span> Auxilio / 911
       </button>
       <button id="openReportBtn" class="fab-btn fab-report arcade-xs">+ REPORTAR</button>
     </div>
@@ -587,7 +582,7 @@
           <div id="mainSearchSuggestions" class="suggestions-dropdown"></div>
           <div class="search-box">
             <span>🔍</span>
-            <input id="destInput" type="text" autocomplete="off" placeholder="Escribe lugar o calle (ej. Cinépolis Hidalgo, Plaza Arenas)..." />
+            <input id="destInput" type="text" autocomplete="off" placeholder="Buscar calle, colonia o lugar (ej. Cinépolis, Plaza Arenas, Altamira)..." />
             <button id="searchRouteBtn" class="chip-btn active arcade-xs">Buscar</button>
           </div>
         </div>
@@ -624,7 +619,7 @@
     </div>
   </div>
 
-  <!-- MODAL 2: PROGRAMAR TRAYECTO CON ORIGEN, DESTINO AUTOCOMPLETADO Y ALARMA -->
+  <!-- MODAL 2: PROGRAMAR TRAYECTO -->
   <div id="routePlannerModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -633,7 +628,6 @@
       </div>
       <input id="routeNameInput" class="input-field arcade-xs" type="text" placeholder="Nombre (ej. Casa → Trabajo)" />
 
-      <!-- Origen del trayecto -->
       <label style="font-size:10px;color:var(--text-secondary);display:block;margin-bottom:3px;" class="arcade-xs">Punto de inicio (Origen):</label>
       <div style="display:flex;gap:6px;margin-bottom:6px;">
         <button type="button" id="originGpsBtn" class="chip-btn active arcade-xs" style="flex:1;justify-content:center;">📡 Mi ubicación actual</button>
@@ -644,8 +638,7 @@
         <div id="originSuggestions" class="suggestions-dropdown downward"></div>
       </div>
 
-      <!-- Destino con autocompletado -->
-      <label style="font-size:10px;color:var(--text-secondary);display:block;margin-bottom:3px;" class="arcade-xs">Destino (selecciona de la lista):</label>
+      <label style="font-size:10px;color:var(--text-secondary);display:block;margin-bottom:3px;" class="arcade-xs">Destino (escribe y toca una sugerencia):</label>
       <div class="search-wrap">
         <input id="routeDestTextInput" class="input-field arcade-xs" type="text" autocomplete="off" placeholder="Escribe destino (ej. Plaza Arenas, Altamira)..." />
         <div id="destSuggestions" class="suggestions-dropdown downward"></div>
@@ -738,16 +731,12 @@
     </div>
   </div>
 
-  <!-- CONTENEDOR EXCLUSIVO ADMIN -->
   <div id="adminHostContainer"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
-    // =========================================================
-    // 1. INICIALIZACIÓN SUPABASE & ESTADO GLOBAL
-    // =========================================================
     const SUPABASE_URL = 'https://uxwumwwevynsuocnfkby.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4d3Vtd3dldnluc3VvY25ma2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwOTk3OTIsImV4cCI6MjExMDY3NTc5Mn0.wRuOH1QBTx5VlkaiEiMSJK6APTcsqjjMd2wnrEQB3FI';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -761,7 +750,6 @@
     let currentUser = null;
     let currentProfile = null;
     let userCoords = [22.2553, -97.8686];
-    let hasRealGps = false;
     let userHeading = 0;
     let userSpeedKmh = 0;
     let followHeading = false;
@@ -779,15 +767,12 @@
     let currentRouteCoords = [];
     let simInterval = null;
 
-    let pickedRouteOrigin = null; // null = GPS actual
+    let pickedRouteOrigin = null;
     let pickedRouteDest = null;
 
     let pendingDispatchAuxilio = null;
     let myActiveAuxilio = null;
 
-    // =========================================================
-    // 2. SONIDO SUTIL Y VIBRACIÓN
-    // =========================================================
     function playSubtleNotification() {
       const soundPref = localStorage.getItem('crs_sound') || 'chime';
       const vibPref = localStorage.getItem('crs_vibrate') !== '0';
@@ -814,9 +799,6 @@
       } catch (e) {}
     }
 
-    // =========================================================
-    // 3. MOTOR DE EFECTOS ATMOSFÉRICOS EN CANVAS (ALERTAS GLOBALES)
-    // =========================================================
     const fxCanvas = document.getElementById('fxCanvas');
     const ctx = fxCanvas.getContext('2d');
     let fxAnimId = null;
@@ -852,7 +834,7 @@
         tick++;
         ctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
         const palette = {
-          minimal: { rain: 'rgba(30,60,110,0.55)', wind: 'rgba(20,20,20,0.4)', fire: 'rgba(225,25,0,0.6)', gas: 'rgba(130,80,200,0.35)', heat: 'rgba(235,110,0,0.4)', quake: '#111111' },
+          minimal: { rain: 'rgba(30,60,110,0.55)', wind: 'rgba(20,20,20,0.4)', fire: 'rgba(217,48,37,0.6)', gas: 'rgba(130,80,200,0.35)', heat: 'rgba(235,110,0,0.4)', quake: '#111111' },
           arcade: { rain: '#00e5ff', wind: '#00ff66', fire: '#ff2a55', gas: '#d500f9', heat: '#ff9100', quake: '#00ff66' },
           pastel: { rain: 'rgba(100,181,246,0.6)', wind: 'rgba(240,98,146,0.45)', fire: 'rgba(255,112,67,0.55)', gas: 'rgba(186,104,200,0.4)', heat: 'rgba(255,167,38,0.45)', quake: '#f06292' },
           gold: { rain: '#f5d061', wind: '#d4af37', fire: '#ef4444', gas: '#a855f7', heat: '#f59e0b', quake: '#f5d061' }
@@ -899,14 +881,21 @@
       }, 4500);
     }
 
-    // =========================================================
-    // 4. MAPA, GPS DE ALTA PRECISIÓN Y AUTOCOMPLETADO LOCAL
-    // =========================================================
+    // Capa base CartoDB Positron (etiquetas nítidas y estilo limpio tipo navegación) con respaldo OSM
     const map = L.map('map', { zoomControl: false }).setView(userCoords, 14);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+    const cartoPositron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 20,
+      attribution: 'EIDOS LABs • CartoDB • OpenStreetMap'
+    });
+    const osmFallback = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
-      attribution: 'EIDOS LABs • Esri • Open-Meteo • OSRM'
-    }).addTo(map);
+      attribution: 'EIDOS LABs • OpenStreetMap'
+    });
+    cartoPositron.on('tileerror', () => {
+      if (!map.hasLayer(osmFallback)) osmFallback.addTo(map);
+    });
+    cartoPositron.addTo(map);
     setTimeout(() => map.invalidateSize(), 250);
 
     const reportMarkersLayer = L.layerGroup().addTo(map);
@@ -922,8 +911,8 @@
       document.getElementById('themeToggleBtn').textContent = icons[themeName] || '◻';
       refreshUserMarker(); renderReportsOnMap();
       if (routeLayer) {
-        const cMap = { minimal: '#111318', arcade: '#00ff66', pastel: '#f06292', gold: '#d4af37' };
-        routeLayer.setStyle({ color: cMap[themeName] || '#111318' });
+        const cMap = { minimal: '#1a73e8', arcade: '#00ff66', pastel: '#f06292', gold: '#d4af37' };
+        routeLayer.setStyle({ color: cMap[themeName] || '#1a73e8' });
       }
     }
     window.setTheme = setTheme;
@@ -962,12 +951,12 @@
             <rect x="11" y="15" width="14" height="6" rx="2" fill="#ff94b8"/>
           </svg></div>`;
       }
-      const strokeC = theme === 'gold' ? '#d4af37' : '#111111';
+      const strokeC = theme === 'gold' ? '#d4af37' : '#111318';
       const bodyC = theme === 'gold' ? '#1c1915' : '#ffffff';
       const rot = isWalking ? 0 : userHeading;
       return `<div style="width:40px;height:40px;display:grid;place-items:center;transform:rotate(${rot}deg);transition:transform 0.25s ease;">
         <svg width="34" height="34" viewBox="0 0 36 36">
-          <ellipse cx="18" cy="19" rx="10" ry="14" fill="rgba(0,0,0,0.22)"/>
+          <ellipse cx="18" cy="19" rx="10" ry="14" fill="rgba(0,0,0,0.2)"/>
           <rect x="9" y="4" width="18" height="28" rx="7" fill="${bodyC}" stroke="${strokeC}" stroke-width="2.2"/>
           <path d="M11 11 Q18 8 25 11 L24 15 L12 15 Z" fill="${strokeC}"/>
           <path d="M12 22 L24 22 L23 26 Q18 28 13 26 Z" fill="${strokeC}"/>
@@ -988,31 +977,30 @@
       if (!('geolocation' in navigator)) return;
       navigator.geolocation.getCurrentPosition(pos => {
         userCoords = [pos.coords.latitude, pos.coords.longitude];
-        hasRealGps = true;
         if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
         userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
         refreshUserMarker();
         if (centerMap) map.setView(userCoords, 16);
       }, () => {
-        if (centerMap) showToast('Activa el permiso de ubicación en tu navegador para máxima precisión');
+        if (centerMap) showToast('Concede permiso de ubicación para centrar con precisión');
       }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
     }
 
-    // Autocompletado inteligente acotado a Tampico, Ciudad Madero y Altamira
+    // Búsqueda flexible priorizando Tampico, Ciudad Madero y Altamira sin descartar lugares reales
     async function searchPlacesSurTamaulipas(queryText) {
-      if (!queryText || queryText.trim().length < 3) return [];
-      const q = encodeURIComponent(`${queryText.trim()}, Tamaulipas`);
-      // Bounding box estricto Zona Conurbada Tampico-Madero-Altamira
-      const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${q}&limit=6&viewbox=-98.08,22.52,-97.74,22.14&bounded=1`;
+      if (!queryText || queryText.trim().length < 2) return [];
+      const clean = queryText.trim();
+      const q = encodeURIComponent(`${clean}, Tamaulipas, Mexico`);
+      const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${q}&limit=7`;
       try {
         const res = await fetch(url);
         const items = await res.json();
         return (items || []).map(it => {
           const a = it.address || {};
-          const mainName = it.name || a.road || a.amenity || a.shop || it.display_name.split(',')[0];
+          const mainName = it.name || a.road || a.amenity || a.shop || a.tourism || it.display_name.split(',')[0];
           const roadPart = a.road && a.road !== mainName ? a.road : '';
           const suburb = a.suburb || a.neighbourhood || a.residential || '';
-          const city = a.city || a.town || a.municipality || 'Zona Sur';
+          const city = a.city || a.town || a.municipality || a.county || '';
           const subtitle = [roadPart, suburb, city].filter(Boolean).join(', ');
           return {
             title: mainName,
@@ -1031,14 +1019,14 @@
       inputEl.addEventListener('input', () => {
         clearTimeout(debounceTimer);
         const val = inputEl.value.trim();
-        if (val.length < 3) {
+        if (val.length < 2) {
           dropdownEl.classList.remove('open');
           return;
         }
         debounceTimer = setTimeout(async () => {
           const results = await searchPlacesSurTamaulipas(val);
           if (results.length === 0) {
-            dropdownEl.innerHTML = `<div class="suggestion-item"><div class="suggestion-sub">Sin coincidencias exactas en Tampico, Madero o Altamira. Prueba agregando colonia o avenida.</div></div>`;
+            dropdownEl.innerHTML = `<div class="suggestion-item"><div class="suggestion-sub">Sin resultados para "${val}". Intenta con avenida, colonia o municipio.</div></div>`;
             dropdownEl.classList.add('open');
             return;
           }
@@ -1052,12 +1040,12 @@
           dropdownEl.querySelectorAll('.suggestion-item[data-idx]').forEach(el => {
             el.addEventListener('click', () => {
               const picked = results[parseInt(el.dataset.idx, 10)];
-              inputEl.value = `${picked.title} (${picked.subtitle})`;
+              inputEl.value = `${picked.title}${picked.subtitle ? ' • ' + picked.subtitle : ''}`;
               dropdownEl.classList.remove('open');
               onSelectCallback(picked);
             });
           });
-        }, 380);
+        }, 320);
       });
     }
 
@@ -1073,8 +1061,8 @@
           if (routeLayer) map.removeLayer(routeLayer);
           if (destPinMarker) map.removeLayer(destPinMarker);
 
-          const cMap = { minimal: '#111318', arcade: '#00ff66', pastel: '#f06292', gold: '#d4af37' };
-          routeLayer = L.polyline(currentRouteCoords, { color: cMap[getCurrentTheme()] || '#111318', weight: 5, opacity: 0.88 }).addTo(map);
+          const cMap = { minimal: '#1a73e8', arcade: '#00ff66', pastel: '#f06292', gold: '#d4af37' };
+          routeLayer = L.polyline(currentRouteCoords, { color: cMap[getCurrentTheme()] || '#1a73e8', weight: 5, opacity: 0.9 }).addTo(map);
           destPinMarker = L.marker(destLatLng).addTo(map).bindPopup(`<strong>${labelText || 'Destino'}</strong>`).openPopup();
 
           map.fitBounds(routeLayer.getBounds(), { padding: [65, 135] });
@@ -1082,7 +1070,7 @@
           document.getElementById('clearActiveRouteBtn').style.display = 'inline-flex';
         }
       } catch (e) {
-        showToast('No se pudo calcular el trazado vial');
+        showToast('No se pudo calcular la ruta');
       }
     }
 
@@ -1098,11 +1086,12 @@
 
     document.getElementById('clearActiveRouteBtn').addEventListener('click', clearActiveRoute);
 
-    // Conectar autocompletado de la barra principal inferior
+    let lastSearchedPlace = null;
     attachAutocomplete(
       document.getElementById('destInput'),
       document.getElementById('mainSearchSuggestions'),
       async (place) => {
+        lastSearchedPlace = place;
         activeRouteId = 'search';
         renderSavedRoutesUI();
         await drawRealRoute([place.lat, place.lng], place.title);
@@ -1115,15 +1104,14 @@
       const results = await searchPlacesSurTamaulipas(txt);
       if (results.length > 0) {
         document.getElementById('mainSearchSuggestions').classList.remove('open');
-        await drawRealRoute([results[0].lat, results[0].lng], results[0].title);
+        const p = results[0];
+        lastSearchedPlace = p;
+        await drawRealRoute([p.lat, p.lng], p.title);
       } else {
-        showToast('Selecciona una dirección de la lista desplegable');
+        showToast('No se encontró ese lugar. Intenta con otro término.');
       }
     });
 
-    // =========================================================
-    // 5. PROGRAMADOR DE TRAYECTOS CON ORIGEN, DESTINO Y ALARMA
-    // =========================================================
     attachAutocomplete(
       document.getElementById('routeOriginInput'),
       document.getElementById('originSuggestions'),
@@ -1135,7 +1123,7 @@
       document.getElementById('destSuggestions'),
       (place) => {
         pickedRouteDest = place;
-        document.getElementById('pickedDestStatus').textContent = `✓ Destino confirmado: ${place.title} (${place.subtitle})`;
+        document.getElementById('pickedDestStatus').textContent = `✓ Destino seleccionado: ${place.title} (${place.subtitle})`;
       }
     );
 
@@ -1174,7 +1162,6 @@
       const hora = document.getElementById('routeTimeInput').value || '07:00';
       const anticipacion = parseInt(document.getElementById('routeAdvanceSelect').value, 10);
 
-      // Si el usuario escribió pero no hizo clic en la sugerencia, buscamos la primera coincidencia automática
       if (!pickedRouteDest) {
         const rawDest = document.getElementById('routeDestTextInput').value.trim();
         const found = await searchPlacesSurTamaulipas(rawDest);
@@ -1182,7 +1169,7 @@
       }
 
       if (!pickedRouteDest) {
-        showToast('Busca y selecciona un destino válido de la lista');
+        showToast('Escribe un destino y selecciona una sugerencia');
         return;
       }
 
@@ -1296,9 +1283,6 @@
       showToast('Trayecto eliminado');
     };
 
-    // =========================================================
-    // 6. REPORTES CIUDADANOS (GPS O MARCAR EN MAPA)
-    // =========================================================
     map.on('click', (e) => {
       if (!isPickingMapPoint) return;
       reportCustomCoords = [e.latlng.lat, e.latlng.lng];
@@ -1310,6 +1294,7 @@
       document.getElementById('reportModal').classList.add('open');
     });
 
+    // Íconos en apariencia minimalista invertidos: fondo blanco puro y borde negro
     function getPinHTML(rep) {
       const theme = getCurrentTheme();
       const icons = {
@@ -1321,8 +1306,11 @@
         'Calle cerrada / Obra / Cable caído': '🚧'
       };
       const ch = icons[rep.subtipo] || '⚠️';
-      const bg = theme === 'arcade' ? '#0b0e17' : (theme === 'pastel' ? '#fff9fb' : (theme === 'gold' ? '#141210' : '#111318'));
-      const bd = theme === 'arcade' ? '#00ff66' : (theme === 'pastel' ? '#f06292' : (theme === 'gold' ? '#d4af37' : '#ffffff'));
+      if (theme === 'minimal') {
+        return `<div style="background:#ffffff;border:2px solid #111318;color:#111318;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:15px;box-shadow:0 3px 10px rgba(0,0,0,0.18);position:relative;">${ch}<span style="position:absolute;bottom:-3px;right:-3px;background:#ffffff;color:#111318;border:1.5px solid #111318;font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span></div>`;
+      }
+      const bg = theme === 'arcade' ? '#0b0e17' : (theme === 'pastel' ? '#fff9fb' : '#141210');
+      const bd = theme === 'arcade' ? '#00ff66' : (theme === 'pastel' ? '#f06292' : '#d4af37');
       return `<div style="background:${bg};border:2px solid ${bd};width:36px;height:36px;border-radius:${theme === 'arcade' ? '4px' : '50%'};display:grid;place-items:center;font-size:15px;box-shadow:0 4px 12px rgba(0,0,0,0.28);position:relative;">${ch}<span style="position:absolute;bottom:-3px;right:-3px;background:${bd};color:${bg};font-size:9px;width:16px;height:16px;border-radius:50%;display:grid;place-items:center;font-weight:800;">${rep.confirmaciones}</span></div>`;
     }
 
@@ -1432,9 +1420,6 @@
       showToast(nextVotes >= 3 ? '✓ Despejado (3/3)' : `✓ Voto registrado (${nextVotes}/3)`);
     });
 
-    // =========================================================
-    // 7. AUXILIO VIAL BIDIRECCIONAL & TARJETA DESLIZABLE
-    // =========================================================
     async function loadAuxilioData() {
       const { data } = await sb.from('auxilio_vial').select('*').in('estado', ['pendiente', 'aceptado']).order('creado_en', { ascending: false }).limit(10);
       const list = data || [];
@@ -1593,9 +1578,6 @@
       loadAuxilioData();
     };
 
-    // =========================================================
-    // 8. PERFIL EN PANEL LATERAL & HERRAMIENTAS ADMIN
-    // =========================================================
     async function refreshAuthSession() {
       const { data: { session } } = await sb.auth.getSession();
       currentUser = session?.user || null;
@@ -1723,14 +1705,14 @@
     function bindAdminModalEvents() {
       let pickedAlert = 'norte';
       const ALERTS_DEF = {
-        huracan: { titulo: 'HURACÁN / TORMENTA TROPICAL', fx: 'rain_storm', tips: ['Resguárdate lejos de ventanas.', 'Evita pasos a desnivel inundados.'] },
-        norte: { titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES', fx: 'wind', tips: ['Precaución en Bulevar Costero y puentes.', 'Aléjate de cables sueltos y espectaculares.'] },
-        inundacion: { titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL', fx: 'rain_storm', tips: ['No cruces corrientes de agua.', 'Usa vías altas alternas.'] },
-        granizo: { titulo: 'GRANIZO / TORMENTA ELÉCTRICA', fx: 'rain_storm', tips: ['Oríllate bajo techo seguro.', 'Enciende luces intermitentes.'] },
-        calor: { titulo: 'ONDA DE CALOR EXTREMA', fx: 'heat', tips: ['Hidrátate constantemente.', 'Evita sol directo de 11:00 a 16:00 hrs.'] },
-        incendio: { titulo: 'INCENDIO DE ALTO RIESGO', fx: 'fire', tips: ['Cede el paso a Bomberos y Protección Civil.', 'Cierra ventanas ante humo denso.'] },
-        gas: { titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA', fx: 'gas', tips: ['Aléjate en sentido contrario al viento.', 'No enciendas flamas ni interruptores.'] },
-        sismo: { titulo: 'ACTIVIDAD SÍSMICA DETECTADA', fx: 'quake', tips: ['Mantén la calma y aléjate de vidrios.', 'Revisa instalaciones de gas tras el sismo.'] }
+        huracan: { titulo: 'HURACÁN / TORMENTA TROPICAL', tips: ['Resguárdate lejos de ventanas.', 'Evita pasos a desnivel inundados.'] },
+        norte: { titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES', tips: ['Precaución en Bulevar Costero y puentes.', 'Aléjate de cables sueltos y espectaculares.'] },
+        inundacion: { titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL', tips: ['No cruces corrientes de agua.', 'Usa vías altas alternas.'] },
+        granizo: { titulo: 'GRANIZO / TORMENTA ELÉCTRICA', tips: ['Oríllate bajo techo seguro.', 'Enciende luces intermitentes.'] },
+        calor: { titulo: 'ONDA DE CALOR EXTREMA', tips: ['Hidrátate constantemente.', 'Evita sol directo de 11:00 a 16:00 hrs.'] },
+        incendio: { titulo: 'INCENDIO DE ALTO RIESGO', tips: ['Cede el paso a Bomberos y Protección Civil.', 'Cierra ventanas ante humo denso.'] },
+        gas: { titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA', tips: ['Aléjate en sentido contrario al viento.', 'No enciendas flamas ni interruptores.'] },
+        sismo: { titulo: 'ACTIVIDAD SÍSMICA DETECTADA', tips: ['Mantén la calma y aléjate de vidrios.', 'Revisa instalaciones de gas tras el sismo.'] }
       };
 
       document.querySelectorAll('#globalAlertGrid .opt-card').forEach(b => {
@@ -1892,9 +1874,6 @@
       showToast('Sesión cerrada');
     });
 
-    // =========================================================
-    // 9. CLIMA, ALERTAS GLOBALES CON FX, DRAWER Y EVENTOS UI
-    // =========================================================
     async function fetchRealWeather() {
       try {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${userCoords[0]}&longitude=${userCoords[1]}&current=temperature_2m,apparent_temperature,wind_speed_10m,wind_gusts_10m&hourly=precipitation_probability,cape&forecast_days=1&timezone=auto`;
@@ -1909,14 +1888,8 @@
     }
 
     const FX_BY_ALERT_TYPE = {
-      huracan: 'rain_storm',
-      norte: 'wind',
-      inundacion: 'rain_storm',
-      granizo: 'rain_storm',
-      calor: 'heat',
-      incendio: 'fire',
-      gas: 'gas',
-      sismo: 'quake'
+      huracan: 'rain_storm', norte: 'wind', inundacion: 'rain_storm', granizo: 'rain_storm',
+      calor: 'heat', incendio: 'fire', gas: 'gas', sismo: 'quake'
     };
 
     function applyGlobalAlertUI(alertRow, playVisualFx = true) {
@@ -1954,10 +1927,7 @@
       document.getElementById('sideDrawer').classList.remove('open');
     }
 
-    document.querySelectorAll('.drawer-tab').forEach(btn => {
-      btn.addEventListener('click', () => switchDrawerTab(btn.dataset.dtab));
-    });
-
+    document.querySelectorAll('.drawer-tab').forEach(btn => btn.addEventListener('click', () => switchDrawerTab(btn.dataset.dtab)));
     document.getElementById('openDrawerBtn').addEventListener('click', () => openSideDrawer('paneRoutes'));
     document.getElementById('openProfileDrawerBtn').addEventListener('click', () => openSideDrawer('paneProfile'));
     document.getElementById('closeDrawerBtn').addEventListener('click', closeSideDrawer);
@@ -2020,9 +1990,6 @@
       });
     });
 
-    // =========================================================
-    // 10. REALTIME SUPABASE & GPS CONTINUO
-    // =========================================================
     async function initRealtimeAndData() {
       const pill = document.getElementById('dbStatusPill');
       try {
@@ -2042,7 +2009,7 @@
         pill.classList.add('offline');
       }
 
-      sb.channel('climaruta-v41-live')
+      sb.channel('climaruta-v42-live')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'reportes' }, payload => {
           if (payload.eventType === 'INSERT' && !payload.new.oculto && payload.new.votos_despejado < 3) {
             if (!activeReports.some(r => r.id === payload.new.id)) {
@@ -2074,7 +2041,6 @@
       navigator.geolocation.watchPosition(pos => {
         if (!simInterval) {
           userCoords = [pos.coords.latitude, pos.coords.longitude];
-          hasRealGps = true;
           if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
           userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
           refreshUserMarker();
