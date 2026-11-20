@@ -104,7 +104,6 @@
     #alertEdgeFlash { position: fixed; inset: 0; pointer-events: none; z-index: 899; box-shadow: inset 0 0 0 0 rgba(217, 48, 37, 0); transition: box-shadow 0.4s ease; }
     #alertEdgeFlash.active { box-shadow: inset 0 0 32px 8px rgba(217, 48, 37, 0.7); }
 
-    /* Barra Superior */
     .top-bar {
       position: fixed; top: 12px; left: 12px; right: 12px; z-index: 500;
       background: var(--bg-card); border: var(--border-width) solid var(--border-color);
@@ -136,7 +135,6 @@
     }
     .chip-btn.active { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
-    /* Banner Alerta Global */
     .global-alert-banner {
       position: fixed; top: 74px; left: 12px; right: 12px; z-index: 510;
       background: var(--danger-bg); color: #ffffff;
@@ -156,7 +154,6 @@
     .alert-details.open { display: block; }
     .alert-details ul { margin-left: 16px; margin-top: 4px; }
 
-    /* Tarjeta Deslizable de Solicitud de Auxilio Cercana */
     .dispatch-card {
       position: fixed; top: 76px; left: 12px; right: 12px; z-index: 650;
       background: var(--bg-card); color: var(--text-primary);
@@ -171,7 +168,6 @@
     .dispatch-user-row { display: flex; align-items: center; gap: 10px; }
     .avatar-circle { width: 42px; height: 42px; border-radius: 50%; background: var(--bg-secondary); border: 1.5px solid var(--border-color); display: grid; place-items: center; font-weight: 800; font-size: 15px; overflow: hidden; flex-shrink: 0; }
 
-    /* Controles Flotantes Derecha Estilo Navegación Moderna */
     .map-controls {
       position: fixed; top: 78px; right: 12px; z-index: 450;
       display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
@@ -201,7 +197,6 @@
     .ctrl-pill.danger { background: var(--danger-bg); color: #fff; border-color: var(--danger-bg); }
     .ctrl-pill.running { background: var(--success-bg); color: #fff; border-color: var(--success-bg); }
 
-    /* Cajón Lateral Izquierdo Unificado */
     .side-drawer-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.42); z-index: 700; display: none; }
     .side-drawer-backdrop.open { display: block; }
     .side-drawer {
@@ -222,7 +217,6 @@
     }
     .drawer-tab.active { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
-    /* Banner modo marcar punto en el mapa */
     .pick-point-banner {
       position: fixed; top: 76px; left: 50%; transform: translateX(-50%); z-index: 620;
       background: var(--accent-bg); color: var(--accent-text);
@@ -232,7 +226,6 @@
     }
     .pick-point-banner.visible { display: flex; }
 
-    /* Dock Inferior Unificado */
     .bottom-dock { position: fixed; bottom: 0; left: 0; right: 0; z-index: 480; display: flex; flex-direction: column; pointer-events: none; }
     .fab-strip { display: flex; justify-content: space-between; align-items: center; padding: 0 12px 10px; pointer-events: none; }
     .fab-btn {
@@ -291,7 +284,6 @@
     }
     .route-chip.selected { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
-    /* Modales */
     .modal-backdrop {
       position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 800;
       display: none; align-items: flex-end; justify-content: center; padding: 12px;
@@ -418,15 +410,14 @@
     </div>
   </aside>
 
-  <!-- Controles Agrupados Estilo Mapa de Navegación -->
   <div class="map-controls" id="mapControlsContainer">
     <div class="ctrl-stack">
       <button id="compassBtn" class="ctrl-stack-btn" title="Alternar Norte arriba / Seguir rumbo">🧭</button>
       <button id="locateBtn" class="ctrl-stack-btn" title="Centrar en mi GPS real">◎</button>
+      <button id="layerSwitchBtn" class="ctrl-stack-btn" title="Cambiar vista de mapa (Calles / Vial / Satélite)">🗺</button>
     </div>
   </div>
 
-  <!-- CAJÓN LATERAL UNIFICADO -->
   <div id="drawerBackdrop" class="side-drawer-backdrop"></div>
   <aside id="sideDrawer" class="side-drawer">
     <div class="modal-head" style="margin-bottom:2px;">
@@ -552,7 +543,7 @@
       </div>
 
       <div style="font-size:10px;color:var(--text-secondary);text-align:center;margin-top:6px;" class="arcade-xs">
-        Desarrollado por <strong>EIDOS LABs</strong> • v4.2<br>Tampico • Ciudad Madero • Altamira
+        Desarrollado por <strong>EIDOS LABs</strong> • v4.3<br>Tampico • Ciudad Madero • Altamira
       </div>
     </div>
   </aside>
@@ -593,7 +584,6 @@
     </section>
   </div>
 
-  <!-- MODAL 1: REPORTAR INCIDENTE -->
   <div id="reportModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -619,7 +609,6 @@
     </div>
   </div>
 
-  <!-- MODAL 2: PROGRAMAR TRAYECTO -->
   <div id="routePlannerModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -682,7 +671,6 @@
     </div>
   </div>
 
-  <!-- MODAL 3: DETALLE DE PIN -->
   <div id="pinModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -698,7 +686,6 @@
     </div>
   </div>
 
-  <!-- MODAL 4: AUXILIO VIAL BIDIRECCIONAL -->
   <div id="sosModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -881,22 +868,35 @@
       }, 4500);
     }
 
-    // Capa base CartoDB Positron (etiquetas nítidas y estilo limpio tipo navegación) con respaldo OSM
+    // Capa base OpenStreetMap limpia (sin API key) + vistas alternativas Calles/Satélite Esri
     const map = L.map('map', { zoomControl: false }).setView(userCoords, 14);
-    const cartoPositron = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-      subdomains: 'abcd',
-      maxZoom: 20,
-      attribution: 'EIDOS LABs • CartoDB • OpenStreetMap'
-    });
-    const osmFallback = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    const osmStreets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      subdomains: ['a', 'b', 'c'],
       maxZoom: 19,
-      attribution: 'EIDOS LABs • OpenStreetMap'
+      attribution: 'EIDOS LABs • © OpenStreetMap contributors'
     });
-    cartoPositron.on('tileerror', () => {
-      if (!map.hasLayer(osmFallback)) osmFallback.addTo(map);
+    const esriWorldStreet = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'EIDOS LABs • Esri World Street Map'
     });
-    cartoPositron.addTo(map);
+    const esriSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'EIDOS LABs • Esri Satellite'
+    });
+
+    osmStreets.addTo(map);
     setTimeout(() => map.invalidateSize(), 250);
+
+    let mapLayerMode = 0;
+    document.getElementById('layerSwitchBtn').addEventListener('click', () => {
+      map.removeLayer(osmStreets);
+      map.removeLayer(esriWorldStreet);
+      map.removeLayer(esriSatellite);
+      mapLayerMode = (mapLayerMode + 1) % 3;
+      if (mapLayerMode === 0) { osmStreets.addTo(map); showToast('🗺 Vista Calles (OpenStreetMap)'); }
+      else if (mapLayerMode === 1) { esriWorldStreet.addTo(map); showToast('🗺 Vista Vial Detallada'); }
+      else { esriSatellite.addTo(map); showToast('🛰️ Vista Satelital'); }
+    });
 
     const reportMarkersLayer = L.layerGroup().addTo(map);
     let tempPickMarker = null;
@@ -986,7 +986,6 @@
       }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
     }
 
-    // Búsqueda flexible priorizando Tampico, Ciudad Madero y Altamira sin descartar lugares reales
     async function searchPlacesSurTamaulipas(queryText) {
       if (!queryText || queryText.trim().length < 2) return [];
       const clean = queryText.trim();
@@ -1086,12 +1085,10 @@
 
     document.getElementById('clearActiveRouteBtn').addEventListener('click', clearActiveRoute);
 
-    let lastSearchedPlace = null;
     attachAutocomplete(
       document.getElementById('destInput'),
       document.getElementById('mainSearchSuggestions'),
       async (place) => {
-        lastSearchedPlace = place;
         activeRouteId = 'search';
         renderSavedRoutesUI();
         await drawRealRoute([place.lat, place.lng], place.title);
@@ -1105,7 +1102,6 @@
       if (results.length > 0) {
         document.getElementById('mainSearchSuggestions').classList.remove('open');
         const p = results[0];
-        lastSearchedPlace = p;
         await drawRealRoute([p.lat, p.lng], p.title);
       } else {
         showToast('No se encontró ese lugar. Intenta con otro término.');
@@ -1294,7 +1290,6 @@
       document.getElementById('reportModal').classList.add('open');
     });
 
-    // Íconos en apariencia minimalista invertidos: fondo blanco puro y borde negro
     function getPinHTML(rep) {
       const theme = getCurrentTheme();
       const icons = {
@@ -2009,7 +2004,7 @@
         pill.classList.add('offline');
       }
 
-      sb.channel('climaruta-v42-live')
+      sb.channel('climaruta-v43-live')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'reportes' }, payload => {
           if (payload.eventType === 'INSERT' && !payload.new.oculto && payload.new.votos_despejado < 3) {
             if (!activeReports.some(r => r.id === payload.new.id)) {
