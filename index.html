@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ClimaRuta Sur — EIDOS LABs</title>
+  <title>EIDOS LABs — Red Vial y Meteorológica Sur</title>
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,12 +99,12 @@
     body.theme-pastel #map .leaflet-tile-pane { filter: sepia(0.15) hue-rotate(305deg) saturate(1.15) brightness(1.04); }
     body.theme-gold #map .leaflet-tile-pane { filter: invert(0.88) sepia(0.35) hue-rotate(10deg) contrast(1.15); }
 
-    #fxCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 900; opacity: 0; transition: opacity 0.6s ease; }
+    #fxCanvas { position: fixed; inset: 0; pointer-events: none; z-index: 900; opacity: 0; transition: opacity 0.5s ease; }
     #fxCanvas.active { opacity: 1; }
     #alertEdgeFlash { position: fixed; inset: 0; pointer-events: none; z-index: 899; box-shadow: inset 0 0 0 0 rgba(225, 25, 0, 0); transition: box-shadow 0.4s ease; }
-    #alertEdgeFlash.active { box-shadow: inset 0 0 28px 6px rgba(225, 25, 0, 0.65); }
+    #alertEdgeFlash.active { box-shadow: inset 0 0 32px 8px rgba(225, 25, 0, 0.7); }
 
-    /* Barra Superior Minimalista */
+    /* Barra Superior */
     .top-bar {
       position: fixed; top: 12px; left: 12px; right: 12px; z-index: 500;
       background: var(--bg-card); border: var(--border-width) solid var(--border-color);
@@ -156,8 +156,8 @@
     .alert-details.open { display: block; }
     .alert-details ul { margin-left: 16px; margin-top: 4px; }
 
-    /* Tarjeta Deslizable Tipo DiDi para Voluntarios */
-    .didi-dispatch-card {
+    /* Tarjeta Deslizable de Despacho para Voluntarios */
+    .dispatch-card {
       position: fixed; top: 76px; left: 12px; right: 12px; z-index: 650;
       background: var(--bg-card); color: var(--text-primary);
       border: 2px solid var(--success-bg); border-radius: var(--radius-lg);
@@ -165,14 +165,13 @@
       display: none; flex-direction: column; gap: 10px;
       touch-action: pan-y; transition: transform 0.25s ease, opacity 0.25s ease;
     }
-    .didi-dispatch-card.visible { display: flex; }
-    .didi-head { display: flex; justify-content: space-between; align-items: center; }
-    .didi-badge { background: var(--success-bg); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
-    .didi-user-row { display: flex; align-items: center; gap: 10px; }
+    .dispatch-card.visible { display: flex; }
+    .dispatch-head { display: flex; justify-content: space-between; align-items: center; }
+    .dispatch-badge { background: var(--success-bg); color: #fff; font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 6px; }
+    .dispatch-user-row { display: flex; align-items: center; gap: 10px; }
     .avatar-circle { width: 42px; height: 42px; border-radius: 50%; background: var(--bg-secondary); border: 1.5px solid var(--border-color); display: grid; place-items: center; font-weight: 800; font-size: 15px; overflow: hidden; flex-shrink: 0; }
-    .avatar-circle img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* Controles Laterales Compactos (Mapa Despejado) */
+    /* Controles Laterales Compactos */
     .map-controls {
       position: fixed; top: 78px; right: 12px; z-index: 450;
       display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
@@ -198,21 +197,27 @@
     .ctrl-pill.danger { background: var(--danger-bg); color: #fff; border-color: var(--danger-bg); }
     .ctrl-pill.running { background: var(--success-bg); color: #fff; border-color: var(--success-bg); }
 
-    /* Cajón Lateral (Side Drawer) para Clima, Trayectos y Configuración */
-    .side-drawer-backdrop {
-      position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 700;
-      display: none;
-    }
+    /* Cajón Lateral Izquierdo Unificado (Perfil + Trayectos + Clima/Ajustes) */
+    .side-drawer-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.42); z-index: 700; display: none; }
     .side-drawer-backdrop.open { display: block; }
     .side-drawer {
-      position: fixed; top: 0; left: 0; bottom: 0; width: 86%; max-width: 360px; z-index: 710;
+      position: fixed; top: 0; left: 0; bottom: 0; width: 90%; max-width: 390px; z-index: 710;
       background: var(--bg-card); color: var(--text-primary);
       border-right: var(--border-width) solid var(--border-color);
-      padding: 16px; overflow-y: auto;
+      padding: 14px; overflow-y: auto;
       transform: translateX(-105%); transition: transform 0.28s ease;
-      display: flex; flex-direction: column; gap: 14px;
+      display: flex; flex-direction: column; gap: 12px;
     }
     .side-drawer.open { transform: translateX(0); }
+
+    .drawer-nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .drawer-tab {
+      padding: 8px 6px; border-radius: var(--radius-md);
+      border: var(--border-width) solid var(--border-color);
+      background: var(--bg-secondary); color: var(--text-primary);
+      font-family: inherit; font-size: 11px; font-weight: 700; cursor: pointer; text-align: center;
+    }
+    .drawer-tab.active { background: var(--accent-bg); color: var(--accent-text); border-color: var(--accent-bg); }
 
     /* Banner modo marcar punto en el mapa */
     .pick-point-banner {
@@ -224,15 +229,9 @@
     }
     .pick-point-banner.visible { display: flex; }
 
-    /* Contenedor Inferior Dinámico (Sin traslapes con SOS / Reportar) */
-    .bottom-dock {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 480;
-      display: flex; flex-direction: column; pointer-events: none;
-    }
-    .fab-strip {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0 12px 10px; pointer-events: none;
-    }
+    /* Dock Inferior Unificado y Autocompletado */
+    .bottom-dock { position: fixed; bottom: 0; left: 0; right: 0; z-index: 480; display: flex; flex-direction: column; pointer-events: none; }
+    .fab-strip { display: flex; justify-content: space-between; align-items: center; padding: 0 12px 10px; pointer-events: none; }
     .fab-btn {
       pointer-events: auto; border: var(--border-width) solid var(--border-color);
       border-radius: var(--radius-pill); padding: 11px 16px;
@@ -248,22 +247,36 @@
       background: var(--bg-card); border-top: var(--border-width) solid var(--border-color);
       border-radius: 20px 20px 0 0; padding: 8px 14px 14px;
       box-shadow: 0 -6px 24px rgba(0,0,0,0.1);
-      transition: all 0.25s ease;
+      position: relative;
     }
-    .sheet-handle-row {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 8px; cursor: pointer;
-    }
+    .sheet-handle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; cursor: pointer; }
     .sheet-body.collapsed { display: none; }
+
+    .search-wrap { position: relative; margin-bottom: 8px; }
     .search-box {
       display: flex; align-items: center; gap: 8px;
       background: var(--bg-secondary); border: var(--border-width) solid var(--border-color);
-      border-radius: var(--radius-md); padding: 8px 10px; margin-bottom: 8px;
+      border-radius: var(--radius-md); padding: 8px 10px;
     }
-    .search-box input {
-      border: none; background: transparent; width: 100%;
-      font-family: inherit; font-size: 12px; color: var(--text-primary); outline: none;
+    .search-box input { border: none; background: transparent; width: 100%; font-family: inherit; font-size: 12px; color: var(--text-primary); outline: none; }
+
+    .suggestions-dropdown {
+      position: absolute; bottom: 100%; left: 0; right: 0; margin-bottom: 6px;
+      background: var(--bg-card); border: var(--border-width) solid var(--border-color);
+      border-radius: var(--radius-md); box-shadow: var(--shadow-card);
+      max-height: 210px; overflow-y: auto; z-index: 600; display: none;
     }
+    .suggestions-dropdown.open { display: block; }
+    .suggestions-dropdown.downward { bottom: auto; top: 100%; margin-bottom: 0; margin-top: 4px; }
+    .suggestion-item {
+      padding: 9px 12px; border-bottom: 1px solid var(--border-color);
+      cursor: pointer; font-size: 11.5px; line-height: 1.35;
+    }
+    .suggestion-item:last-child { border-bottom: none; }
+    .suggestion-item:hover { background: var(--bg-secondary); }
+    .suggestion-title { font-weight: 700; color: var(--text-primary); }
+    .suggestion-sub { font-size: 10px; color: var(--text-secondary); }
+
     .routes-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
     .routes-scroll::-webkit-scrollbar { display: none; }
     .route-chip {
@@ -290,11 +303,7 @@
     }
     .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
     .modal-head h2 { font-size: 15px; font-weight: 800; }
-    .close-btn {
-      background: var(--bg-secondary); color: var(--text-primary);
-      border: none; width: 30px; height: 30px; border-radius: 50%;
-      font-weight: 800; cursor: pointer;
-    }
+    .close-btn { background: var(--bg-secondary); color: var(--text-primary); border: none; width: 30px; height: 30px; border-radius: 50%; font-weight: 800; cursor: pointer; }
     .tabs-row { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
     .tab-btn {
       padding: 7px 11px; border-radius: var(--radius-pill); border: var(--border-width) solid var(--border-color);
@@ -356,29 +365,29 @@
   <div id="alertEdgeFlash"></div>
   <div id="toast" class="toast"></div>
 
-  <!-- Banner cuando el usuario está eligiendo un punto exacto en el mapa -->
+  <!-- Banner modo marcar punto en el mapa -->
   <div id="pickPointBanner" class="pick-point-banner arcade-xs">
-    <span>📍 Toca cualquier calle en el mapa para marcar el reporte</span>
+    <span id="pickPointMsg">📍 Toca cualquier calle en el mapa para marcar el punto</span>
     <button id="cancelPickPointBtn" class="chip-btn arcade-xs" style="padding:3px 8px;">Cancelar</button>
   </div>
 
-  <!-- Barra Superior Limpia (Sin botones de Admin expuestos) -->
+  <!-- Barra Superior -->
   <header class="top-bar">
     <div class="brand">
-      <button id="openDrawerBtn" class="chip-btn arcade-xs" title="Clima, Trayectos y Ajustes">☰</button>
+      <button id="openDrawerBtn" class="chip-btn arcade-xs" title="Menú principal">☰</button>
       <div class="logo-badge">EL</div>
       <div class="brand-text">
-        <h1 class="arcade-sm">ClimaRuta Sur <span id="dbStatusPill" class="live-pill">CONECTANDO</span></h1>
-        <div id="topWeatherLine" class="brand-sub arcade-xs">EIDOS LABs • Tampico, Madero y Altamira</div>
+        <h1 class="arcade-sm">EIDOS LABs <span id="dbStatusPill" class="live-pill">CONECTANDO</span></h1>
+        <div id="topWeatherLine" class="brand-sub arcade-xs">Red Vial y Meteorológica • Sur de Tamaulipas</div>
       </div>
     </div>
     <div class="top-actions">
       <button id="themeToggleBtn" class="chip-btn arcade-xs" title="Cambiar apariencia">◻</button>
-      <button id="openProfileBtn" class="chip-btn arcade-xs">👤 <span id="topUserLabel">Entrar</span></button>
+      <button id="openProfileDrawerBtn" class="chip-btn arcade-xs">👤 <span id="topUserLabel">Entrar</span></button>
     </div>
   </header>
 
-  <!-- Banner de Alerta Global -->
+  <!-- Banner Alerta Global -->
   <section id="globalAlertBanner" class="global-alert-banner">
     <div class="alert-header-row">
       <div id="alertBannerTitle" class="alert-title arcade-xs">🚨 ALERTA GENERAL</div>
@@ -390,87 +399,171 @@
     </div>
   </section>
 
-  <!-- Tarjeta Deslizable Tipo DiDi para Voluntarios Verificados -->
-  <aside id="didiDispatchCard" class="didi-dispatch-card">
-    <div class="didi-head">
-      <span class="didi-badge arcade-xs">🆘 SOLICITUD DE AUXILIO CERCANA</span>
+  <!-- Tarjeta Deslizable de Solicitud de Auxilio Cercana -->
+  <aside id="dispatchCard" class="dispatch-card">
+    <div class="dispatch-head">
+      <span class="dispatch-badge arcade-xs">🆘 SOLICITUD DE AUXILIO CERCANA</span>
       <span style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Desliza para descartar →</span>
     </div>
-    <div class="didi-user-row">
-      <div id="didiUserAvatar" class="avatar-circle">👤</div>
+    <div class="dispatch-user-row">
+      <div class="avatar-circle">👤</div>
       <div style="flex:1;min-width:0;">
-        <div id="didiUserName" style="font-size:12.5px;font-weight:800;" class="arcade-xs">Usuario Verificado ⭐ 5.0</div>
-        <div id="didiFallaText" style="font-size:11px;color:var(--danger-bg);font-weight:700;" class="arcade-xs">Falla reportada</div>
-        <div id="didiVehiculoText" style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Vehículo y placas</div>
+        <div id="dispatchUserName" style="font-size:12.5px;font-weight:800;" class="arcade-xs">Usuario Verificado ⭐ 5.0</div>
+        <div id="dispatchFallaText" style="font-size:11px;color:var(--danger-bg);font-weight:700;" class="arcade-xs">Falla reportada</div>
+        <div id="dispatchVehiculoText" style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Vehículo y placas</div>
       </div>
     </div>
     <div style="display:flex;gap:8px;">
-      <button id="didiDismissBtn" class="chip-btn arcade-xs" style="flex:1;justify-content:center;">Ignorar</button>
-      <button id="didiAcceptBtn" class="primary-btn arcade-xs" style="flex:2;background:var(--success-bg);color:#fff;">✓ Aceptar y Acudir</button>
+      <button id="dispatchDismissBtn" class="chip-btn arcade-xs" style="flex:1;justify-content:center;">Ignorar</button>
+      <button id="dispatchAcceptBtn" class="primary-btn arcade-xs" style="flex:2;background:var(--success-bg);color:#fff;">✓ Aceptar y Acudir</button>
     </div>
   </aside>
 
-  <!-- Controles Derechos del Mapa (Solo Brújula/GPS para público; herramientas Admin se inyectan solo tras login real) -->
+  <!-- Controles Laterales -->
   <div class="map-controls" id="mapControlsContainer">
     <button id="compassBtn" class="ctrl-icon" title="Alternar Norte arriba / Seguir rumbo">🧭</button>
-    <button id="locateBtn" class="ctrl-icon" title="Mi ubicación GPS">◎</button>
+    <button id="locateBtn" class="ctrl-icon" title="Centrar en mi GPS real">◎</button>
   </div>
 
-  <!-- Cajón Lateral Izquierdo (Clima Detallado, Trayectos con Alarma y Notificaciones) -->
+  <!-- CAJÓN LATERAL UNIFICADO (PERFIL + TRAYECTOS + CLIMA/AJUSTES) -->
   <div id="drawerBackdrop" class="side-drawer-backdrop"></div>
   <aside id="sideDrawer" class="side-drawer">
-    <div class="modal-head" style="margin-bottom:4px;">
+    <div class="modal-head" style="margin-bottom:2px;">
       <div>
-        <h2 class="arcade-sm">EIDOS LABs • Panel</h2>
-        <div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">ClimaRuta Sur v4.0</div>
+        <h2 class="arcade-sm">EIDOS LABs</h2>
+        <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Tampico • Ciudad Madero • Altamira</div>
       </div>
       <button id="closeDrawerBtn" class="close-btn">✕</button>
     </div>
 
-    <!-- Clima Open-Meteo -->
-    <div class="list-item" style="flex-direction:column;align-items:stretch;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <strong style="font-size:11.5px;" class="arcade-xs">📡 Estación Open-Meteo</strong>
-        <button id="refreshWeatherBtn" class="chip-btn arcade-xs" style="padding:3px 8px;">↻ Actualizar</button>
+    <!-- Pestañas internas ordenadas sin saturar -->
+    <div class="drawer-nav">
+      <button class="drawer-tab active arcade-xs" data-dtab="paneProfile">👤 Perfil</button>
+      <button class="drawer-tab arcade-xs" data-dtab="paneRoutes">⏰ Trayectos</button>
+      <button class="drawer-tab arcade-xs" data-dtab="paneWeather">📡 Clima/App</button>
+    </div>
+
+    <!-- PESTAÑA 1: PERFIL, REGISTRO Y VERIFICACIÓN EN VIVO -->
+    <div id="paneProfile" class="drawer-pane">
+      <div id="authFormsView">
+        <div class="tabs-row">
+          <button id="tabLoginBtn" class="tab-btn active arcade-xs">Iniciar Sesión</button>
+          <button id="tabRegisterBtn" class="tab-btn arcade-xs">Crear Cuenta</button>
+        </div>
+        <div id="loginBox">
+          <input id="loginEmailInput" class="input-field arcade-xs" type="email" placeholder="Correo electrónico" />
+          <input id="loginPassInput" class="input-field arcade-xs" type="password" placeholder="Contraseña" />
+          <button id="doLoginBtn" class="primary-btn arcade-xs">Entrar</button>
+        </div>
+        <div id="registerBox" style="display:none;">
+          <input id="regNameInput" class="input-field arcade-xs" type="text" placeholder="Nombre completo real" />
+          <input id="regPhoneInput" class="input-field arcade-xs" type="tel" placeholder="Teléfono celular (10 dígitos)" />
+          <input id="regEmailInput" class="input-field arcade-xs" type="email" placeholder="Correo electrónico" />
+          <input id="regPassInput" class="input-field arcade-xs" type="password" placeholder="Contraseña (mín. 6 caracteres)" />
+          <select id="regRoleSelect" class="input-field arcade-xs">
+            <option value="ciudadano">🚗 Ciudadano (Reportar y pedir auxilio)</option>
+            <option value="voluntario">🤝 Ciudadano + Voluntario Vial</option>
+          </select>
+          <button id="doRegisterBtn" class="primary-btn arcade-xs">Registrarme</button>
+        </div>
       </div>
-      <div id="weatherDetailBox" style="font-size:11px;color:var(--text-secondary);line-height:1.45;" class="arcade-xs">
-        Consultando datos meteorológicos...
+
+      <div id="loggedProfileView" style="display:none;">
+        <div class="list-item">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div class="avatar-circle">👤</div>
+            <div>
+              <strong id="profNameLabel" style="font-size:12px;" class="arcade-xs">Usuario</strong>
+              <div id="profRoleBadge" style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Rol • Estado</div>
+              <div id="profStatsLabel" style="font-size:10px;font-weight:700;" class="arcade-xs">⭐ 5.0 • 0 auxilios • 0 reportes</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="volunteerToggleBox" class="list-item" style="display:none;">
+          <div>
+            <strong style="font-size:11px;" class="arcade-xs">🟢 Disponible para Auxilio Vial</strong>
+            <div style="font-size:9.5px;color:var(--text-secondary);" class="arcade-xs">Recibir alertas cercanas cuando alguien pida ayuda</div>
+          </div>
+          <input type="checkbox" id="volDisponibleCheck" style="width:20px;height:20px;" />
+        </div>
+
+        <div class="list-item" style="flex-direction:column;align-items:stretch;">
+          <strong style="font-size:11px;margin-bottom:4px;" class="arcade-xs">🪪 Verificación de Identidad en Vivo</strong>
+          <p style="font-size:10px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Captura directa desde cámara (sin galería) para seguridad mutua.</p>
+          <input id="profVehiculoInput" class="input-field arcade-xs" type="text" placeholder="Vehículo y color (ej. Nissan March Rojo)" />
+          <input id="profPlacasInput" class="input-field arcade-xs" type="text" placeholder="Placas (ej. XTM-123)" />
+          <input id="profTipLinkInput" class="input-field arcade-xs" type="text" placeholder="Enlace o CLABE opcional de apoyo" />
+          <label style="font-size:10px;font-weight:700;margin-bottom:3px;" class="arcade-xs">1. Selfie en Vivo (Cámara frontal):</label>
+          <input id="liveSelfieInput" type="file" accept="image/*" capture="user" class="input-field arcade-xs" />
+          <label style="font-size:10px;font-weight:700;margin-bottom:3px;" class="arcade-xs">2. Foto INE Frente (Obligatorio Voluntarios):</label>
+          <input id="liveIneInput" type="file" accept="image/*" capture="environment" class="input-field arcade-xs" />
+          <button id="submitVerificationBtn" class="primary-btn arcade-xs">Guardar y Enviar Verificación</button>
+        </div>
+
+        <div class="list-item" style="flex-direction:column;align-items:stretch;">
+          <strong style="font-size:11px;margin-bottom:4px;" class="arcade-xs">🏆 Apariencias y Recompensas</strong>
+          <p style="font-size:10px;color:var(--text-secondary);margin-bottom:6px;" class="arcade-xs">Desbloquea Edición Dorada con 3 auxilios o 15 reportes confirmados.</p>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;">
+            <button class="chip-btn arcade-xs" onclick="setTheme('minimal')">◻ Minimal</button>
+            <button class="chip-btn arcade-xs" onclick="setTheme('arcade')">👾 Arcade</button>
+            <button class="chip-btn arcade-xs" onclick="setTheme('pastel')">🌸 Pastel</button>
+            <button class="chip-btn arcade-xs" onclick="tryGoldTheme()">👑 Dorada</button>
+          </div>
+        </div>
+
+        <button id="doLogoutBtn" class="danger-btn arcade-xs">Cerrar Sesión</button>
       </div>
     </div>
 
-    <!-- Trayectos Guardados con Alarmas -->
-    <div class="list-item" style="flex-direction:column;align-items:stretch;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-        <strong style="font-size:11.5px;" class="arcade-xs">⏰ Mis Trayectos y Alarmas</strong>
-        <button id="openNewRouteBtn" class="chip-btn active arcade-xs" style="padding:4px 9px;">+ Nuevo</button>
+    <!-- PESTAÑA 2: TRAYECTOS GUARDADOS CON ALARMA Y AUTOCOMPLETADO -->
+    <div id="paneRoutes" class="drawer-pane" style="display:none;">
+      <div class="list-item" style="flex-direction:column;align-items:stretch;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <strong style="font-size:11.5px;" class="arcade-xs">⏰ Mis Trayectos y Alarmas</strong>
+          <button id="openNewRouteBtn" class="chip-btn active arcade-xs" style="padding:4px 9px;">+ Programar</button>
+        </div>
+        <p style="font-size:10px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Aviso automático de clima e incidentes antes de tu hora de salida.</p>
+        <div id="drawerRoutesList"></div>
       </div>
-      <p style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Recibe aviso automático si hay lluvia, Norte o incidentes en tu ruta antes de salir.</p>
-      <div id="drawerRoutesList"></div>
     </div>
 
-    <!-- Configuración de Notificaciones y Sonido -->
-    <div class="list-item" style="flex-direction:column;align-items:stretch;">
-      <strong style="font-size:11.5px;margin-bottom:6px;" class="arcade-xs">🔔 Alertas y Sonido en Celular</strong>
-      <label style="font-size:10.5px;color:var(--text-secondary);margin-bottom:4px;" class="arcade-xs">Tono sutil de notificación:</label>
-      <div style="display:flex;gap:6px;margin-bottom:8px;">
-        <select id="notifSoundSelect" class="input-field arcade-xs" style="margin-bottom:0;">
-          <option value="chime">🎵 Pulso suave (2 notas)</option>
-          <option value="crystal">✨ Destello cristalino corto</option>
-          <option value="mute">🔇 Silencio (Solo visual)</option>
-        </select>
-        <button id="testSoundBtn" class="chip-btn arcade-xs">Probar</button>
+    <!-- PESTAÑA 3: CLIMA OPEN-METEO Y CONFIGURACIÓN DE SONIDO -->
+    <div id="paneWeather" class="drawer-pane" style="display:none;">
+      <div class="list-item" style="flex-direction:column;align-items:stretch;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <strong style="font-size:11.5px;" class="arcade-xs">📡 Estación Open-Meteo</strong>
+          <button id="refreshWeatherBtn" class="chip-btn arcade-xs" style="padding:3px 8px;">↻ Actualizar</button>
+        </div>
+        <div id="weatherDetailBox" style="font-size:11px;color:var(--text-secondary);line-height:1.45;" class="arcade-xs">Consultando datos...</div>
       </div>
-      <label style="display:flex;align-items:center;gap:8px;font-size:11px;cursor:pointer;" class="arcade-xs">
-        <input type="checkbox" id="notifVibrateCheck" checked /> Vibración háptica en alertas
-      </label>
-      <button id="enablePushPermBtn" class="chip-btn arcade-xs" style="margin-top:8px;justify-content:center;">📲 Activar permisos del navegador</button>
+
+      <div class="list-item" style="flex-direction:column;align-items:stretch;">
+        <strong style="font-size:11.5px;margin-bottom:6px;" class="arcade-xs">🔔 Alertas y Sonido en Celular</strong>
+        <div style="display:flex;gap:6px;margin-bottom:8px;">
+          <select id="notifSoundSelect" class="input-field arcade-xs" style="margin-bottom:0;">
+            <option value="chime">🎵 Pulso suave (2 notas)</option>
+            <option value="crystal">✨ Destello cristalino corto</option>
+            <option value="mute">🔇 Silencio (Solo visual)</option>
+          </select>
+          <button id="testSoundBtn" class="chip-btn arcade-xs">Probar</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:11px;cursor:pointer;" class="arcade-xs">
+          <input type="checkbox" id="notifVibrateCheck" checked /> Vibración háptica en alertas
+        </label>
+        <button id="enablePushPermBtn" class="chip-btn arcade-xs" style="margin-top:8px;justify-content:center;">📲 Activar permisos del navegador</button>
+      </div>
+
+      <div style="font-size:10px;color:var(--text-secondary);text-align:center;margin-top:6px;" class="arcade-xs">
+        Desarrollado por <strong>EIDOS LABs</strong> • v4.1<br>Tampico • Ciudad Madero • Altamira
+      </div>
     </div>
   </aside>
 
   <!-- Mapa Principal -->
   <main id="map"></main>
 
-  <!-- Dock Inferior Unificado (Evita cualquier sobreposición con SOS y Reportar) -->
+  <!-- Dock Inferior con Autocompletado Real -->
   <div class="bottom-dock">
     <div class="fab-strip">
       <button id="openSosBtn" class="fab-btn fab-sos arcade-xs">
@@ -490,19 +583,22 @@
       </div>
 
       <div id="bottomSheetBody" class="sheet-body">
-        <div class="search-box">
-          <span>🔍</span>
-          <input id="destInput" type="text" placeholder="Buscar calle, colonia o lugar (ej. Playa Miramar, Av. Hidalgo)..." />
-          <button id="searchRouteBtn" class="chip-btn active arcade-xs">Ir</button>
+        <div class="search-wrap">
+          <div id="mainSearchSuggestions" class="suggestions-dropdown"></div>
+          <div class="search-box">
+            <span>🔍</span>
+            <input id="destInput" type="text" autocomplete="off" placeholder="Escribe lugar o calle (ej. Cinépolis Hidalgo, Plaza Arenas)..." />
+            <button id="searchRouteBtn" class="chip-btn active arcade-xs">Buscar</button>
+          </div>
         </div>
         <div class="routes-scroll" id="bottomSavedRoutesRow">
-          <span style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Ningún trayecto seleccionado. Busca un destino o abre ☰ para programar tus rutas.</span>
+          <span style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Sin trayecto activo. Busca una dirección o abre ☰ → Trayectos.</span>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- MODAL 1: REPORTAR INCIDENTE (GPS ACTUAL O PUNTO EN EL MAPA) -->
+  <!-- MODAL 1: REPORTAR INCIDENTE -->
   <div id="reportModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -523,20 +619,38 @@
         <button class="opt-card arcade-xs" data-tipo="vial" data-subtipo="Choque / Accidente vial">💥 Choque / Accidente</button>
         <button class="opt-card arcade-xs" data-tipo="peligro" data-subtipo="Calle cerrada / Obra / Cable caído">🚧 Calle cerrada / Peligro</button>
       </div>
-      <input id="reportColoniaInput" class="input-field arcade-xs" type="text" placeholder="Colonia o referencia (ej. Blvd. Costero, Ejido La Pedrera...)" />
+      <input id="reportColoniaInput" class="input-field arcade-xs" type="text" placeholder="Colonia o referencia (ej. Av. Hidalgo, Blvd. Petrocel...)" />
       <button id="submitReportBtn" class="primary-btn arcade-xs">Publicar Reporte Ahora</button>
     </div>
   </div>
 
-  <!-- MODAL 2: PROGRAMAR NUEVO TRAYECTO CON ALARMA -->
+  <!-- MODAL 2: PROGRAMAR TRAYECTO CON ORIGEN, DESTINO AUTOCOMPLETADO Y ALARMA -->
   <div id="routePlannerModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
         <h2 class="arcade-sm">Programar Trayecto y Alarma</h2>
         <button class="close-btn" data-close="routePlannerModal">✕</button>
       </div>
-      <input id="routeNameInput" class="input-field arcade-xs" type="text" placeholder="Nombre (ej. Casa → Trabajo Altamira)" />
-      <input id="routeDestTextInput" class="input-field arcade-xs" type="text" placeholder="Destino en Tampico/Madero/Altamira..." />
+      <input id="routeNameInput" class="input-field arcade-xs" type="text" placeholder="Nombre (ej. Casa → Trabajo)" />
+
+      <!-- Origen del trayecto -->
+      <label style="font-size:10px;color:var(--text-secondary);display:block;margin-bottom:3px;" class="arcade-xs">Punto de inicio (Origen):</label>
+      <div style="display:flex;gap:6px;margin-bottom:6px;">
+        <button type="button" id="originGpsBtn" class="chip-btn active arcade-xs" style="flex:1;justify-content:center;">📡 Mi ubicación actual</button>
+        <button type="button" id="originCustomBtn" class="chip-btn arcade-xs" style="flex:1;justify-content:center;">🔍 Elegir dirección</button>
+      </div>
+      <div id="originSearchWrap" class="search-wrap" style="display:none;">
+        <input id="routeOriginInput" class="input-field arcade-xs" type="text" autocomplete="off" placeholder="Escribe calle o colonia de inicio..." />
+        <div id="originSuggestions" class="suggestions-dropdown downward"></div>
+      </div>
+
+      <!-- Destino con autocompletado -->
+      <label style="font-size:10px;color:var(--text-secondary);display:block;margin-bottom:3px;" class="arcade-xs">Destino (selecciona de la lista):</label>
+      <div class="search-wrap">
+        <input id="routeDestTextInput" class="input-field arcade-xs" type="text" autocomplete="off" placeholder="Escribe destino (ej. Plaza Arenas, Altamira)..." />
+        <div id="destSuggestions" class="suggestions-dropdown downward"></div>
+      </div>
+      <div id="pickedDestStatus" style="font-size:10px;color:var(--success-bg);font-weight:700;margin-bottom:8px;" class="arcade-xs"></div>
 
       <div style="display:flex;gap:8px;margin-bottom:8px;">
         <div style="flex:1;">
@@ -575,7 +689,7 @@
     </div>
   </div>
 
-  <!-- MODAL 3: DETALLE DE PIN Y DESPEJE 3/3 -->
+  <!-- MODAL 3: DETALLE DE PIN -->
   <div id="pinModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -591,7 +705,7 @@
     </div>
   </div>
 
-  <!-- MODAL 4: AUXILIO VIAL BIDIRECCIONAL Y DIRECTORIO 911 -->
+  <!-- MODAL 4: AUXILIO VIAL BIDIRECCIONAL -->
   <div id="sosModal" class="modal-backdrop">
     <div class="modal-card">
       <div class="modal-head">
@@ -607,14 +721,12 @@
       </div>
 
       <hr style="border:none;border-top:1px solid var(--border-color);margin:10px 0;" />
-      <h3 style="font-size:12px;margin-bottom:6px;" class="arcade-xs">🤝 Auxilio Vial Verificado (EIDOS LABs)</h3>
+      <h3 style="font-size:12px;margin-bottom:6px;" class="arcade-xs">🤝 Auxilio Vial Comunitario</h3>
 
-      <!-- Estado de mi solicitud activa (si tengo una en curso) -->
       <div id="myActiveAuxilioBox" style="display:none;margin-bottom:10px;"></div>
 
-      <!-- Formulario para pedir auxilio (requiere cuenta verificada) -->
       <div id="requestAuxilioFormBox">
-        <p style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Por seguridad mutua, tanto tú como el voluntario comparten identidad verificada con foto en vivo.</p>
+        <p style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Por seguridad mutua, solicitante y voluntario comparten su ficha verificada con foto en vivo.</p>
         <select id="sosFallaSelect" class="input-field arcade-xs">
           <option value="Ponchadura de llanta">🛞 Ponchadura de llanta</option>
           <option value="Paso de corriente / Batería">🔋 Paso de corriente / Batería</option>
@@ -623,108 +735,10 @@
         </select>
         <button id="requestAuxilioBtn" class="primary-btn arcade-xs">Solicitar Auxilio en mi Ubicación</button>
       </div>
-
-      <div id="auxilioListContainer" style="margin-top:10px;"></div>
     </div>
   </div>
 
-  <!-- MODAL 5: PERFIL, REGISTRO, VERIFICACIÓN EN VIVO Y RECOMPENSAS -->
-  <div id="profileModal" class="modal-backdrop">
-    <div class="modal-card">
-      <div class="modal-head">
-        <h2 class="arcade-sm">👤 Perfil y Seguridad</h2>
-        <button class="close-btn" data-close="profileModal">✕</button>
-      </div>
-
-      <!-- Vista No Autenticado: Login / Registro -->
-      <div id="authFormsView">
-        <div class="tabs-row">
-          <button id="tabLoginBtn" class="tab-btn active arcade-xs">Iniciar Sesión</button>
-          <button id="tabRegisterBtn" class="tab-btn arcade-xs">Crear Cuenta</button>
-        </div>
-
-        <div id="loginBox">
-          <input id="loginEmailInput" class="input-field arcade-xs" type="email" placeholder="Correo electrónico" />
-          <input id="loginPassInput" class="input-field arcade-xs" type="password" placeholder="Contraseña" />
-          <button id="doLoginBtn" class="primary-btn arcade-xs">Entrar a ClimaRuta Sur</button>
-        </div>
-
-        <div id="registerBox" style="display:none;">
-          <input id="regNameInput" class="input-field arcade-xs" type="text" placeholder="Nombre completo real" />
-          <input id="regPhoneInput" class="input-field arcade-xs" type="tel" placeholder="Teléfono celular (10 dígitos)" />
-          <input id="regEmailInput" class="input-field arcade-xs" type="email" placeholder="Correo electrónico" />
-          <input id="regPassInput" class="input-field arcade-xs" type="password" placeholder="Crea una contraseña (mín. 6 caracteres)" />
-          <select id="regRoleSelect" class="input-field arcade-xs">
-            <option value="ciudadano">🚗 Ciudadano (Reportar y pedir auxilio)</option>
-            <option value="voluntario">🤝 Ciudadano + Voluntario Vial (Acudir a ayudar)</option>
-          </select>
-          <button id="doRegisterBtn" class="primary-btn arcade-xs">Registrarme</button>
-        </div>
-      </div>
-
-      <!-- Vista Autenticado: Ficha de Usuario, Verificación en Vivo, Recompensas y Admin (si rol === 'admin') -->
-      <div id="loggedProfileView" style="display:none;">
-        <div class="list-item">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div id="profAvatarBox" class="avatar-circle">👤</div>
-            <div>
-              <strong id="profNameLabel" style="font-size:12.5px;" class="arcade-xs">Usuario</strong>
-              <div id="profRoleBadge" style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Rol • Estado</div>
-              <div id="profStatsLabel" style="font-size:10.5px;font-weight:700;" class="arcade-xs">⭐ 5.0 • 0 auxilios • 0 reportes</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Verificación de Identidad con Cámara en Vivo (Sin galería) -->
-        <div id="verificationSectionBox" class="list-item" style="flex-direction:column;align-items:stretch;">
-          <strong style="font-size:11.5px;margin-bottom:4px;" class="arcade-xs">🪪 Verificación de Identidad en Vivo</strong>
-          <p style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Para proteger a quienes piden ayuda y a los voluntarios, las fotos se toman directo con la cámara (sin archivos de galería).</p>
-
-          <input id="profVehiculoInput" class="input-field arcade-xs" type="text" placeholder="Vehículo y color (ej. Nissan March Rojo)" />
-          <input id="profPlacasInput" class="input-field arcade-xs" type="text" placeholder="Placas (ej. XTM-123)" />
-          <input id="profTipLinkInput" class="input-field arcade-xs" type="text" placeholder="Enlace o CLABE opcional para propinas/apoyo" />
-
-          <label style="font-size:10.5px;font-weight:700;margin-bottom:4px;" class="arcade-xs">1. Foto Selfie en Vivo (Cámara frontal):</label>
-          <input id="liveSelfieInput" type="file" accept="image/*" capture="user" class="input-field arcade-xs" />
-
-          <label style="font-size:10.5px;font-weight:700;margin-bottom:4px;" class="arcade-xs">2. Foto INE Frente en Vivo (Obligatorio Voluntarios):</label>
-          <input id="liveIneInput" type="file" accept="image/*" capture="environment" class="input-field arcade-xs" />
-
-          <button id="submitVerificationBtn" class="primary-btn arcade-xs">Enviar Verificación en Vivo</button>
-        </div>
-
-        <!-- Recompensas y Apariencias Desbloqueables -->
-        <div class="list-item" style="flex-direction:column;align-items:stretch;">
-          <strong style="font-size:11.5px;margin-bottom:4px;" class="arcade-xs">🏆 Recompensas y Apariencias Especiales</strong>
-          <p id="rewardStatusText" style="font-size:10.5px;color:var(--text-secondary);margin-bottom:8px;" class="arcade-xs">Completa 3 auxilios viales o 15 reportes confirmados para desbloquear la apariencia Edición Dorada por 7 días.</p>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="chip-btn arcade-xs" onclick="setTheme('minimal')">◻ Minimalista</button>
-            <button class="chip-btn arcade-xs" onclick="setTheme('arcade')">👾 Arcade</button>
-            <button class="chip-btn arcade-xs" onclick="setTheme('pastel')">🌸 Pastel</button>
-            <button id="goldThemeBtn" class="chip-btn arcade-xs" onclick="tryGoldTheme()">👑 Dorada (Recompensa)</button>
-          </div>
-        </div>
-
-        <!-- Modo Voluntario Activo -->
-        <div id="volunteerToggleBox" class="list-item" style="display:none;">
-          <div>
-            <strong style="font-size:11.5px;" class="arcade-xs">🟢 Disponible para Auxilio Vial</strong>
-            <div style="font-size:10px;color:var(--text-secondary);" class="arcade-xs">Recibir alertas tipo DiDi cuando alguien cercano pida ayuda</div>
-          </div>
-          <input type="checkbox" id="volDisponibleCheck" style="width:20px;height:20px;" />
-        </div>
-
-        <!-- Acerca de EIDOS LABs -->
-        <div style="font-size:10px;color:var(--text-secondary);text-align:center;margin:8px 0;" class="arcade-xs">
-          Desarrollado por <strong>EIDOS LABs</strong> • ClimaRuta Sur v4.0<br>Red Comunitaria Tampico • Ciudad Madero • Altamira
-        </div>
-
-        <button id="doLogoutBtn" class="danger-btn arcade-xs">Cerrar Sesión</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL EXCLUSIVO ADMIN (SOLO SE INYECTA SI ROL === 'admin') -->
+  <!-- CONTENEDOR EXCLUSIVO ADMIN -->
   <div id="adminHostContainer"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -732,7 +746,7 @@
 
   <script>
     // =========================================================
-    // 1. INICIALIZACIÓN SUPABASE & ESTADO
+    // 1. INICIALIZACIÓN SUPABASE & ESTADO GLOBAL
     // =========================================================
     const SUPABASE_URL = 'https://uxwumwwevynsuocnfkby.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV4d3Vtd3dldnluc3VvY25ma2J5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwOTk3OTIsImV4cCI6MjExMDY3NTc5Mn0.wRuOH1QBTx5VlkaiEiMSJK6APTcsqjjMd2wnrEQB3FI';
@@ -747,6 +761,7 @@
     let currentUser = null;
     let currentProfile = null;
     let userCoords = [22.2553, -97.8686];
+    let hasRealGps = false;
     let userHeading = 0;
     let userSpeedKmh = 0;
     let followHeading = false;
@@ -760,57 +775,134 @@
     let savedRoutes = [];
     let activeRouteId = null;
     let routeLayer = null;
+    let destPinMarker = null;
     let currentRouteCoords = [];
     let simInterval = null;
+
+    let pickedRouteOrigin = null; // null = GPS actual
+    let pickedRouteDest = null;
 
     let pendingDispatchAuxilio = null;
     let myActiveAuxilio = null;
 
     // =========================================================
-    // 2. SISTEMA DE SONIDO SUTIL (WEB AUDIO API) Y VIBRACIÓN
+    // 2. SONIDO SUTIL Y VIBRACIÓN
     // =========================================================
     function playSubtleNotification() {
       const soundPref = localStorage.getItem('crs_sound') || 'chime';
       const vibPref = localStorage.getItem('crs_vibrate') !== '0';
-
-      if (vibPref && 'vibrate' in navigator) {
-        navigator.vibrate([90, 50, 110]);
-      }
+      if (vibPref && 'vibrate' in navigator) navigator.vibrate([90, 50, 110]);
       if (soundPref === 'mute') return;
-
       try {
         const AudioCtx = window.AudioContext || window.webkitAudioContext;
         const ac = new AudioCtx();
         const osc = ac.createOscillator();
         const gain = ac.createGain();
-        osc.connect(gain);
-        gain.connect(ac.destination);
-
+        osc.connect(gain); gain.connect(ac.destination);
         const now = ac.currentTime;
         if (soundPref === 'crystal') {
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(880, now);
+          osc.type = 'sine'; osc.frequency.setValueAtTime(880, now);
           osc.frequency.exponentialRampToValueAtTime(1318.5, now + 0.14);
-          gain.gain.setValueAtTime(0.08, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-          osc.start(now);
-          osc.stop(now + 0.23);
+          gain.gain.setValueAtTime(0.08, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+          osc.start(now); osc.stop(now + 0.23);
         } else {
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(587.33, now);
+          osc.type = 'triangle'; osc.frequency.setValueAtTime(587.33, now);
           osc.frequency.setValueAtTime(783.99, now + 0.11);
-          gain.gain.setValueAtTime(0.09, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
-          osc.start(now);
-          osc.stop(now + 0.27);
+          gain.gain.setValueAtTime(0.09, now); gain.gain.exponentialRampToValueAtTime(0.001, now + 0.26);
+          osc.start(now); osc.stop(now + 0.27);
         }
       } catch (e) {}
     }
 
     // =========================================================
-    // 3. MAPA ESRI ARCGIS & AVATARES
+    // 3. MOTOR DE EFECTOS ATMOSFÉRICOS EN CANVAS (ALERTAS GLOBALES)
     // =========================================================
-    const map = L.map('map', { zoomControl: false }).setView(userCoords, 13);
+    const fxCanvas = document.getElementById('fxCanvas');
+    const ctx = fxCanvas.getContext('2d');
+    let fxAnimId = null;
+    let fxTimeout = null;
+
+    function resizeCanvas() {
+      fxCanvas.width = window.innerWidth;
+      fxCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function triggerAlertBurst(fxType) {
+      if (fxAnimId) cancelAnimationFrame(fxAnimId);
+      if (fxTimeout) clearTimeout(fxTimeout);
+      const theme = getCurrentTheme();
+      const particles = [];
+      const count = fxType === 'wind' ? 45 : 75;
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * fxCanvas.width,
+          y: Math.random() * fxCanvas.height,
+          vx: fxType === 'wind' ? (8 + Math.random() * 8) : (fxType === 'rain_storm' ? -2.5 : (Math.random() - 0.5) * 1.8),
+          vy: fxType === 'rain_storm' ? (11 + Math.random() * 7) : (fxType === 'fire' || fxType === 'heat' ? -(1.8 + Math.random() * 2.5) : (0.8 + Math.random() * 1.5)),
+          size: 2.5 + Math.random() * 4
+        });
+      }
+      fxCanvas.classList.add('active');
+      document.getElementById('alertEdgeFlash').classList.add('active');
+
+      let tick = 0;
+      function drawFx() {
+        tick++;
+        ctx.clearRect(0, 0, fxCanvas.width, fxCanvas.height);
+        const palette = {
+          minimal: { rain: 'rgba(30,60,110,0.55)', wind: 'rgba(20,20,20,0.4)', fire: 'rgba(225,25,0,0.6)', gas: 'rgba(130,80,200,0.35)', heat: 'rgba(235,110,0,0.4)', quake: '#111111' },
+          arcade: { rain: '#00e5ff', wind: '#00ff66', fire: '#ff2a55', gas: '#d500f9', heat: '#ff9100', quake: '#00ff66' },
+          pastel: { rain: 'rgba(100,181,246,0.6)', wind: 'rgba(240,98,146,0.45)', fire: 'rgba(255,112,67,0.55)', gas: 'rgba(186,104,200,0.4)', heat: 'rgba(255,167,38,0.45)', quake: '#f06292' },
+          gold: { rain: '#f5d061', wind: '#d4af37', fire: '#ef4444', gas: '#a855f7', heat: '#f59e0b', quake: '#f5d061' }
+        }[theme] || { wind: 'rgba(20,20,20,0.4)' };
+
+        const colorKey = fxType === 'rain_storm' ? 'rain' : fxType;
+        ctx.strokeStyle = palette[colorKey] || palette.wind;
+        ctx.fillStyle = palette[colorKey] || palette.wind;
+
+        if (fxType === 'quake') {
+          ctx.lineWidth = 2.5;
+          ctx.beginPath();
+          const baseY = fxCanvas.height * 0.5;
+          for (let x = 0; x < fxCanvas.width; x += 8) {
+            const amp = Math.sin((x + tick * 14) * 0.04) * 30 * Math.sin(tick * 0.15);
+            if (x === 0) ctx.moveTo(x, baseY + amp); else ctx.lineTo(x, baseY + amp);
+          }
+          ctx.stroke();
+        } else {
+          particles.forEach(p => {
+            p.x += p.vx; p.y += p.vy;
+            if (p.x > fxCanvas.width) p.x = 0; if (p.x < 0) p.x = fxCanvas.width;
+            if (p.y > fxCanvas.height) p.y = 0; if (p.y < 0) p.y = fxCanvas.height;
+            if (theme === 'arcade') {
+              const s = Math.round(p.size * 1.5);
+              ctx.fillRect(Math.round(p.x), Math.round(p.y), fxType === 'wind' ? s * 4 : s, fxType === 'rain_storm' ? s * 3 : s);
+            } else if (fxType === 'wind') {
+              ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 38, p.y); ctx.stroke();
+            } else if (fxType === 'rain_storm') {
+              ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - 4, p.y + 16); ctx.stroke();
+            } else {
+              ctx.beginPath(); ctx.arc(p.x, p.y, fxType === 'gas' ? p.size * 5 : p.size, 0, Math.PI * 2); ctx.fill();
+            }
+          });
+        }
+        fxAnimId = requestAnimationFrame(drawFx);
+      }
+      drawFx();
+
+      fxTimeout = setTimeout(() => {
+        fxCanvas.classList.remove('active');
+        document.getElementById('alertEdgeFlash').classList.remove('active');
+        setTimeout(() => { if (fxAnimId) cancelAnimationFrame(fxAnimId); }, 550);
+      }, 4500);
+    }
+
+    // =========================================================
+    // 4. MAPA, GPS DE ALTA PRECISIÓN Y AUTOCOMPLETADO LOCAL
+    // =========================================================
+    const map = L.map('map', { zoomControl: false }).setView(userCoords, 14);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
       maxZoom: 19,
       attribution: 'EIDOS LABs • Esri • Open-Meteo • OSRM'
@@ -820,9 +912,7 @@
     const reportMarkersLayer = L.layerGroup().addTo(map);
     let tempPickMarker = null;
 
-    function getCurrentTheme() {
-      return localStorage.getItem('crs_theme') || 'minimal';
-    }
+    function getCurrentTheme() { return localStorage.getItem('crs_theme') || 'minimal'; }
 
     function setTheme(themeName) {
       localStorage.setItem('crs_theme', themeName);
@@ -830,14 +920,12 @@
       document.body.className = `theme-${themeName}` + (hasAlert ? ' has-alert' : '');
       const icons = { minimal: '◻', arcade: '👾', pastel: '🌸', gold: '👑' };
       document.getElementById('themeToggleBtn').textContent = icons[themeName] || '◻';
-      refreshUserMarker();
-      renderReportsOnMap();
+      refreshUserMarker(); renderReportsOnMap();
       if (routeLayer) {
         const cMap = { minimal: '#111318', arcade: '#00ff66', pastel: '#f06292', gold: '#d4af37' };
         routeLayer.setStyle({ color: cMap[themeName] || '#111318' });
       }
     }
-
     window.setTheme = setTheme;
     window.tryGoldTheme = () => {
       const unlocked = currentProfile && (
@@ -846,12 +934,8 @@
         currentProfile.reportes_confirmados >= 15 ||
         (currentProfile.tema_desbloqueado_hasta && new Date(currentProfile.tema_desbloqueado_hasta) > new Date())
       );
-      if (!unlocked) {
-        showToast('👑 Completa 3 auxilios o 15 reportes confirmados para desbloquear');
-        return;
-      }
-      setTheme('gold');
-      showToast('👑 Apariencia Edición Dorada activada');
+      if (!unlocked) { showToast('👑 Completa 3 auxilios o 15 reportes confirmados para desbloquear'); return; }
+      setTheme('gold'); showToast('👑 Apariencia Edición Dorada activada');
     };
 
     function getUserAvatarHTML() {
@@ -900,54 +984,111 @@
       userMarker.setIcon(L.divIcon({ className: '', html: getUserAvatarHTML(), iconSize: [44, 44], iconAnchor: [22, 22] }));
     }
 
-    // Marcar ubicación exacta en el mapa para reportar
-    map.on('click', (e) => {
-      if (!isPickingMapPoint) return;
-      reportCustomCoords = [e.latlng.lat, e.latlng.lng];
-      if (tempPickMarker) map.removeLayer(tempPickMarker);
-      tempPickMarker = L.marker(reportCustomCoords).addTo(map);
-      isPickingMapPoint = false;
-      document.getElementById('pickPointBanner').classList.remove('visible');
-      document.getElementById('reportCoordsLabel').textContent = `📍 Punto marcado en el mapa (${reportCustomCoords[0].toFixed(4)}, ${reportCustomCoords[1].toFixed(4)})`;
-      document.getElementById('reportModal').classList.add('open');
-    });
-
-    // =========================================================
-    // 4. BÚSQUEDA REAL DE DIRECCIONES (NOMINATIM + OSRM)
-    // =========================================================
-    async function geocodeTampicoSur(queryText) {
-      const q = encodeURIComponent(`${queryText}, Tamaulipas, Mexico`);
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${q}&limit=1&viewbox=-98.05,22.50,-97.75,22.15&bounded=0`;
-      const res = await fetch(url);
-      const list = await res.json();
-      if (list && list.length > 0) {
-        return { lat: parseFloat(list[0].lat), lng: parseFloat(list[0].lon), display: list[0].display_name.split(',')[0] };
-      }
-      return null;
+    function requestPreciseLocation(centerMap = false) {
+      if (!('geolocation' in navigator)) return;
+      navigator.geolocation.getCurrentPosition(pos => {
+        userCoords = [pos.coords.latitude, pos.coords.longitude];
+        hasRealGps = true;
+        if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
+        userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
+        refreshUserMarker();
+        if (centerMap) map.setView(userCoords, 16);
+      }, () => {
+        if (centerMap) showToast('Activa el permiso de ubicación en tu navegador para máxima precisión');
+      }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
     }
 
-    async function drawRealRoute(destLatLng, labelText = '') {
+    // Autocompletado inteligente acotado a Tampico, Ciudad Madero y Altamira
+    async function searchPlacesSurTamaulipas(queryText) {
+      if (!queryText || queryText.trim().length < 3) return [];
+      const q = encodeURIComponent(`${queryText.trim()}, Tamaulipas`);
+      // Bounding box estricto Zona Conurbada Tampico-Madero-Altamira
+      const url = `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${q}&limit=6&viewbox=-98.08,22.52,-97.74,22.14&bounded=1`;
       try {
-        const url = `https://router.project-osrm.org/route/v1/driving/${userCoords[1]},${userCoords[0]};${destLatLng[1]},${destLatLng[0]}?overview=full&geometries=geojson`;
+        const res = await fetch(url);
+        const items = await res.json();
+        return (items || []).map(it => {
+          const a = it.address || {};
+          const mainName = it.name || a.road || a.amenity || a.shop || it.display_name.split(',')[0];
+          const roadPart = a.road && a.road !== mainName ? a.road : '';
+          const suburb = a.suburb || a.neighbourhood || a.residential || '';
+          const city = a.city || a.town || a.municipality || 'Zona Sur';
+          const subtitle = [roadPart, suburb, city].filter(Boolean).join(', ');
+          return {
+            title: mainName,
+            subtitle: subtitle || it.display_name,
+            lat: parseFloat(it.lat),
+            lng: parseFloat(it.lon)
+          };
+        });
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function attachAutocomplete(inputEl, dropdownEl, onSelectCallback) {
+      let debounceTimer = null;
+      inputEl.addEventListener('input', () => {
+        clearTimeout(debounceTimer);
+        const val = inputEl.value.trim();
+        if (val.length < 3) {
+          dropdownEl.classList.remove('open');
+          return;
+        }
+        debounceTimer = setTimeout(async () => {
+          const results = await searchPlacesSurTamaulipas(val);
+          if (results.length === 0) {
+            dropdownEl.innerHTML = `<div class="suggestion-item"><div class="suggestion-sub">Sin coincidencias exactas en Tampico, Madero o Altamira. Prueba agregando colonia o avenida.</div></div>`;
+            dropdownEl.classList.add('open');
+            return;
+          }
+          dropdownEl.innerHTML = results.map((r, idx) => `
+            <div class="suggestion-item" data-idx="${idx}">
+              <div class="suggestion-title">📍 ${r.title}</div>
+              <div class="suggestion-sub">${r.subtitle}</div>
+            </div>`).join('');
+          dropdownEl.classList.add('open');
+
+          dropdownEl.querySelectorAll('.suggestion-item[data-idx]').forEach(el => {
+            el.addEventListener('click', () => {
+              const picked = results[parseInt(el.dataset.idx, 10)];
+              inputEl.value = `${picked.title} (${picked.subtitle})`;
+              dropdownEl.classList.remove('open');
+              onSelectCallback(picked);
+            });
+          });
+        }, 380);
+      });
+    }
+
+    async function drawRealRoute(destLatLng, labelText = '', originLatLng = null) {
+      const start = originLatLng || userCoords;
+      try {
+        const url = `https://router.project-osrm.org/route/v1/driving/${start[1]},${start[0]};${destLatLng[1]},${destLatLng[0]}?overview=full&geometries=geojson`;
         const res = await fetch(url);
         const data = await res.json();
         if (data.routes && data.routes.length > 0) {
           const r = data.routes[0];
           currentRouteCoords = r.geometry.coordinates.map(c => [c[1], c[0]]);
           if (routeLayer) map.removeLayer(routeLayer);
+          if (destPinMarker) map.removeLayer(destPinMarker);
+
           const cMap = { minimal: '#111318', arcade: '#00ff66', pastel: '#f06292', gold: '#d4af37' };
-          routeLayer = L.polyline(currentRouteCoords, { color: cMap[getCurrentTheme()] || '#111318', weight: 5, opacity: 0.85 }).addTo(map);
-          map.fitBounds(routeLayer.getBounds(), { padding: [60, 130] });
+          routeLayer = L.polyline(currentRouteCoords, { color: cMap[getCurrentTheme()] || '#111318', weight: 5, opacity: 0.88 }).addTo(map);
+          destPinMarker = L.marker(destLatLng).addTo(map).bindPopup(`<strong>${labelText || 'Destino'}</strong>`).openPopup();
+
+          map.fitBounds(routeLayer.getBounds(), { padding: [65, 135] });
           document.getElementById('routeStatsLabel').textContent = `${labelText ? labelText + ' • ' : ''}${(r.distance / 1000).toFixed(1)} km (${Math.round(r.duration / 60)} min)`;
           document.getElementById('clearActiveRouteBtn').style.display = 'inline-flex';
         }
       } catch (e) {
-        showToast('No se pudo calcular la ruta');
+        showToast('No se pudo calcular el trazado vial');
       }
     }
 
     function clearActiveRoute() {
       if (routeLayer) { map.removeLayer(routeLayer); routeLayer = null; }
+      if (destPinMarker) { map.removeLayer(destPinMarker); destPinMarker = null; }
       currentRouteCoords = [];
       activeRouteId = null;
       document.getElementById('routeStatsLabel').textContent = '';
@@ -957,94 +1098,60 @@
 
     document.getElementById('clearActiveRouteBtn').addEventListener('click', clearActiveRoute);
 
+    // Conectar autocompletado de la barra principal inferior
+    attachAutocomplete(
+      document.getElementById('destInput'),
+      document.getElementById('mainSearchSuggestions'),
+      async (place) => {
+        activeRouteId = 'search';
+        renderSavedRoutesUI();
+        await drawRealRoute([place.lat, place.lng], place.title);
+      }
+    );
+
     document.getElementById('searchRouteBtn').addEventListener('click', async () => {
       const txt = document.getElementById('destInput').value.trim();
       if (!txt) return;
-      showToast('🔍 Buscando ubicación...');
-      const geo = await geocodeTampicoSur(txt);
-      if (!geo) {
-        showToast('No se encontró ese lugar en la zona conurbada');
-        return;
+      const results = await searchPlacesSurTamaulipas(txt);
+      if (results.length > 0) {
+        document.getElementById('mainSearchSuggestions').classList.remove('open');
+        await drawRealRoute([results[0].lat, results[0].lng], results[0].title);
+      } else {
+        showToast('Selecciona una dirección de la lista desplegable');
       }
-      activeRouteId = 'search';
-      renderSavedRoutesUI();
-      await drawRealRoute([geo.lat, geo.lng], geo.display);
     });
 
     // =========================================================
-    // 5. TRAYECTOS GUARDADOS CON ALARMAS Y FRECTUENCIA
+    // 5. PROGRAMADOR DE TRAYECTOS CON ORIGEN, DESTINO Y ALARMA
     // =========================================================
-    async function loadUserSavedRoutes() {
-      if (!currentUser) {
-        savedRoutes = JSON.parse(localStorage.getItem('crs_local_routes') || '[]');
-        renderSavedRoutesUI();
-        return;
+    attachAutocomplete(
+      document.getElementById('routeOriginInput'),
+      document.getElementById('originSuggestions'),
+      (place) => { pickedRouteOrigin = place; }
+    );
+
+    attachAutocomplete(
+      document.getElementById('routeDestTextInput'),
+      document.getElementById('destSuggestions'),
+      (place) => {
+        pickedRouteDest = place;
+        document.getElementById('pickedDestStatus').textContent = `✓ Destino confirmado: ${place.title} (${place.subtitle})`;
       }
-      const { data } = await sb.from('trayectos_guardados').select('*').eq('user_id', currentUser.id).order('creado_en', { ascending: false });
-      savedRoutes = data || [];
-      renderSavedRoutesUI();
-    }
+    );
 
-    function renderSavedRoutesUI() {
-      const bottomRow = document.getElementById('bottomSavedRoutesRow');
-      const drawerList = document.getElementById('drawerRoutesList');
+    document.getElementById('originGpsBtn').addEventListener('click', () => {
+      pickedRouteOrigin = null;
+      document.getElementById('originGpsBtn').classList.add('active');
+      document.getElementById('originCustomBtn').classList.remove('active');
+      document.getElementById('originSearchWrap').style.display = 'none';
+    });
 
-      if (!savedRoutes || savedRoutes.length === 0) {
-        bottomRow.innerHTML = `<span style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Sin trayectos activos. Busca una calle arriba o programa tus alarmas en ☰.</span>`;
-        drawerList.innerHTML = `<div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Aún no has guardado trayectos con alarma.</div>`;
-        return;
-      }
+    document.getElementById('originCustomBtn').addEventListener('click', () => {
+      document.getElementById('originCustomBtn').classList.add('active');
+      document.getElementById('originGpsBtn').classList.remove('active');
+      document.getElementById('originSearchWrap').style.display = 'block';
+    });
 
-      bottomRow.innerHTML = savedRoutes.map(rt => {
-        const isSel = activeRouteId === rt.id;
-        return `<button class="route-chip ${isSel ? 'selected' : ''} arcade-xs" onclick="toggleSavedRoute(${rt.id})">
-          🧭 ${rt.nombre} (${rt.hora_salida.slice(0,5)})
-        </button>`;
-      }).join('');
-
-      drawerList.innerHTML = savedRoutes.map(rt => {
-        const freqText = rt.tipo_frecuencia === 'fecha_unica'
-          ? `📅 ${rt.fecha_especifica}`
-          : `🔁 ${(rt.dias_semana || []).join(', ')}`;
-        return `<div class="list-item" style="padding:8px 10px;">
-          <div style="min-width:0;">
-            <strong style="font-size:11px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" class="arcade-xs">${rt.nombre}</strong>
-            <div style="font-size:9.5px;color:var(--text-secondary);" class="arcade-xs">⏰ ${rt.hora_salida.slice(0,5)} (-${rt.minutos_anticipacion}m) • ${freqText}</div>
-          </div>
-          <div style="display:flex;gap:4px;">
-            <button class="chip-btn arcade-xs" style="padding:4px 7px;" onclick="toggleSavedRoute(${rt.id})">Ver</button>
-            <button class="chip-btn arcade-xs" style="padding:4px 7px;color:var(--danger-bg);" onclick="deleteSavedRoute(${rt.id})">✕</button>
-          </div>
-        </div>`;
-      }).join('');
-    }
-
-    window.toggleSavedRoute = async (id) => {
-      if (activeRouteId === id) {
-        clearActiveRoute();
-        return;
-      }
-      const rt = savedRoutes.find(r => r.id === id);
-      if (!rt) return;
-      activeRouteId = id;
-      renderSavedRoutesUI();
-      closeSideDrawer();
-      await drawRealRoute([rt.destino_lat, rt.destino_lng], rt.nombre);
-    };
-
-    window.deleteSavedRoute = async (id) => {
-      if (activeRouteId === id) clearActiveRoute();
-      if (currentUser) {
-        await sb.from('trayectos_guardados').delete().eq('id', id);
-      } else {
-        savedRoutes = savedRoutes.filter(r => r.id !== id);
-        localStorage.setItem('crs_local_routes', JSON.stringify(savedRoutes));
-      }
-      await loadUserSavedRoutes();
-      showToast('Trayecto eliminado');
-    };
-
-    // Guardado de trayecto programado
     let selectedFreqType = 'dias_semana';
     document.getElementById('freqDaysBtn').addEventListener('click', () => {
       selectedFreqType = 'dias_semana';
@@ -1063,25 +1170,34 @@
     document.querySelectorAll('.day-pill').forEach(el => el.addEventListener('click', () => el.classList.toggle('on')));
 
     document.getElementById('saveScheduledRouteBtn').addEventListener('click', async () => {
-      const nombre = document.getElementById('routeNameInput').value.trim() || 'Trayecto Habitual';
-      const destTxt = document.getElementById('routeDestTextInput').value.trim();
+      const nombre = document.getElementById('routeNameInput').value.trim() || 'Trayecto Programado';
       const hora = document.getElementById('routeTimeInput').value || '07:00';
       const anticipacion = parseInt(document.getElementById('routeAdvanceSelect').value, 10);
-      if (!destTxt) { showToast('Escribe un destino'); return; }
 
-      const geo = await geocodeTampicoSur(destTxt);
-      if (!geo) { showToast('No se encontró ese destino en la zona'); return; }
+      // Si el usuario escribió pero no hizo clic en la sugerencia, buscamos la primera coincidencia automática
+      if (!pickedRouteDest) {
+        const rawDest = document.getElementById('routeDestTextInput').value.trim();
+        const found = await searchPlacesSurTamaulipas(rawDest);
+        if (found.length > 0) pickedRouteDest = found[0];
+      }
 
+      if (!pickedRouteDest) {
+        showToast('Busca y selecciona un destino válido de la lista');
+        return;
+      }
+
+      const startLat = pickedRouteOrigin ? pickedRouteOrigin.lat : userCoords[0];
+      const startLng = pickedRouteOrigin ? pickedRouteOrigin.lng : userCoords[1];
       const dias = Array.from(document.querySelectorAll('.day-pill.on')).map(d => d.dataset.day);
       const fechaEsp = document.getElementById('routeSpecificDateInput').value || null;
 
-      const payload = {
+      const row = {
         nombre,
-        origen_lat: userCoords[0],
-        origen_lng: userCoords[1],
-        destino_texto: geo.display,
-        destino_lat: geo.lat,
-        destino_lng: geo.lng,
+        origen_lat: startLat,
+        origen_lng: startLng,
+        destino_texto: `${pickedRouteDest.title} - ${pickedRouteDest.subtitle}`,
+        destino_lat: pickedRouteDest.lat,
+        destino_lng: pickedRouteDest.lng,
         hora_salida: hora,
         tipo_frecuencia: selectedFreqType,
         dias_semana: dias,
@@ -1089,24 +1205,111 @@
         minutos_anticipacion: anticipacion
       };
 
-      if (currentUser) {
-        payload.user_id = currentUser.id;
-        await sb.from('trayectos_guardados').insert([payload]);
-      } else {
-        payload.id = Date.now();
-        savedRoutes.unshift(payload);
-        localStorage.setItem('crs_local_routes', JSON.stringify(savedRoutes));
-      }
+      try {
+        if (currentUser) {
+          row.user_id = currentUser.id;
+          const { error } = await sb.from('trayectos_guardados').insert([row]);
+          if (error) throw error;
+        } else {
+          row.id = Date.now();
+          savedRoutes.unshift(row);
+          localStorage.setItem('crs_local_routes', JSON.stringify(savedRoutes));
+        }
 
-      document.getElementById('routePlannerModal').classList.remove('open');
-      await loadUserSavedRoutes();
-      playSubtleNotification();
-      showToast('⏰ Trayecto programado con aviso automático');
+        pickedRouteDest = null;
+        pickedRouteOrigin = null;
+        document.getElementById('routeNameInput').value = '';
+        document.getElementById('routeDestTextInput').value = '';
+        document.getElementById('pickedDestStatus').textContent = '';
+        document.getElementById('routePlannerModal').classList.remove('open');
+
+        await loadUserSavedRoutes();
+        playSubtleNotification();
+        showToast('⏰ Trayecto guardado y alarma activada');
+      } catch (err) {
+        showToast(`Error al guardar: ${err.message}`);
+      }
     });
 
+    async function loadUserSavedRoutes() {
+      if (!currentUser) {
+        savedRoutes = JSON.parse(localStorage.getItem('crs_local_routes') || '[]');
+        renderSavedRoutesUI();
+        return;
+      }
+      const { data } = await sb.from('trayectos_guardados').select('*').eq('user_id', currentUser.id).order('creado_en', { ascending: false });
+      savedRoutes = data || [];
+      renderSavedRoutesUI();
+    }
+
+    function renderSavedRoutesUI() {
+      const bottomRow = document.getElementById('bottomSavedRoutesRow');
+      const drawerList = document.getElementById('drawerRoutesList');
+
+      if (!savedRoutes || savedRoutes.length === 0) {
+        bottomRow.innerHTML = `<span style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Sin trayecto activo. Busca una dirección o abre ☰ → Trayectos.</span>`;
+        drawerList.innerHTML = `<div style="font-size:10.5px;color:var(--text-secondary);" class="arcade-xs">Aún no has guardado trayectos con alarma.</div>`;
+        return;
+      }
+
+      bottomRow.innerHTML = savedRoutes.map(rt => {
+        const isSel = activeRouteId === rt.id;
+        return `<button class="route-chip ${isSel ? 'selected' : ''} arcade-xs" onclick="toggleSavedRoute(${rt.id})">
+          🧭 ${rt.nombre} (${rt.hora_salida.slice(0,5)})
+        </button>`;
+      }).join('');
+
+      drawerList.innerHTML = savedRoutes.map(rt => {
+        const freqText = rt.tipo_frecuencia === 'fecha_unica' ? `📅 ${rt.fecha_especifica}` : `🔁 ${(rt.dias_semana || []).join(', ')}`;
+        return `<div class="list-item" style="padding:8px 10px;">
+          <div style="min-width:0;">
+            <strong style="font-size:11px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" class="arcade-xs">${rt.nombre}</strong>
+            <div style="font-size:9.5px;color:var(--text-secondary);" class="arcade-xs">📍 ${rt.destino_texto}</div>
+            <div style="font-size:9.5px;color:var(--text-secondary);" class="arcade-xs">⏰ ${rt.hora_salida.slice(0,5)} (-${rt.minutos_anticipacion}m) • ${freqText}</div>
+          </div>
+          <div style="display:flex;gap:4px;">
+            <button class="chip-btn arcade-xs" style="padding:4px 7px;" onclick="toggleSavedRoute(${rt.id})">Ver</button>
+            <button class="chip-btn arcade-xs" style="padding:4px 7px;color:var(--danger-bg);" onclick="deleteSavedRoute(${rt.id})">✕</button>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    window.toggleSavedRoute = async (id) => {
+      if (activeRouteId === id) { clearActiveRoute(); return; }
+      const rt = savedRoutes.find(r => r.id === id);
+      if (!rt) return;
+      activeRouteId = id;
+      renderSavedRoutesUI();
+      closeSideDrawer();
+      await drawRealRoute([rt.destino_lat, rt.destino_lng], rt.nombre, [rt.origen_lat, rt.origen_lng]);
+    };
+
+    window.deleteSavedRoute = async (id) => {
+      if (activeRouteId === id) clearActiveRoute();
+      if (currentUser) await sb.from('trayectos_guardados').delete().eq('id', id);
+      else {
+        savedRoutes = savedRoutes.filter(r => r.id !== id);
+        localStorage.setItem('crs_local_routes', JSON.stringify(savedRoutes));
+      }
+      await loadUserSavedRoutes();
+      showToast('Trayecto eliminado');
+    };
+
     // =========================================================
-    // 6. REPORTES CIUDADANOS (GPS O PUNTO MARCADO EN MAPA)
+    // 6. REPORTES CIUDADANOS (GPS O MARCAR EN MAPA)
     // =========================================================
+    map.on('click', (e) => {
+      if (!isPickingMapPoint) return;
+      reportCustomCoords = [e.latlng.lat, e.latlng.lng];
+      if (tempPickMarker) map.removeLayer(tempPickMarker);
+      tempPickMarker = L.marker(reportCustomCoords).addTo(map);
+      isPickingMapPoint = false;
+      document.getElementById('pickPointBanner').classList.remove('visible');
+      document.getElementById('reportCoordsLabel').textContent = `📍 Punto exacto marcado (${reportCustomCoords[0].toFixed(5)}, ${reportCustomCoords[1].toFixed(5)})`;
+      document.getElementById('reportModal').classList.add('open');
+    });
+
     function getPinHTML(rep) {
       const theme = getCurrentTheme();
       const icons = {
@@ -1142,7 +1345,6 @@
       document.getElementById('pinConfirmCount').textContent = rep.confirmaciones;
       document.getElementById('pinClearCount').textContent = rep.votos_despejado;
 
-      // Solo si el usuario autenticado tiene rol === 'admin' en la base de datos se inyecta el botón de sanción
       const adminBox = document.getElementById('adminPinActionsContainer');
       adminBox.innerHTML = '';
       if (currentProfile && currentProfile.rol === 'admin') {
@@ -1183,7 +1385,7 @@
     document.getElementById('submitReportBtn').addEventListener('click', async () => {
       const { data: mod } = await sb.from('dispositivos_moderacion').select('shadowban').eq('device_id', deviceId).maybeSingle();
       const isShadowbanned = mod?.shadowban === true;
-      const targetCoords = reportCustomCoords || [userCoords[0] + (Math.random() - 0.5) * 0.0015, userCoords[1] + (Math.random() - 0.5) * 0.0015];
+      const targetCoords = reportCustomCoords || userCoords;
       const colonia = document.getElementById('reportColoniaInput').value.trim() || 'Zona Conurbada';
 
       const { data, error } = await sb.from('reportes').insert([{
@@ -1231,13 +1433,12 @@
     });
 
     // =========================================================
-    // 7. AUXILIO VIAL BIDIRECCIONAL TIPO DIDI + CANCELACIÓN REAL
+    // 7. AUXILIO VIAL BIDIRECCIONAL & TARJETA DESLIZABLE
     // =========================================================
     async function loadAuxilioData() {
       const { data } = await sb.from('auxilio_vial').select('*').in('estado', ['pendiente', 'aceptado']).order('creado_en', { ascending: false }).limit(10);
       const list = data || [];
 
-      // 1. Verificar si el usuario actual tiene una solicitud activa (como solicitante o voluntario)
       myActiveAuxilio = currentUser
         ? list.find(a => a.solicitante_id === currentUser.id || a.voluntario_id === currentUser.id)
         : list.find(a => a.solicitante_device === deviceId);
@@ -1277,58 +1478,56 @@
         formBox.style.display = 'block';
       }
 
-      // 2. Si el usuario es Voluntario Certificado disponible, mostrar tarjeta tipo DiDi si hay solicitud pendiente
       if (currentProfile && currentProfile.voluntario_disponible && currentProfile.estado_verificacion === 'aprobado' && !myActiveAuxilio) {
         const pending = list.find(a => a.estado === 'pendiente' && a.solicitante_id !== currentUser?.id);
         if (pending && (!pendingDispatchAuxilio || pendingDispatchAuxilio.id !== pending.id)) {
-          showDidiDispatchCard(pending);
+          showDispatchCard(pending);
         } else if (!pending) {
-          hideDidiDispatchCard();
+          hideDispatchCard();
         }
       }
     }
 
-    function showDidiDispatchCard(aux) {
+    function showDispatchCard(aux) {
       pendingDispatchAuxilio = aux;
-      const card = document.getElementById('didiDispatchCard');
-      document.getElementById('didiUserName').textContent = `${aux.solicitante_nombre || 'Ciudadano Verificado'} • ⭐ ${aux.solicitante_estrellas || '5.0'}`;
-      document.getElementById('didiFallaText').textContent = `Falla: ${aux.falla}`;
-      document.getElementById('didiVehiculoText').textContent = `${aux.solicitante_vehiculo || 'Vehículo'} • Placas: ${aux.solicitante_placas || 'Verificadas'}`;
+      const card = document.getElementById('dispatchCard');
+      document.getElementById('dispatchUserName').textContent = `${aux.solicitante_nombre || 'Ciudadano Verificado'} • ⭐ ${aux.solicitante_estrellas || '5.0'}`;
+      document.getElementById('dispatchFallaText').textContent = `Falla: ${aux.falla}`;
+      document.getElementById('dispatchVehiculoText').textContent = `${aux.solicitante_vehiculo || 'Vehículo'} • Placas: ${aux.solicitante_placas || 'Verificadas'}`;
       card.style.transform = 'translateX(0)';
       card.style.opacity = '1';
       card.classList.add('visible');
       playSubtleNotification();
     }
 
-    function hideDidiDispatchCard() {
+    function hideDispatchCard() {
       pendingDispatchAuxilio = null;
-      document.getElementById('didiDispatchCard').classList.remove('visible');
+      document.getElementById('dispatchCard').classList.remove('visible');
     }
 
-    // Gesto deslizable en tarjeta tipo DiDi
     let touchStartX = 0;
-    const didiCard = document.getElementById('didiDispatchCard');
-    didiCard.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
-    didiCard.addEventListener('touchmove', e => {
+    const dispCard = document.getElementById('dispatchCard');
+    dispCard.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+    dispCard.addEventListener('touchmove', e => {
       const dx = e.touches[0].clientX - touchStartX;
-      if (Math.abs(dx) > 15) didiCard.style.transform = `translateX(${dx}px)`;
+      if (Math.abs(dx) > 15) dispCard.style.transform = `translateX(${dx}px)`;
     });
-    didiCard.addEventListener('touchend', e => {
+    dispCard.addEventListener('touchend', e => {
       const dx = e.changedTouches[0].clientX - touchStartX;
       if (Math.abs(dx) > 90) {
-        didiCard.style.transform = `translateX(${dx > 0 ? 400 : -400}px)`;
-        didiCard.style.opacity = '0';
-        setTimeout(hideDidiDispatchCard, 220);
+        dispCard.style.transform = `translateX(${dx > 0 ? 400 : -400}px)`;
+        dispCard.style.opacity = '0';
+        setTimeout(hideDispatchCard, 220);
       } else {
-        didiCard.style.transform = 'translateX(0)';
+        dispCard.style.transform = 'translateX(0)';
       }
     });
 
-    document.getElementById('didiDismissBtn').addEventListener('click', hideDidiDispatchCard);
-    document.getElementById('didiAcceptBtn').addEventListener('click', async () => {
+    document.getElementById('dispatchDismissBtn').addEventListener('click', hideDispatchCard);
+    document.getElementById('dispatchAcceptBtn').addEventListener('click', async () => {
       if (!pendingDispatchAuxilio || !currentProfile) return;
       const auxId = pendingDispatchAuxilio.id;
-      hideDidiDispatchCard();
+      hideDispatchCard();
       await sb.from('auxilio_vial').update({
         estado: 'aceptado',
         voluntario_id: currentUser.id,
@@ -1344,13 +1543,13 @@
     document.getElementById('requestAuxilioBtn').addEventListener('click', async () => {
       if (!currentUser || !currentProfile) {
         document.getElementById('sosModal').classList.remove('open');
-        document.getElementById('profileModal').classList.add('open');
-        showToast('Inicia sesión y verifica tu identidad para pedir auxilio');
+        openSideDrawer('paneProfile');
+        showToast('Inicia sesión y verifica tu identidad en Perfil para pedir auxilio');
         return;
       }
       if (currentProfile.estado_verificacion !== 'aprobado' && currentProfile.rol !== 'admin') {
         document.getElementById('sosModal').classList.remove('open');
-        document.getElementById('profileModal').classList.add('open');
+        openSideDrawer('paneProfile');
         showToast('Completa tu verificación en vivo en Perfil para pedir auxilio');
         return;
       }
@@ -1395,7 +1594,7 @@
     };
 
     // =========================================================
-    // 8. AUTENTICACIÓN, PERFIL, VERIFICACIÓN EN VIVO Y HERRAMIENTAS ADMIN
+    // 8. PERFIL EN PANEL LATERAL & HERRAMIENTAS ADMIN
     // =========================================================
     async function refreshAuthSession() {
       const { data: { session } } = await sb.auth.getSession();
@@ -1404,17 +1603,13 @@
       if (currentUser) {
         const { data: prof } = await sb.from('perfiles_usuarios').select('*').eq('id', currentUser.id).maybeSingle();
         currentProfile = prof;
-        document.getElementById('topUserLabel').textContent = prof ? prof.nombre_completo.split(' ')[0] : 'Mi Perfil';
+        document.getElementById('topUserLabel').textContent = prof ? prof.nombre_completo.split(' ')[0] : 'Perfil';
         document.getElementById('authFormsView').style.display = 'none';
         document.getElementById('loggedProfileView').style.display = 'block';
         renderProfileData();
 
-        // Si y SOLO SI el rol en Supabase es 'admin', se inyectan las herramientas exclusivas de Administrador
-        if (prof && prof.rol === 'admin') {
-          mountExclusiveAdminTools();
-        } else {
-          unmountExclusiveAdminTools();
-        }
+        if (prof && prof.rol === 'admin') mountExclusiveAdminTools();
+        else unmountExclusiveAdminTools();
       } else {
         currentProfile = null;
         document.getElementById('topUserLabel').textContent = 'Entrar';
@@ -1444,7 +1639,6 @@
       }
     }
 
-    // Herramientas exclusivas de Admin (Inyectadas dinámicamente solo tras validación de rol === 'admin')
     function mountExclusiveAdminTools() {
       if (document.getElementById('adminAlertTriggerBtn')) return;
       const controls = document.getElementById('mapControlsContainer');
@@ -1529,14 +1723,14 @@
     function bindAdminModalEvents() {
       let pickedAlert = 'norte';
       const ALERTS_DEF = {
-        huracan: { titulo: 'HURACÁN / TORMENTA TROPICAL', tips: ['Resguárdate lejos de ventanas.', 'Evita pasos a desnivel inundados.'] },
-        norte: { titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES', tips: ['Precaución en Bulevar Costero y puentes.', 'Aléjate de cables sueltos y espectaculares.'] },
-        inundacion: { titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL', tips: ['No cruces corrientes de agua.', 'Usa vías altas alternas.'] },
-        granizo: { titulo: 'GRANIZO / TORMENTA ELÉCTRICA', tips: ['Oríllate bajo techo seguro.', 'Enciende luces intermitentes.'] },
-        calor: { titulo: 'ONDA DE CALOR EXTREMA', tips: ['Hidrátate constantemente.', 'Evita sol directo de 11:00 a 16:00 hrs.'] },
-        incendio: { titulo: 'INCENDIO DE ALTO RIESGO', tips: ['Cede el paso a Bomberos y Protección Civil.', 'Cierra ventanas ante humo denso.'] },
-        gas: { titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA', tips: ['Aléjate en sentido contrario al viento.', 'No enciendas flamas ni interruptores.'] },
-        sismo: { titulo: 'ACTIVIDAD SÍSMICA DETECTADA', tips: ['Mantén la calma y aléjate de vidrios.', 'Revisa instalaciones de gas tras el sismo.'] }
+        huracan: { titulo: 'HURACÁN / TORMENTA TROPICAL', fx: 'rain_storm', tips: ['Resguárdate lejos de ventanas.', 'Evita pasos a desnivel inundados.'] },
+        norte: { titulo: 'EVENTO DE "NORTE" / RACHAS FUERTES', fx: 'wind', tips: ['Precaución en Bulevar Costero y puentes.', 'Aléjate de cables sueltos y espectaculares.'] },
+        inundacion: { titulo: 'LLUVIA SEVERA / INUNDACIÓN VIAL', fx: 'rain_storm', tips: ['No cruces corrientes de agua.', 'Usa vías altas alternas.'] },
+        granizo: { titulo: 'GRANIZO / TORMENTA ELÉCTRICA', fx: 'rain_storm', tips: ['Oríllate bajo techo seguro.', 'Enciende luces intermitentes.'] },
+        calor: { titulo: 'ONDA DE CALOR EXTREMA', fx: 'heat', tips: ['Hidrátate constantemente.', 'Evita sol directo de 11:00 a 16:00 hrs.'] },
+        incendio: { titulo: 'INCENDIO DE ALTO RIESGO', fx: 'fire', tips: ['Cede el paso a Bomberos y Protección Civil.', 'Cierra ventanas ante humo denso.'] },
+        gas: { titulo: 'ALERTA POR FUGA DE GAS / QUÍMICA', fx: 'gas', tips: ['Aléjate en sentido contrario al viento.', 'No enciendas flamas ni interruptores.'] },
+        sismo: { titulo: 'ACTIVIDAD SÍSMICA DETECTADA', fx: 'quake', tips: ['Mantén la calma y aléjate de vidrios.', 'Revisa instalaciones de gas tras el sismo.'] }
       };
 
       document.querySelectorAll('#globalAlertGrid .opt-card').forEach(b => {
@@ -1553,7 +1747,7 @@
         await sb.from('alertas_globales').update({ activa: false }).eq('activa', true);
         const { data, error } = await sb.from('alertas_globales').insert([{ tipo: pickedAlert, titulo: cfg.titulo, zona, precauciones: cfg.tips, activa: true }]).select().single();
         if (!error && data) {
-          applyGlobalAlertUI(data);
+          applyGlobalAlertUI(data, true);
           document.getElementById('adminModal').classList.remove('open');
           showToast('🚨 Alerta global emitida');
         }
@@ -1603,7 +1797,6 @@
       document.getElementById('admTabVerifBtn').click();
     };
 
-    // Registro e Inicio de Sesión
     document.getElementById('tabLoginBtn').addEventListener('click', () => {
       document.getElementById('tabLoginBtn').classList.add('active');
       document.getElementById('tabRegisterBtn').classList.remove('active');
@@ -1696,12 +1889,11 @@
     document.getElementById('doLogoutBtn').addEventListener('click', async () => {
       await sb.auth.signOut();
       await refreshAuthSession();
-      document.getElementById('profileModal').classList.remove('open');
       showToast('Sesión cerrada');
     });
 
     // =========================================================
-    // 9. CLIMA, ALERTAS GLOBALES, DRAWER Y EVENTOS UI
+    // 9. CLIMA, ALERTAS GLOBALES CON FX, DRAWER Y EVENTOS UI
     // =========================================================
     async function fetchRealWeather() {
       try {
@@ -1716,8 +1908,21 @@
       } catch (e) {}
     }
 
-    function applyGlobalAlertUI(alertRow) {
+    const FX_BY_ALERT_TYPE = {
+      huracan: 'rain_storm',
+      norte: 'wind',
+      inundacion: 'rain_storm',
+      granizo: 'rain_storm',
+      calor: 'heat',
+      incendio: 'fire',
+      gas: 'gas',
+      sismo: 'quake'
+    };
+
+    function applyGlobalAlertUI(alertRow, playVisualFx = true) {
       const banner = document.getElementById('globalAlertBanner');
+      const fx = FX_BY_ALERT_TYPE[alertRow.tipo] || 'wind';
+      banner.dataset.fx = fx;
       document.getElementById('alertBannerTitle').textContent = `🚨 ${alertRow.titulo} • ${alertRow.zona}`;
       document.getElementById('alertZoneText').textContent = `Zona: ${alertRow.zona}`;
       const ul = document.getElementById('alertTipsList');
@@ -1726,6 +1931,7 @@
       banner.classList.add('visible');
       document.body.classList.add('has-alert');
       playSubtleNotification();
+      if (playVisualFx) triggerAlertBurst(fx);
     }
 
     function hideGlobalAlertUI() {
@@ -1733,7 +1939,13 @@
       document.body.classList.remove('has-alert');
     }
 
-    function openSideDrawer() {
+    function switchDrawerTab(tabId) {
+      document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.dtab === tabId));
+      document.querySelectorAll('.drawer-pane').forEach(p => p.style.display = (p.id === tabId ? 'block' : 'none'));
+    }
+
+    function openSideDrawer(initialTab = 'paneProfile') {
+      switchDrawerTab(initialTab);
       document.getElementById('drawerBackdrop').classList.add('open');
       document.getElementById('sideDrawer').classList.add('open');
     }
@@ -1742,7 +1954,12 @@
       document.getElementById('sideDrawer').classList.remove('open');
     }
 
-    document.getElementById('openDrawerBtn').addEventListener('click', openSideDrawer);
+    document.querySelectorAll('.drawer-tab').forEach(btn => {
+      btn.addEventListener('click', () => switchDrawerTab(btn.dataset.dtab));
+    });
+
+    document.getElementById('openDrawerBtn').addEventListener('click', () => openSideDrawer('paneRoutes'));
+    document.getElementById('openProfileDrawerBtn').addEventListener('click', () => openSideDrawer('paneProfile'));
     document.getElementById('closeDrawerBtn').addEventListener('click', closeSideDrawer);
     document.getElementById('drawerBackdrop').addEventListener('click', closeSideDrawer);
 
@@ -1765,17 +1982,17 @@
       showToast(followHeading ? '🧭 Mapa siguiendo tu ruta' : '🧭 Mapa fijo Norte arriba');
     });
 
-    document.getElementById('locateBtn').addEventListener('click', () => map.setView(userCoords, 15));
+    document.getElementById('locateBtn').addEventListener('click', () => requestPreciseLocation(true));
     document.getElementById('refreshWeatherBtn').addEventListener('click', fetchRealWeather);
     document.getElementById('openReportBtn').addEventListener('click', () => document.getElementById('reportModal').classList.add('open'));
     document.getElementById('openSosBtn').addEventListener('click', () => { loadAuxilioData(); document.getElementById('sosModal').classList.add('open'); });
-    document.getElementById('openProfileBtn').addEventListener('click', () => document.getElementById('profileModal').classList.add('open'));
     document.getElementById('openNewRouteBtn').addEventListener('click', () => { closeSideDrawer(); document.getElementById('routePlannerModal').classList.add('open'); });
 
     document.getElementById('alertExpandBtn').addEventListener('click', () => {
       const d = document.getElementById('alertBannerDetails');
       const open = d.classList.toggle('open');
       document.getElementById('alertExpandBtn').textContent = open ? 'Ocultar ▲' : 'Precauciones ▼';
+      if (open) triggerAlertBurst(document.getElementById('globalAlertBanner').dataset.fx || 'wind');
     });
 
     document.getElementById('notifSoundSelect').addEventListener('change', e => localStorage.setItem('crs_sound', e.target.value));
@@ -1804,7 +2021,7 @@
     });
 
     // =========================================================
-    // 10. REALTIME SUPABASE & ARRANQUE
+    // 10. REALTIME SUPABASE & GPS CONTINUO
     // =========================================================
     async function initRealtimeAndData() {
       const pill = document.getElementById('dbStatusPill');
@@ -1815,7 +2032,7 @@
         renderReportsOnMap();
 
         const { data: alerts } = await sb.from('alertas_globales').select('*').eq('activa', true).order('creado_en', { ascending: false }).limit(1);
-        if (alerts && alerts.length > 0) applyGlobalAlertUI(alerts[0]);
+        if (alerts && alerts.length > 0) applyGlobalAlertUI(alerts[0], true);
 
         await loadAuxilioData();
         pill.textContent = 'EN VIVO';
@@ -1825,7 +2042,7 @@
         pill.classList.add('offline');
       }
 
-      sb.channel('climaruta-v4-live')
+      sb.channel('climaruta-v41-live')
         .on('postgres_changes', { event: '*', schema: 'public', table: 'reportes' }, payload => {
           if (payload.eventType === 'INSERT' && !payload.new.oculto && payload.new.votos_despejado < 3) {
             if (!activeReports.some(r => r.id === payload.new.id)) {
@@ -1845,7 +2062,7 @@
           }
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'alertas_globales' }, payload => {
-          if (payload.new && payload.new.activa) applyGlobalAlertUI(payload.new);
+          if (payload.new && payload.new.activa) applyGlobalAlertUI(payload.new, true);
           else hideGlobalAlertUI();
         })
         .on('postgres_changes', { event: '*', schema: 'public', table: 'auxilio_vial' }, () => loadAuxilioData())
@@ -1853,15 +2070,17 @@
     }
 
     if ('geolocation' in navigator) {
+      requestPreciseLocation(true);
       navigator.geolocation.watchPosition(pos => {
         if (!simInterval) {
           userCoords = [pos.coords.latitude, pos.coords.longitude];
+          hasRealGps = true;
           if (pos.coords.heading !== null && !isNaN(pos.coords.heading)) userHeading = pos.coords.heading;
           userSpeedKmh = pos.coords.speed ? pos.coords.speed * 3.6 : 0;
           refreshUserMarker();
           if (followHeading) map.panTo(userCoords);
         }
-      }, () => {}, { enableHighAccuracy: true });
+      }, () => {}, { enableHighAccuracy: true, maximumAge: 0 });
     }
 
     function showToast(msg) {
